@@ -79,6 +79,7 @@ let rayCoordinates;
 let grid;
 
 let YEquation;
+let XEquation;
 
 function preload (){
     this.load.image("player", "assets/doomguy64x64.png", {frameWidth: 64, frameHeight: 64});
@@ -104,7 +105,6 @@ function create(){
 
     player.body.setCollideWorldBounds(true);
 
-    // player.setCircle(32,32,10);
 
     //Here we create the indicator for the pov of the player
     playerHeader = this.add.triangle(playerPositionX, playerPositionY, pHeCord[0], pHeCord[1], pHeCord[2], pHeCord[3], pHeCord[4], pHeCord[5], "0xff0000");
@@ -204,7 +204,6 @@ function create(){
     // }
 
     rays[0] = {graphLine: this.add.line(playerPositionX, playerPositionY, 0, 0, 0, 0, "0x00ff00")};
-    // rays[0].graphLine.setTo(0, 0, player.x - rayCoordinates.x,  -Math.abs(player.y - rayCoordinates.y));
     redrawRay();
     this.physics.add.existing(rays[0].graphLine, false);
     
@@ -248,21 +247,14 @@ function update (){
     player.body.setVelocity(0);
     playerHeader.body.setVelocity(0);
     rays[0].graphLine.body.setVelocity(0);
-    
-    // rays[0].setTo(0, 0, rayCoordinates.x, rayCoordinates.y);
-    
+        
     player.rotation = playerAngle;
 
     playerHeader.rotation = playerAngle;
 
-    raycaster.setRayAngle = playerAngle;
-
     rays[0].graphLine.rotation = playerAngle;
 
     raycaster.setPlayerPosition = player;
-
-    // console.log(velocityX, velocityY);
-    // console.log(playerAngle*180/Math.PI);
 
     if (cursors.up.isDown){
         velocityX = player.body.velocity.x + Xcomponent;
@@ -321,9 +313,6 @@ function update (){
         rayCoordinates = raycaster.drawRays3D();
         redrawRay();
 
-        // console.log(rayCoordinates);
-        // console.log(playerAngle*180/Math.PI);
-
         if (cursors.left.isDown){
             playerAngle -= angleOperator;
             if(playerAngle < 0){
@@ -335,27 +324,32 @@ function update (){
                 playerAngle -= 2*Math.PI;
             }
         }
+
+        raycaster.setRayAngle = playerAngle;
     }
 
     if(keySpace.isDown){
-        // console.log("x2", player.x - rayCoordinates.x, "y2", -Math.abs(player.y - rayCoordinates.y));
-
-        console.log("x2", player.x - rayCoordinates.x, "y2", rayCoordinates.y, "EQN:", player.y, YEquation, "=", player.y + YEquation);
+        console.log("x2", player.x - rayCoordinates.x, "y2", YEquation, "EQN:", player.y, YEquation, "=", player.y + YEquation);
         
-        console.log("ray coordinates: ", rayCoordinates.x, rayCoordinates.y, rayCoordinates.y/32);
+        console.log("ray coordinates: ", rayCoordinates.x, rayCoordinates.y);
         console.log("player position: ", player.x, player.y);
 
-        console.dir(rayCoordinates.y);
-        console.dir(player.y);
+        console.log("rayAngle: ", raycaster.getRayAngle);
 
-        console.dir(rayCoordinates.y - player.y);
     }
 }
 
 function redrawRay(){
-    YEquation = rayCoordinates.y - player.y;
+    XEquation = Math.sin(playerAngle) * (player.x - rayCoordinates.x);
+    YEquation = Math.cos(playerAngle) * (rayCoordinates.y - player.y);
 
-    rays[0].graphLine.setTo(0, 0, player.x - rayCoordinates.x, YEquation);
+    if(playerAngle == 0 || playerAngle == Math.pi){
+        XEquation = player.x - rayCoordinates.x;
+    }else if(playerAngle == Math.pi/2 || playerAngle == 3*Math.pi/2 ){
+        YEquation = rayCoordinates.y - player.y;
+    }
+
+    rays[0].graphLine.setTo(0, 0, XEquation, YEquation);
 }
 
 function generateWallMatrix(){
