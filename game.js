@@ -66,7 +66,8 @@ pHeCord[3] = pHeCord[1];
 pHeCord[4] = pHeCord[2]/2;
 pHeCord[5] = pHeCord[3] - 30;
 
-let rays = Array(1);
+let rayAmount = 60;
+let rays = Array(rayAmount);
 let point;
 let distance;
 
@@ -87,7 +88,7 @@ function preload (){
     this.load.image("player", "assets/doomguy64x64.png", {frameWidth: 64, frameHeight: 64});
     this.load.image("wall", "assets/wall.png", {frameWidth: 32, frameHeight: 32});
 
-    raycaster = new Raycaster(playerAngle, playerPositionX, playerPositionY);
+    raycaster = new Raycaster(playerAngle, playerPositionX, playerPositionY, rayAmount);
 }
 
 function create(){
@@ -197,20 +198,20 @@ function create(){
     //Here we stablish the raycasting
 
     rayCoordinates = raycaster.drawRays3D();
-    // for(let i = 0; i < 10; i++){
-    //     rays[i] = {graphLine: this.add.line(playerPositionX, playerPositionY, 0, 0, 0, 0, "0x00ff00")};
-    //     rays[i].graphLine.setTo(0, 0, 0, -playerPositionY);
-    //     this.physics.add.existing(rays[i].graphLine, false);
-    // }
+    for(let i = 0; i < 10; i++){
+        rays[i] = {graphLine: this.add.line(playerPositionX, playerPositionY, 0, 0, 0, 0, "0x00ff00")};
+        rays[i].graphLine.setTo(0, 0, 0, -playerPositionY);
+        this.physics.add.existing(rays[i].graphLine, false);
+    }
 
     point = this.add.text(playerPositionX, playerPositionY, `x:${rayCoordinates.x}, y:${rayCoordinates.y}`, { fontFamily: 'Georgia, "Goudy Bookletter 1911", Times, serif' }).setDepth(2)
     distance =  this.add.text(playerPositionX, playerPositionY, `Distance: ${raycaster.hypoCalc(rayCoordinates.x - player.x, rayCoordinates.y - player.y)}`, { fontFamily: 'Georgia, "Goudy Bookletter 1911", Times, serif' }).setDepth(2)
     
 
-    rays[0] = {graphLine: this.add.line(playerPositionX, playerPositionY, 0, 0, 0, 0, "0x00ff00")};
+    // rays[0] = {graphLine: this.add.line(playerPositionX, playerPositionY, 0, 0, 0, 0, "0x00ff00")};
     
     redrawRay();
-    this.physics.add.existing(rays[0].graphLine, false);
+    // this.physics.add.existing(rays[0].graphLine, false);
     
     // console.log("x2", player.x - rayCoordinates.x, "y2", -Math.abs(player.y - rayCoordinates.y));
 
