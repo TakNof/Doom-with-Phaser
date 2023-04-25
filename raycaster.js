@@ -59,7 +59,7 @@ class Raycaster{
         let rayYoffset;
         let rayXoffset;
 
-        let NegInvTan = -1/Math.tan(this.rayAngle);
+        let NegInvTan = -(1/Math.tan(this.rayAngle));
 
         let matrixPosition;
         
@@ -74,20 +74,20 @@ class Raycaster{
 
                 depthOfField = 8;
 
-            }else if(this.rayAngle < Math.PI){
-                console.log("Less", this.rayAngle)
+            }else if(this.rayAngle > Math.PI){
+                // console.log("Less", this.rayAngle)
                 rayYposition = parseInt((this.playerPosition.y - 0.0001)/32)*32;
-                rayXposition = (this.playerPosition.y - rayYposition) * NegInvTan + this.playerPosition.x;
+                rayXposition = (-(this.playerPosition.y - rayYposition)) * NegInvTan + this.playerPosition.x;
 
-                rayYoffset = 32;
+                rayYoffset = -32;
                 rayXoffset = -rayYoffset*NegInvTan;
 
             }else{
-                console.log("Higher", this.rayAngle)
+                // console.log("Higher", this.rayAngle)
                 rayYposition = parseInt((this.playerPosition.y + 32)/32)*32;
-                rayXposition = (this.playerPosition.y - rayYposition) * NegInvTan + this.playerPosition.x;
+                rayXposition = (-(this.playerPosition.y - rayYposition)) * NegInvTan + this.playerPosition.x;
 
-                rayYoffset = -32;
+                rayYoffset = 32;
                 rayXoffset = -rayYoffset*NegInvTan;
             }
 
@@ -98,15 +98,15 @@ class Raycaster{
             while(depthOfField < 8){     
                 matrixPosition = {
 
-                    x: parseInt((rayXposition + rayXoffset)/32),
-                    y: parseInt((rayYposition + rayYoffset)/32)
-                }
-
-                if(matrixPosition.x < 0 || matrixPosition.y < 0){
-                    break;
+                    x: parseInt((rayXposition)/32),
+                    y: parseInt((rayYposition)/32)
                 }
 
                 let wallPlace = matrixPosition.y * this.matrixDimensions.xdim + matrixPosition.x;
+
+                if(matrixPosition.x < 0 || matrixPosition.y < 0 || wallPlace > this.matrixDimensions.xdim * this.matrixDimensions.ydim){
+                    break;
+                }
                 
                 if(wallPlace < this.matrixDimensions.xdim * this.matrixDimensions.ydim && this.matrix[matrixPosition.y][matrixPosition.x] === true){
                     console.log("Wall detected");

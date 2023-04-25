@@ -5,7 +5,7 @@ let config = {
     physics: {
         default: 'arcade',
         arcade: {
-            debug: true
+            debug: false
         }
     },
     scene: {
@@ -329,7 +329,7 @@ function update (){
     }
 
     if(keySpace.isDown){
-        console.log("x2", player.x - rayCoordinates.x, "y2", YEquation, "EQN:", player.y, YEquation, "=", player.y + YEquation);
+        console.log("x2", XEquation, "y2", YEquation, "EQN:", player.y, YEquation, "=", player.y + YEquation);
         
         console.log("ray coordinates: ", rayCoordinates.x, rayCoordinates.y);
         console.log("player position: ", player.x, player.y);
@@ -340,14 +340,22 @@ function update (){
 }
 
 function redrawRay(){
-    XEquation = Math.sin(playerAngle) * (player.x - rayCoordinates.x);
-    YEquation = Math.cos(playerAngle) * (rayCoordinates.y - player.y);
+    // XEquation = Math.sin(playerAngle) * (- rayCoordinates.x);
+    // YEquation = Math.cos(playerAngle) * (- rayCoordinates.y);
 
-    if(playerAngle == 0 || playerAngle == Math.pi){
-        XEquation = player.x - rayCoordinates.x;
-    }else if(playerAngle == Math.pi/2 || playerAngle == 3*Math.pi/2 ){
-        YEquation = rayCoordinates.y - player.y;
-    }
+    // if(playerAngle == 0 || playerAngle == Math.pi){
+    //     XEquation = player.x - rayCoordinates.x;
+    // }else if(playerAngle == Math.pi/2 || playerAngle == 3*Math.pi/2 ){
+    //     YEquation = rayCoordinates.y - player.y;
+    // }
+
+    // XEquation = player.x - rayCoordinates.x;
+    // YEquation = rayCoordinates.y - player.y;
+
+    XEquation = rayCoordinates.x - player.x;
+    YEquation = rayCoordinates.y - player.y;
+
+    // let coordinatesText = this.add.text(XEquation, YEquation, `x: ${XEquation}, y: ${YEquation}`, { font: '"Press Start 2P"' });
 
     rays[0].graphLine.setTo(0, 0, XEquation, YEquation);
 }
