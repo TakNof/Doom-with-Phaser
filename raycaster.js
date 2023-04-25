@@ -54,7 +54,7 @@ class Raycaster{
         return this.playerPosition;
     }
 
-    drawRays3D(){
+    drawRays2D(){
         let rayYposition;
         let rayXposition;
 
@@ -69,6 +69,8 @@ class Raycaster{
         let checks = {horizontal: true, vertical: true};
             
         let depthOfFieldLimit = 7;
+
+        let RDistance;
 
         for(let i = 0; i < this.rayAmount; i++){
             let NegInvTan = -(1/Math.tan(currentAngle));
@@ -216,13 +218,16 @@ class Raycaster{
                     // console.log("Using vertical total distance");
                     rayXposition = vertical.x;
                     rayYposition = vertical.y;
+                    RDistance = totalDistance.x;
                 }else if(totalDistance.x > totalDistance.y){
                     // console.log("Using horizontal total distance");
                     rayXposition = horizontal.x;
                     rayYposition = horizontal.y;
+                    RDistance = totalDistance.y;
                 }else{
                     rayXposition = Math.cos(currentAngle) * depthOfFieldLimit*32 + this.playerPosition.x;
                     rayYposition = Math.sin(currentAngle) * depthOfFieldLimit*32 + this.playerPosition.y;
+                    RDistance = this.hypoCalc(rayXposition, rayYposition);
                 }
             }else if(checks.horizontal === true ^ checks.vertical === true){
                 if(checks.horizontal === true){
@@ -245,10 +250,14 @@ class Raycaster{
                 currentAngle += 2*Math.PI;
             }else if(currentAngle > 2*Math.PI){
                 currentAngle -= 2*Math.PI;
-            } 
+            }
+
+            if(currentAngle == playerAngle +3*Math.PI/2){
+                
+            }
         }
 
-        return {x: coordinatesX, y: coordinatesY};
+        return {x: coordinatesX, y: coordinatesY, z: RDistance};
     }
     
     hypoCalc(x, y){
