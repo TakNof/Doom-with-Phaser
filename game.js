@@ -66,7 +66,7 @@ pHeCord[3] = pHeCord[1];
 pHeCord[4] = pHeCord[2]/2;
 pHeCord[5] = pHeCord[3] - 30;
 
-let rayAmount = 60;
+let rayAmount = 100;
 let rays = Array(rayAmount);
 let point;
 let distance;
@@ -198,61 +198,30 @@ function create(){
     //Here we stablish the raycasting
 
     rayCoordinates = raycaster.drawRays3D();
-    for(let i = 0; i < 10; i++){
-        rays[i] = {graphLine: this.add.line(playerPositionX, playerPositionY, 0, 0, 0, 0, "0x00ff00")};
-        rays[i].graphLine.setTo(0, 0, 0, -playerPositionY);
-        this.physics.add.existing(rays[i].graphLine, false);
+    
+    for(let i = 0; i < rayAmount; i++){
+        rays[i] = this.add.line(playerPositionX, playerPositionY, 0, 0, 0, 0, "0x00ff00");
+        rays[i].setTo(0, 0, 0, -playerPositionY);
+        this.physics.add.existing(rays[i], false);
+        rays[i].body.setAllowRotation(true);
+        rays[i].body.setSize(64, 64, true);
+        rays[i].body.setCollideWorldBounds(true);
+        this.physics.add.collider(rays[i], walls);
     }
-
-    point = this.add.text(playerPositionX, playerPositionY, `x:${rayCoordinates.x}, y:${rayCoordinates.y}`, { fontFamily: 'Georgia, "Goudy Bookletter 1911", Times, serif' }).setDepth(2)
-    distance =  this.add.text(playerPositionX, playerPositionY, `Distance: ${raycaster.hypoCalc(rayCoordinates.x - player.x, rayCoordinates.y - player.y)}`, { fontFamily: 'Georgia, "Goudy Bookletter 1911", Times, serif' }).setDepth(2)
-    
-
-    // rays[0] = {graphLine: this.add.line(playerPositionX, playerPositionY, 0, 0, 0, 0, "0x00ff00")};
-    
+        
     redrawRay();
-    // this.physics.add.existing(rays[0].graphLine, false);
-    
-    // console.log("x2", player.x - rayCoordinates.x, "y2", -Math.abs(player.y - rayCoordinates.y));
-
-    //Raycast attempt using elements from phaser
-    // rays[0] = {graphLine: this.add.line(playerPositionX, playerPositionY, 0, 0, 0, 0, "0x00ff00")};
-    // rays[0].graphLine.setTo(0, 0, 0, -playerPositionY);
-    // this.physics.add.existing(rays[0].graphLine, false);
-    
-    // console.log(rays[0].calcLine);
-
-    // console.log(wallOrderCoordinates);
-    // let rays2 = Phaser.Geom.Intersects.GetRaysFromPointToPolygon(player.x, player.y, new Phaser.Geom.Polygon(wallOrderCoordinates))
-    
-    // for(let ray of rays2) {
-    //     console.log(ray.z + 90, (playerAngle * 180 / Math.PI) + 90, Math.abs((playerAngle * 180 / Math.PI) + 90 - (ray.z + 90)));
-
-    //     if(Math.abs((playerAngle * 180 / Math.PI) + 90 - (ray.z + 90)) <= 0.1 && Math.abs((playerAngle * 180 / Math.PI) + 90 - (ray.z + 90)) > -0.1){     
-    //         console.log("Elegido: ", ray.z + 90, (playerAngle * 180 / Math.PI) + 90, Math.abs((playerAngle * 180 / Math.PI) + 90 - (ray.z + 90)));      
-    //         rays[0].graphLine.setTo(0, 0, ray.x - player.x + 32, ray.y - playerPositionY - 32);
-
-    //         console.log(ray.x + player.x + 32, ray.y + playerPositionY - 32)
-    //         break;
-    //     }
-    // }
-    
-
-    rays[0].graphLine.body.setAllowRotation(true);
-    rays[0].graphLine.body.setSize(64, 64, true);
-    rays[0].graphLine.body.setCollideWorldBounds(true);
 
     //Here we add the interaction collider between the objects and the walls.
     this.physics.add.collider(player, walls);
     this.physics.add.collider(playerHeader, walls);
-    this.physics.add.collider(rays[0].graphLine, walls);
-
 }
 
 function update (){
     player.body.setVelocity(0);
     playerHeader.body.setVelocity(0);
-    rays[0].graphLine.body.setVelocity(0);
+    for(let ray of rays){
+        ray.body.setVelocity(0);
+    }
         
     player.rotation = playerAngle;
 
@@ -281,8 +250,10 @@ function update (){
         playerHeader.body.setVelocityX((defaultVelocityX*(velocityX/velocityX) + (defaultVelocity*velocityX)));
         playerHeader.body.setVelocityY((defaultVelocityY*(velocityY/velocityY) + (defaultVelocity*velocityY)));
         
-        rays[0].graphLine.body.setVelocityX((defaultVelocityX*(velocityX/velocityX) + (defaultVelocity*velocityX)));
-        rays[0].graphLine.body.setVelocityY((defaultVelocityY*(velocityY/velocityY) + (defaultVelocity*velocityY)));
+        for(let ray of rays){
+            ray.body.setVelocityX((defaultVelocityX*(velocityX/velocityX) + (defaultVelocity*velocityX)));
+            ray.body.setVelocityY((defaultVelocityY*(velocityY/velocityY) + (defaultVelocity*velocityY)));
+        }
         
     }else if(cursors.down.isDown){
         velocityX = player.body.velocity.x + Xcomponent;
@@ -302,8 +273,10 @@ function update (){
         playerHeader.body.setVelocityX(-(defaultVelocityX*(velocityX/velocityX) + (defaultVelocity*velocityX)));
         playerHeader.body.setVelocityY(-(defaultVelocityY*(velocityY/velocityY) + (defaultVelocity*velocityY)));
 
-        rays[0].graphLine.body.setVelocityX(-(defaultVelocityX*(velocityX/velocityX) + (defaultVelocity*velocityX)));
-        rays[0].graphLine.body.setVelocityY(-(defaultVelocityY*(velocityY/velocityY) + (defaultVelocity*velocityY)));
+        for(let ray of rays){
+            ray.body.setVelocityX(-(defaultVelocityX*(velocityX/velocityX) + (defaultVelocity*velocityX)));
+            ray.body.setVelocityY(-(defaultVelocityY*(velocityY/velocityY) + (defaultVelocity*velocityY)));
+        }
     }
 
     if(cursors.left.isDown || cursors.right.isDown){
@@ -328,34 +301,36 @@ function update (){
 
     if(keySpace.isDown){
         console.log("x2", XEquation, "y2", YEquation, "EQN:", player.y, YEquation, "=", player.y + YEquation);
-        console.log("Line x2: ", player.x + rays[0].graphLine.geom.x2, "y2: ", player.y + rays[0].graphLine.geom.y2 , "x1: ", rays[0].graphLine.geom.x1, "y1: ", rays[0].graphLine.geom.y1);
+        console.log("Line x2: ", player.x + rays[0].geom.x2, "y2: ", player.y + rays[0].geom.y2 , "x1: ", rays[0].geom.x1, "y1: ", rays[0].geom.y1);
         console.log("ray coordinates: ", rayCoordinates.x, rayCoordinates.y);
         console.log("player position: ", player.x, player.y);
 
         console.log("rayAngle: ", raycaster.getRayAngle);
 
         
-        // console.log(rays[0].graphLine.body.prev.x, rays[0].graphLine.body.prev.y);
-        // console.log(rays[0].graphLine.body.transform.x, rays[0].graphLine.body.transform.y);
+        // console.log(rays[0].body.prev.x, rays[0].body.prev.y);
+        // console.log(rays[0].body.transform.x, rays[0].body.transform.y);
 
     }
 }
 
 function redrawRay(){
-    XEquation = - player.x + rayCoordinates.x;
-    YEquation = - player.y + rayCoordinates.y;
+    for(let i = 0; i < rayAmount; i++){
+        XEquation = - player.x + rayCoordinates.x[i];
+        YEquation = - player.y + rayCoordinates.y[i];
 
-    // let coordinatesText = this.add.text(XEquation, YEquation, `x: ${XEquation}, y: ${YEquation}`, { font: '"Press Start 2P"' });
+        // let coordinatesText = this.add.text(XEquation, YEquation, `x: ${XEquation}, y: ${YEquation}`, { font: '"Press Start 2P"' });
 
-    rays[0].graphLine.setTo(0, 0, XEquation, YEquation);
+        rays[i].setTo(0, 0, XEquation, YEquation);
 
-    point.y = rayCoordinates.y;
-    point.x = rayCoordinates.x;
-    point.text = `x:${rayCoordinates.x} (${parseInt(rayCoordinates.x/32)}), y:${rayCoordinates.y} (${parseInt(rayCoordinates.y/32)})`;
+        // point.y = rayCoordinates.y;
+        // point.x = rayCoordinates.x;
+        // point.text = `x:${rayCoordinates.x} (${parseInt(rayCoordinates.x/32)}), y:${rayCoordinates.y} (${parseInt(rayCoordinates.y/32)})`;
 
-    distance.y = player.y;
-    distance.x = player.x;
-    distance.text = `Distance: ${raycaster.hypoCalc(rayCoordinates.x - player.x, rayCoordinates.y - player.y)/32}`;
+        // distance.y = player.y;
+        // distance.x = player.x;
+        // distance.text = `Distance: ${raycaster.hypoCalc(rayCoordinates.x - player.x, rayCoordinates.y - player.y)/32}`;
+    }
 }
 
 function generateWallMatrix(){
