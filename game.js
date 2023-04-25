@@ -5,7 +5,7 @@ let config = {
     physics: {
         default: 'arcade',
         arcade: {
-            debug: false
+            debug: true
         }
     },
     scene: {
@@ -14,6 +14,8 @@ let config = {
         update: update
     }
 };
+
+let game = new Phaser.Game(config);
 
 let cursors;
 
@@ -65,12 +67,12 @@ pHeCord[4] = pHeCord[2]/2;
 pHeCord[5] = pHeCord[3] - 30;
 
 let rays = Array(1);
-
-let game = new Phaser.Game(config);
+let point;
+let distance;
 
 let generateWalls = true;
 
-let generateRandomWalls = false;
+let generateRandomWalls = true;
 
 let raycaster;
 
@@ -95,6 +97,7 @@ function create(){
     //Here we stablish the input of the keys.
     cursors = this.input.keyboard.createCursorKeys();
     keySpace = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
+
 
     //Here we are creating the main character.
     player = this.add.sprite(playerPositionX, playerPositionY, 'player');
@@ -194,16 +197,18 @@ function create(){
     //Here we stablish the raycasting
 
     rayCoordinates = raycaster.drawRays3D();
-
-    console.log("ray coordinates: ", rayCoordinates.x, rayCoordinates.y, rayCoordinates.y/32);
-
     // for(let i = 0; i < 10; i++){
     //     rays[i] = {graphLine: this.add.line(playerPositionX, playerPositionY, 0, 0, 0, 0, "0x00ff00")};
     //     rays[i].graphLine.setTo(0, 0, 0, -playerPositionY);
     //     this.physics.add.existing(rays[i].graphLine, false);
     // }
 
+    point = this.add.text(playerPositionX, playerPositionY, `x:${rayCoordinates.x}, y:${rayCoordinates.y}`, { fontFamily: 'Georgia, "Goudy Bookletter 1911", Times, serif' }).setDepth(2)
+    distance =  this.add.text(playerPositionX, playerPositionY, `Distance: ${raycaster.hypoCalc(rayCoordinates.x - player.x, rayCoordinates.y - player.y)}`, { fontFamily: 'Georgia, "Goudy Bookletter 1911", Times, serif' }).setDepth(2)
+    
+
     rays[0] = {graphLine: this.add.line(playerPositionX, playerPositionY, 0, 0, 0, 0, "0x00ff00")};
+    
     redrawRay();
     this.physics.add.existing(rays[0].graphLine, false);
     
@@ -252,9 +257,10 @@ function update (){
 
     playerHeader.rotation = playerAngle;
 
-    rays[0].graphLine.rotation = playerAngle;
-
     raycaster.setPlayerPosition = player;
+
+    rayCoordinates = raycaster.drawRays3D();
+    redrawRay(); 
 
     if (cursors.up.isDown){
         velocityX = player.body.velocity.x + Xcomponent;
@@ -267,9 +273,6 @@ function update (){
         if(velocityY < 0){
             defaultVelocityY *= -1;
         }
-
-        rayCoordinates = raycaster.drawRays3D();
-        redrawRay();
 
         player.body.setVelocityX((defaultVelocityX*(velocityX/velocityX) + (defaultVelocity*velocityX)));
         player.body.setVelocityY((defaultVelocityY*(velocityY/velocityY) + (defaultVelocity*velocityY)));
@@ -292,9 +295,6 @@ function update (){
             defaultVelocityY *= -1;
         }
 
-        rayCoordinates = raycaster.drawRays3D();
-        redrawRay();
-
         player.body.setVelocityX(-(defaultVelocityX*(velocityX/velocityX) + (defaultVelocity*velocityX)));
         player.body.setVelocityY(-(defaultVelocityY*(velocityY/velocityY) + (defaultVelocity*velocityY)));
 
@@ -309,9 +309,6 @@ function update (){
 
         Xcomponent = Math.cos(playerAngle + Math.PI/2) * -5;
         Ycomponent = Math.sin(playerAngle + Math.PI/2) * -5;
-
-        rayCoordinates = raycaster.drawRays3D();
-        redrawRay();
 
         if (cursors.left.isDown){
             playerAngle -= angleOperator;
@@ -330,34 +327,34 @@ function update (){
 
     if(keySpace.isDown){
         console.log("x2", XEquation, "y2", YEquation, "EQN:", player.y, YEquation, "=", player.y + YEquation);
-        
+        console.log("Line x2: ", player.x + rays[0].graphLine.geom.x2, "y2: ", player.y + rays[0].graphLine.geom.y2 , "x1: ", rays[0].graphLine.geom.x1, "y1: ", rays[0].graphLine.geom.y1);
         console.log("ray coordinates: ", rayCoordinates.x, rayCoordinates.y);
         console.log("player position: ", player.x, player.y);
 
         console.log("rayAngle: ", raycaster.getRayAngle);
 
+        
+        // console.log(rays[0].graphLine.body.prev.x, rays[0].graphLine.body.prev.y);
+        // console.log(rays[0].graphLine.body.transform.x, rays[0].graphLine.body.transform.y);
+
     }
 }
 
 function redrawRay(){
-    // XEquation = Math.sin(playerAngle) * (- rayCoordinates.x);
-    // YEquation = Math.cos(playerAngle) * (- rayCoordinates.y);
-
-    // if(playerAngle == 0 || playerAngle == Math.pi){
-    //     XEquation = player.x - rayCoordinates.x;
-    // }else if(playerAngle == Math.pi/2 || playerAngle == 3*Math.pi/2 ){
-    //     YEquation = rayCoordinates.y - player.y;
-    // }
-
-    // XEquation = player.x - rayCoordinates.x;
-    // YEquation = rayCoordinates.y - player.y;
-
-    XEquation = rayCoordinates.x - player.x;
-    YEquation = rayCoordinates.y - player.y;
+    XEquation = - player.x + rayCoordinates.x;
+    YEquation = - player.y + rayCoordinates.y;
 
     // let coordinatesText = this.add.text(XEquation, YEquation, `x: ${XEquation}, y: ${YEquation}`, { font: '"Press Start 2P"' });
 
     rays[0].graphLine.setTo(0, 0, XEquation, YEquation);
+
+    point.y = rayCoordinates.y;
+    point.x = rayCoordinates.x;
+    point.text = `x:${rayCoordinates.x} (${parseInt(rayCoordinates.x/32)}), y:${rayCoordinates.y} (${parseInt(rayCoordinates.y/32)})`;
+
+    distance.y = player.y;
+    distance.x = player.x;
+    distance.text = `Distance: ${raycaster.hypoCalc(rayCoordinates.x - player.x, rayCoordinates.y - player.y)/32}`;
 }
 
 function generateWallMatrix(){
