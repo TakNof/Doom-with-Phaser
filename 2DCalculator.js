@@ -1,3 +1,29 @@
+let config = {
+    type: Phaser.AUTO   ,
+    parent: 'phaser-example',
+    backgroundColor: '#0072bc',
+    physics: {
+        default: 'arcade',
+        arcade: {
+            debug: true
+        }
+    },
+    scene: {
+        preload: preload,
+        create: create,
+        update: update,
+        parent: "scene1"
+    },
+    scale: {
+        width: 1024,
+        height: 1523
+    },
+
+};
+
+//Stablishing the configurations.
+const game = new Phaser.Game(config);
+
 //Variables for the movement and for other actions.
 let cursors;
 let keySpace;
@@ -53,25 +79,29 @@ let angleOperator = 0.05;
 
 //Stablishing the raycaster elements.
 let raycaster;
-let rayAmount = 100;
-let rays = Array(rayAmount);
-let rayCoordinates;
+let rays2DAmount = 100;
+let rays = Array(rays2DAmount);
+let ray2DCoordinates;
 
 //These variables are used for the correct positioning of the rays (due the use of local coordinates).
 let YEquation;
 let XEquation;
 
 
-const game2d = new Phaser.Scene("game2d");
+let rays3DCameraWidth = 100;
+let rays3DCameraAmount = parseInt(canvasSizeX/rays3DCameraWidth);
+let rays3DCamera = Array(rays3DCameraAmount);
+
 //With the preload method we preload the sprites and we generate the object from the raycaster class.
-game2d.preload = function(){
+function preload(){
     this.load.image("player", "assets/doomguy64x64.png", {frameWidth: 64, frameHeight: 64});
     this.load.image("wall", "assets/wall.png", {frameWidth: 32, frameHeight: 32});
 
-    raycaster = new Raycaster(playerAngle, playerPositionX, playerPositionY, rayAmount);
-};
+    raycaster = new Raycaster(playerAngle, playerPositionX, playerPositionY, rays2DAmount);
+    rayDrawing = new Graphicator(wallBlockSizeX, canvasSize, rays3DCameraWidth, rays3DCameraAmount);
+}
 
-game2d.create = function(){
+function create(){
     //Creating the grid.
     grid = this.add.grid(0, 0, canvasSizeX*2, canvasSizeY*2, 32, 32, 0x00b9f2).setAltFillStyle(0x016fce).setOutlineStyle();
 
@@ -102,7 +132,6 @@ game2d.create = function(){
     playerHeader.body.setCollideWorldBounds(true);
 
     //Here we create the map walls.
-
     if(generateWalls == true && generateRandomWalls == true){
         //If true, random walls will be generated.
 
@@ -200,10 +229,10 @@ game2d.create = function(){
     //Here we stablish the raycasting.
 
     //first we have to calculate all the rays distance.
-    rayCoordinates = raycaster.drawRays2D();
+    ray2DCoordinates = raycaster.drawRays2D();
     
     //Then we have to add all the lines to the array we created, with the same properties and atributes as the previous objects.
-    for(let i = 0; i < rayAmount; i++){
+    for(let i = 0; i < rays2DAmount; i++){
         rays[i] = this.add.line(playerPositionX, playerPositionY, 0, 0, 0, 0, "0x00ff00");
         rays[i].setTo(0, 0, 0, -playerPositionY);
         this.physics.add.existing(rays[i], false);
@@ -214,14 +243,25 @@ game2d.create = function(){
     }
     
     //With the rays calculated we redraw the lines from the sight of the player.
-    redrawRay();
+    redrawRay2D();
 
     //Here we add the interaction collider between the objects and the walls.
     this.physics.add.collider(player, walls);
     this.physics.add.collider(playerHeader, walls);
-};
 
-game2d.update = function (){
+
+
+    rayDrawing.setDistance = ray2DCoordinates.distance;
+
+    for(let i = 0; i < rays3DCameraAmount; i++){
+        rays3DCamera[i] = this.add.rectangle(0, playerPositionY*3, rays3DCameraWidth, canvasSizeY,"0xff0000");
+        this.physics.add.existing(rays3DCamera[i], false);
+    }
+
+    redrawRay3D();
+}
+
+function update(){
     //This function updates each certain time working like the game clock.
 
     //Here we strablish the atributes for the player.
@@ -235,8 +275,8 @@ game2d.update = function (){
         ray.body.setVelocity(0);
     }
     raycaster.setPlayerPosition = player;
-    rayCoordinates = raycaster.drawRays2D();
-    redrawRay(); 
+    ray2DCoordinates = raycaster.drawRays2D();
+    redrawRay2D(); 
 
     if(cursors.up.isDown ^ cursors.down.isDown){
         velocityX = player.body.velocity.x + Xcomponent;
@@ -297,22 +337,37 @@ game2d.update = function (){
         //Because we are changing the angle, we have to load it to the reycaster
         raycaster.setRayAngle = playerAngle;
     }
+}
 
-    if(keySpace.isDown){
-        setTimeout(()=>{
-            console.log("changing to scene2");
-            this.scene.start("game3d");
-        },100)
-    }
-}; 
-
-function redrawRay(){
+function redrawRay2D(){
     //This method allows the recalculation of the ray coordinates and redraws it.
-    for(let i = 0; i < rayAmount; i++){
+    for(let i = 0; i < rays2DAmount; i++){
         //The XEquation and YEquation are needed due to the fact that the ray is drawn according to "local" coordinates,
         //so we have to convert them to global coordinates.
-        XEquation = - player.x + rayCoordinates.x[i];
-        YEquation = - player.y + rayCoordinates.y[i];
+        XEquation = - player.x + ray2DCoordinates.x[i];
+        YEquation = - player.y + ray2DCoordinates.y[i];
+        rays[i].setTo(0, 0, XEquation, YEquation);
+    }
+}
+
+function redrawRay2D(){
+    //This method allows the recalculation of the 2D ray coordinates and redraws it.
+    for(let i = 0; i < rays2DAmount; i++){
+        //The XEquation and YEquation are needed due to the fact that the ray is drawn according to "local" coordinates,
+        //so we have to convert them to global coordinates.
+        XEquation = - player.x + ray2DCoordinates.x[i];
+        YEquation = - player.y + ray2DCoordinates.y[i];
+        rays[i].setTo(0, 0, XEquation, YEquation);
+    }
+}
+
+function redrawRay3D(){
+    //This method allows the recalculation of the 3D ray coordinates and redraws it.
+    for(let i = 0; i < rays3DCameraAmount; i++){
+        //The XEquation and YEquation are needed due to the fact that the ray is drawn according to "local" coordinates,
+        //so we have to convert them to global coordinates.
+        XEquation = - player.x + ray2DCoordinates.x[i];
+        YEquation = - player.y + ray2DCoordinates.y[i];
         rays[i].setTo(0, 0, XEquation, YEquation);
     }
 }
@@ -348,65 +403,3 @@ function readMatrix(){
         }
     }
 }
-
-const game3d = new Phaser.Scene("game3d");
-game3d.create = function(){
-    Introkey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ENTER);
-    player = this.add.rectangle(400, 300, 64, 64, 0xffffff);
-
-    this.physics.add.existing(player, false);
-
-    cursors = this.input.keyboard.createCursorKeys();
-
-    player.body.setCollideWorldBounds(true);
-};
-
-game3d.update = function(){
-    player.body.setVelocity(0);
-
-    if (cursors.left.isDown)
-    {
-        player.body.setVelocityX(-300);
-    }
-    else if (cursors.right.isDown)
-    {
-        player.body.setVelocityX(300);
-    }
-
-    if (cursors.up.isDown)
-    {
-        player.body.setVelocityY(-300);
-    }
-    else if (cursors.down.isDown)
-    {
-        player.body.setVelocityY(300);
-    }
-
-    if(Introkey.isDown){
-        console.log("changing to scene1");
-        setTimeout(()=>{
-            this.scene.start("game2d");
-        },100)
-    }
-};
-
-
-let config = {
-    type: Phaser.Scale.CENTER_BOTH,
-    parent: 'phaser-example',
-    backgroundColor: '#0072bc',
-    physics: {
-        default: 'arcade',
-        arcade: {
-            debug: true
-        }
-    },
-    scene: [game2d, game3d],
-    scale: {
-        parent: 'MyGame',
-        mode: Phaser.Scale.FIT
-    }
-};
-
-//Stablishing the configurations.
-let game = new Phaser.Game(config);

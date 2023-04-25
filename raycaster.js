@@ -257,7 +257,7 @@ class Raycaster{
             }
         }
 
-        return {x: coordinatesX, y: coordinatesY, z: RDistance};
+        return {x: coordinatesX, y: coordinatesY, distance: RDistance};
     }
     
     hypoCalc(x, y){
