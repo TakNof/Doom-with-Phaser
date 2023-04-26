@@ -36,4 +36,4 @@ function update(){
             this.scene.start("game2d");
         },100)
     }
-};
+}

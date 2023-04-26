@@ -65,6 +65,7 @@ class Raycaster{
 
         let coordinatesX = Array(this.rayAmount);
         let coordinatesY = Array(this.rayAmount);
+        let distances = Array(this.rayDistance);
 
         let checks = {horizontal: true, vertical: true};
             
@@ -243,6 +244,7 @@ class Raycaster{
 
             coordinatesX[i] = rayXposition;
             coordinatesY[i] = rayYposition;
+            distances[i] = RDistance;
             
             currentAngle = currentAngle + this.angleOffset;
 
@@ -257,7 +259,7 @@ class Raycaster{
             }
         }
 
-        return {x: coordinatesX, y: coordinatesY, distance: RDistance};
+        return {x: coordinatesX, y: coordinatesY, distance: distances};
     }
     
     hypoCalc(x, y){

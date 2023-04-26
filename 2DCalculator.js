@@ -5,7 +5,7 @@ let config = {
     physics: {
         default: 'arcade',
         arcade: {
-            debug: true
+            debug: false
         }
     },
     scene: {
@@ -31,8 +31,8 @@ let Introkey;
 
 //Stablishing the canvas size and its components.
 let canvasSize = "1024x768";
-let canvasSizeX = canvasSize.split("x")[0];
-let canvasSizeY = canvasSize.split("x")[1];
+let canvasSizeX = parseInt(canvasSize.split("x")[0]);
+let canvasSizeY = parseInt(canvasSize.split("x")[1]);
 
 //Visual grid to visualize better the space.
 let grid;
@@ -51,8 +51,8 @@ let generateRandomWalls = true;
 
 //Stablishing the player and its initial position.
 let player;
-let playerPositionX = parseInt(canvasSizeX)/2;
-let playerPositionY = parseInt(canvasSizeY)/2;
+let playerPositionX = canvasSizeX/2;
+let playerPositionY = canvasSizeY/2;
 let playerAngle = 0;
 
 //Stablishing the player header, which was useful at the beginning of the development.
@@ -88,8 +88,12 @@ let YEquation;
 let XEquation;
 
 
-let rays3DCameraWidth = 100;
-let rays3DCameraAmount = parseInt(canvasSizeX/rays3DCameraWidth);
+// let rays3DCameraWidth = 8;
+// let rays3DCameraAmount = parseInt(canvasSizeX/rays3DCameraWidth);
+
+let rays3DCameraAmount = 100;
+let rays3DCameraWidth = canvasSizeX/rays3DCameraAmount;
+
 let rays3DCamera = Array(rays3DCameraAmount);
 
 //With the preload method we preload the sprites and we generate the object from the raycaster class.
@@ -158,7 +162,7 @@ function create(){
             let blockExtentionY;
 
             //This while loop will prevent the walls from being generated out of bounds.
-            do{true
+            do{
                 blockExtentionX = getRndInteger(1, 5);
                 blockExtentionY = getRndInteger(1, 5);
                 
@@ -254,7 +258,7 @@ function create(){
     rayDrawing.setDistance = ray2DCoordinates.distance;
 
     for(let i = 0; i < rays3DCameraAmount; i++){
-        rays3DCamera[i] = this.add.rectangle(0, playerPositionY*3, rays3DCameraWidth, canvasSizeY,"0xff0000");
+        rays3DCamera[i] = this.add.rectangle(rays3DCameraWidth/2 + i*rays3DCameraWidth, canvasSizeY + 0.5*canvasSizeY, rays3DCameraWidth, canvasSizeY,"0xff0000");
         this.physics.add.existing(rays3DCamera[i], false);
     }
 
@@ -277,6 +281,7 @@ function update(){
     raycaster.setPlayerPosition = player;
     ray2DCoordinates = raycaster.drawRays2D();
     redrawRay2D(); 
+    redrawRay3D();
 
     if(cursors.up.isDown ^ cursors.down.isDown){
         velocityX = player.body.velocity.x + Xcomponent;
@@ -350,25 +355,16 @@ function redrawRay2D(){
     }
 }
 
-function redrawRay2D(){
-    //This method allows the recalculation of the 2D ray coordinates and redraws it.
-    for(let i = 0; i < rays2DAmount; i++){
-        //The XEquation and YEquation are needed due to the fact that the ray is drawn according to "local" coordinates,
-        //so we have to convert them to global coordinates.
-        XEquation = - player.x + ray2DCoordinates.x[i];
-        YEquation = - player.y + ray2DCoordinates.y[i];
-        rays[i].setTo(0, 0, XEquation, YEquation);
-    }
-}
-
 function redrawRay3D(){
     //This method allows the recalculation of the 3D ray coordinates and redraws it.
     for(let i = 0; i < rays3DCameraAmount; i++){
-        //The XEquation and YEquation are needed due to the fact that the ray is drawn according to "local" coordinates,
-        //so we have to convert them to global coordinates.
-        XEquation = - player.x + ray2DCoordinates.x[i];
-        YEquation = - player.y + ray2DCoordinates.y[i];
-        rays[i].setTo(0, 0, XEquation, YEquation);
+        if(i + 1 >= rays3DCameraAmount){
+            break;
+        }else{
+            rayDrawing.setDistance = ray2DCoordinates.distance[i];
+            rays3DCamera[i].setSize(rays3DCameraWidth, rayDrawing.getDistance());
+            // Phaser.Geom.Rectangle.Inflate(rays3DCamera[i], rays3DCameraWidth, rayDrawing.getDistance());
+        }
     }
 }
 
@@ -394,7 +390,7 @@ function generateWallMatrix(){
 
 function getRndInteger(min, max) {
     return Math.floor(Math.random() * (max - min) ) + min;
-  }
+}
 
 function readMatrix(){
     for(let i = 0; i < wallNumberRatioY; i++){

@@ -11,8 +11,12 @@ class Graphicator{
 
         this.drawHeight = (this.blockSize*this.canvasSize.y)/this.distance;
         if(this.drawHeight > this.canvasSize.y){
-            this.blockSize = this.canvasSize.y;
+            this.drawHeight = this.canvasSize.y;
         }
+    }
+
+    getDistance(){
+        return this.drawHeight;
     }
 
     drawRays3D(){
