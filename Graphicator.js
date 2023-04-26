@@ -20,4 +20,19 @@ class Graphicator{
     getHeight(){
         return this.drawHeight;
     }
+
+    setHeightEnemy(distance){
+        let drawHeight;
+
+        if(!isFinite(distance)){
+            drawHeight = 0;
+        }else{
+            drawHeight = (this.blockSize*this.canvasSize.y)/distance;
+            if(drawHeight > 1.3*this.canvasSize.y){
+                drawHeight = 1.3*this.canvasSize.y;
+            }
+        }
+
+        return drawHeight;
+    }
 }

@@ -55,6 +55,19 @@ let playerPositionX = canvasSizeX/2;
 let playerPositionY = canvasSizeY/2;
 let playerAngle = 0;
 
+//Stablishing the enemy and its initial position.
+let enemy;
+let enemyHeader;
+let enemyPositionX = canvasSizeX/4;
+let enemyPositionY = canvasSizeY/4;
+let enemyAngle = 0;
+let chaseDistance = 300;
+let allowChase = true;
+
+
+let cacodemon;
+let cacodemonAngle = 0;
+
 //Stablishing the player header, which was useful at the beginning of the development.
 let playerHeader;
 let pHeCord = [0, 0, 0, 0, 0, 0]
@@ -85,6 +98,11 @@ let rays2DAmount = 100;
 let rays = Array(rays2DAmount);
 let ray2DCoordinates;
 
+//Stablishing the simple raycaster of the enemy.
+let enemyRay;
+let enemyRaycaster;
+let ray2DEnemyCoordinates;
+
 //These variables are used for the correct positioning of the rays (due the use of local coordinates).
 let YEquation;
 let XEquation;
@@ -99,10 +117,13 @@ let rays3DCamera = Array(rays3DCameraAmount);
 
 //With the preload method we preload the sprites and we generate the object from the raycaster class.
 function preload(){
-    this.load.image("player", "assets/doomguy64x64.png", {frameWidth: 64, frameHeight: 64});
     this.load.image("wall", "assets/wall.png", {frameWidth: 32, frameHeight: 32});
+    this.load.image("player", "assets/doomguy64x64.png", {frameWidth: 64, frameHeight: 64});
+    this.load.image("enemy", "assets/enemy.jpg", {frameWidth: 64, frameHeight: 64});
+    this.load.image("cacodemon", "assets/cacodemon.png");
 
     raycaster = new Raycaster(playerAngle, playerPositionX, playerPositionY, rays2DAmount);
+    enemyRaycaster = new EnemyRaycaster(enemyPositionX, enemyPositionY, playerPositionX,playerPositionY);
     rayDrawing = new Graphicator(wallBlockSizeX, canvasSize, rays3DCameraWidth, rays3DCameraAmount);
 }
 
@@ -135,6 +156,35 @@ function create(){
     playerHeader.body.setAllowRotation(true);
 
     playerHeader.body.setCollideWorldBounds(true);
+
+    //Here we are creating the enemy.
+
+    enemy = this.add.sprite(enemyPositionX, enemyPositionY, 'enemy');
+
+    this.physics.add.existing(enemy,false);
+
+    enemy.body.setAllowRotation(true);
+
+    enemy.body.setCollideWorldBounds(true);
+
+    cacodemon = this.add.sprite(playerPositionX, canvasSizeY*3, 'cacodemon');
+
+    this.physics.add.existing(cacodemon,false);
+
+    cacodemon.body.setAllowRotation(true);
+
+    cacodemon.body.setCollideWorldBounds(false);
+
+    //Here we create the indicator for the pov of the enemy.
+    enemyHeader = this.add.triangle(enemyPositionX, enemyPositionY, pHeCord[0], pHeCord[1], pHeCord[2], pHeCord[3], pHeCord[4], pHeCord[5], "0xff0000");
+
+    this.physics.add.existing(enemyHeader, false);
+    
+    enemyHeader.body.setSize(64, 64, true);
+    
+    enemyHeader.body.setAllowRotation(true);
+
+    enemyHeader.body.setCollideWorldBounds(true);
 
     //Here we create the map walls.
     if(generateWalls == true && generateRandomWalls == true){
@@ -188,8 +238,9 @@ function create(){
                 wallOrder[j][0] = true;
                 wallOrder[j][wallNumberRatioX - 1] = true;
             }
-            //With the matrix wall created we stablish it with to the raycaster.
+            //With the matrix wall created we stablish it with to the raycaster and enemyRaycaster.
             raycaster.setMatrix = wallOrder;
+            enemyRaycaster.setMatrix = wallOrder;
 
             //Now with the wall positions being true in the matrix the only thing that lefts to do is to
             //traverse the matrix looking for the true values, if found, a wall object will be generated.
@@ -225,8 +276,9 @@ function create(){
                 }
             }
         }
-
+        
         raycaster.setMatrix = wallOrder;
+        enemyRaycaster.setMatrix = wallOrder;
 
         for(let i = 0; i < wallNumberRatioY; i++){
             for(let j = 0; j < wallNumberRatioX; j++){
@@ -242,8 +294,9 @@ function create(){
 
     //Here we stablish the raycasting.
 
-    //first we have to calculate all the rays distance.
+    //first we have to calculate all the rays distance for the player and the enemy.
     ray2DCoordinates = raycaster.drawRays2D();
+    ray2DEnemyCoordinates = enemyRaycaster.detectWalls();
     
     //Then we have to add all the lines to the array we created, with the same properties and atributes as the previous objects.
     for(let i = 0; i < rays2DAmount; i++){
@@ -256,42 +309,82 @@ function create(){
         this.physics.add.collider(rays[i], walls);
     }
     
+    //The same goes with the enemyRay
+    enemyRay = this.add.line(enemyPositionX, enemyPositionY, 0, 0, 0, 0, "0x000000");
+    enemyRay.setTo(0, 0, 0, -enemyPositionY);
+    this.physics.add.existing(enemyRay, false);
+    enemyRay.body.setAllowRotation(true);
+    enemyRay.body.setSize(64, 64, true);
+    enemyRay.body.setCollideWorldBounds(true);
+    this.physics.add.collider(enemyRay, walls);
+
     //With the rays calculated we redraw the lines from the sight of the player.
-    redrawRay2D();
+    redrawRay2D();   
 
     //Here we add the interaction collider between the objects and the walls.
     this.physics.add.collider(player, walls);
     this.physics.add.collider(playerHeader, walls);
+    this.physics.add.collider(enemy, walls);
+    this.physics.add.collider(enemyHeader, walls);
 
-
-
+    //The distance of each ray is needed to draw the 3D graphics, so we load the to the object.
     rayDrawing.setDistance = ray2DCoordinates.distance;
 
+    //Here we stablish the rectangles of the 3D graphics
     for(let i = 0; i < rays3DCameraAmount; i++){
         rays3DCamera[i] = this.add.rectangle(rays3DCameraWidth/2 + i*rays3DCameraWidth, canvasSizeY + 0.5*canvasSizeY, rays3DCameraWidth, canvasSizeY/3,"0x00ff00");
         this.physics.add.existing(rays3DCamera[i], false);
     }
 
+    //Then we redraw them.
     redrawRay3D();
+
+    drawEnemy();
 }
 
 function update(){
     //This function updates each certain time working like the game clock.
 
-    //Here we strablish the atributes for the player.
+    //Here we stablish the atributes for the player.
     player.body.setVelocity(0);
     playerHeader.body.setVelocity(0);       
     player.rotation = playerAngle;
     playerHeader.rotation = playerAngle;
 
+    //Here we stablish the atributes for the enemy.
+    enemyRaycaster.setRayAngle = player;
+    enemyAngle = enemyRaycaster.getRayAngle;
+    
+    enemy.body.setVelocity(0);
+    enemyHeader.body.setVelocity(0);
+    enemyRay.body.setVelocity(0);
+    
+    ray2DEnemyCoordinates = enemyRaycaster.detectWalls();
+
+    if(allowChase){
+        enemy.body.velocity.x = updateEnemyPosition()[0];
+        enemy.body.velocity.y = updateEnemyPosition()[1];
+        enemyHeader.body.velocity.x = updateEnemyPosition()[0];
+        enemyHeader.body.velocity.y = updateEnemyPosition()[1];
+
+        enemyRay.body.velocity.x = updateEnemyPosition()[0];
+        enemyRay.body.velocity.y = updateEnemyPosition()[1];
+    }
+
     //And here we stablish the atributes for the rays.
     for(let ray of rays){
         ray.body.setVelocity(0);
     }
+    
     raycaster.setPlayerPosition = player;
+    enemyRaycaster.setPlayerPosition = player;
+    enemyRaycaster.setEnemyPosition = enemy;
+
+
     ray2DCoordinates = raycaster.drawRays2D();
     redrawRay2D(); 
     redrawRay3D();
+    drawEnemy();
 
     if(cursors.up.isDown ^ cursors.down.isDown){
         velocityX = player.body.velocity.x + Xcomponent;
@@ -363,6 +456,11 @@ function redrawRay2D(){
         YEquation = - player.y + ray2DCoordinates.y[i];
         rays[i].setTo(0, 0, XEquation, YEquation);
     }
+
+    //We to the same with the enemy ray.
+    XEquation = - enemy.x + ray2DEnemyCoordinates.x[0];
+    YEquation = - enemy.y + ray2DEnemyCoordinates.y[0];
+    enemyRay.setTo(0, 0, XEquation, YEquation);
 }
 
 function redrawRay3D(){
@@ -374,10 +472,77 @@ function redrawRay3D(){
     }
 }
 
+function distanceEnemyWallPlayer(){
+    //Its imporntant to know the player distance regards to the enemy, same with the wall the enemy is
+    //aiming at.
+
+    //With these distances we can know if the wall is infront of the player or not.
+    let distancePlayer = raycaster.hypoCalc(enemy.x, enemy.y);
+    let distanceWall = enemyRaycaster.hypoCalc(ray2DEnemyCoordinates.x, ray2DEnemyCoordinates.y);
+
+    return [distancePlayer, distanceWall];
+}
+
+function updateEnemyPosition(){
+    
+    //We want the enemy to chase the player, so we need to setup some conditions.
+
+    let distance = distanceEnemyWallPlayer();
+
+    //We want the enemy to follow us if we are in range of sight and if the distance with the player is less than the distance
+    //with the wall.
+    if (distance[0] <= chaseDistance && distance[0] > 10 && (distance[0] < distance[1] || distance[1] == undefined)) {
+        let angle = enemyRaycaster.getRayAngle;
+        let enemyXcomponent = Math.cos(angle) * (defaultVelocity/1.8);
+        let enemyYcomponent = Math.sin(angle) * (defaultVelocity/1.8);
+        let enemyVelocityX = player.body.velocity.x + enemyXcomponent;
+        let enemyVelocityY = player.body.velocity.y + enemyYcomponent;
+
+        //We want the enemy to react when we are 
+        enemy.rotation = enemyRaycaster.getRayAngle - 3*Math.PI/2;
+        enemyHeader.rotation = enemyAngle - 3*Math.PI/2;
+
+        return[enemyVelocityX, enemyVelocityY];
+    }else{
+        return [0,0];
+    }    
+}
+
+function drawEnemy(){
+    // console.log(playerAngle + 5*Math.PI/4, enemyRaycaster.getRayAngle + Math.PI, playerAngle + 7*Math.PI/4);
+    let distance = distanceEnemyWallPlayer();
+    let enemyAngle = enemyRaycaster.getRayAngle;
+    let rangeAngles = [raycaster.checkLimitsAngle(playerAngle + 5*Math.PI/4) , raycaster.checkLimitsAngle(playerAngle + 7*Math.PI/4)];
+
+    if(rangeAngles[0] < enemyAngle + Math.PI && raycaster.checkLimitsAngle(enemyAngle + Math.PI) < rangeAngles[1] && distance[0] < distance[1]){
+        console.log("drawing demon")
+        cacodemon.visible = true;
+
+        let enemyHeight = rayDrawing.setHeightEnemy(raycaster.hypoCalc(enemy.x, enemy.y));
+        let xRelative = {neg: Math.tan(playerAngle + Math.PI) * distance[0], pos: Math.tan(playerAngle) * distance[0]};
+
+        
+        let newAngle1 = raycaster.checkLimitsAngle(enemyAngle - playerAngle + Math.PI);
+        let newAngle2 = raycaster.checkLimitsAngle(enemyAngle - playerAngle);
+
+        cacodemon.x =(hypoCalc(Math.cos(newAngle1) * xRelative.neg, 0 ,Math.sin(newAngle1) * xRelative.neg, 0)) + (hypoCalc(Math.cos(newAngle2) * xRelative.pos, 0 ,Math.sin(newAngle2) * xRelative.pos, 0));
+        cacodemon.y = (canvasSizeY + 0.5*canvasSizeY ) - rayDrawing.getHeight()/2;
+        if(enemyHeight/100 > 2.5){
+            cacodemon.scaleY = 2.5;
+            cacodemon.scaleX = 2.5;
+        }else{
+            cacodemon.scaleY = enemyHeight/100;
+            cacodemon.scaleX = enemyHeight/100;
+        }
+        
+    }else{
+        cacodemon.visible = false;
+    }
+}
 function generateWallMatrix(){
     //With this method we can generate the matrix for the walls.
-    
     raycaster.setMatrixDimensions = [wallNumberRatioX, wallNumberRatioY];
+    enemyRaycaster.setMatrixDimensions = [wallNumberRatioX, wallNumberRatioY];
     
     let wallOrder = [];
 
@@ -404,4 +569,8 @@ function readMatrix(){
             console.log(wallOrder[i][j]);
         }
     }
+}
+
+function hypoCalc(x1, x2, y1, y2){
+    return Math.sqrt(Math.pow(x1 - x2, 2) + Math.pow(y1 - y2, 2))
 }
