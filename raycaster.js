@@ -3,11 +3,7 @@ class Raycaster{
     constructor(playerAngle, playerPositionX, playerPositionY, rayAmount){
         this.rayAngle = playerAngle + 5*Math.PI/4;
 
-        if(this.rayAngle < 0){
-            this.rayAngle += 2*Math.PI;
-        }else if(this.rayAngle > 2*Math.PI){
-            this.rayAngle -= 2*Math.PI;
-        }
+        this.rayAngle = this.checkLimitsAngle(this.rayAngle);
         
         this.playerPosition = {x: playerPositionX, y: playerPositionY};
 
@@ -18,12 +14,7 @@ class Raycaster{
 
     set setRayAngle(playerAngle){
         this.rayAngle = playerAngle + 5*Math.PI/4;
-
-        if(this.rayAngle < 0){
-            this.rayAngle += 2*Math.PI;
-        }else if(this.rayAngle > 2*Math.PI){
-            this.rayAngle -= 2*Math.PI;
-        }     
+        this.rayAngle = this.checkLimitsAngle(this.rayAngle);    
     }
 
     get getRayAngle(){
@@ -69,7 +60,7 @@ class Raycaster{
 
         let checks = {horizontal: true, vertical: true};
             
-        let depthOfFieldLimit = 7;
+        let depthOfFieldLimit = 10;
 
         let RDistance;
 
@@ -85,6 +76,7 @@ class Raycaster{
 
             let adjustMatrixPosition ={x: 0, y:0};
             
+            let wallDetected = false;
 
             //Horizontal check
 
@@ -136,6 +128,7 @@ class Raycaster{
 
                     if(wallPlace < this.matrixDimensions.xdim * this.matrixDimensions.ydim && this.matrix[matrixPosition.y][matrixPosition.x] === true){
                         // console.log(`Vertical wall detected at ${matrixPosition.x}, y:${matrixPosition.y}`);
+                        wallDetected = true;
                         totalDistance.y = this.hypoCalc(horizontal.x, horizontal.y);
                         depthOfField  = depthOfFieldLimit;
                     }else{
@@ -199,8 +192,8 @@ class Raycaster{
 
                     if(wallPlace < this.matrixDimensions.xdim * this.matrixDimensions.ydim && this.matrix[matrixPosition.y][matrixPosition.x] === true){
                         // console.log(`Horizontal wall detected at ${matrixPosition.x}, y:${matrixPosition.y}`);
+                        wallDetected = true;
                         totalDistance.x = this.hypoCalc(vertical.x, vertical.y);
-
                         depthOfField  = depthOfFieldLimit;
                     }else{
                         rayXposition += rayXoffset;
@@ -240,29 +233,43 @@ class Raycaster{
                     rayXposition = vertical.x;
                     rayYposition = vertical.y;
                 }
-            }
-
-            coordinatesX[i] = rayXposition;
-            coordinatesY[i] = rayYposition;
-            distances[i] = RDistance;
+            }          
             
             currentAngle = currentAngle + this.angleOffset;
 
-            if(currentAngle < 0){
-                currentAngle += 2*Math.PI;
-            }else if(currentAngle > 2*Math.PI){
-                currentAngle -= 2*Math.PI;
-            }
+            currentAngle = this.checkLimitsAngle(currentAngle);
+            
+            coordinatesX[i] = rayXposition;
+            coordinatesY[i] = rayYposition;
 
-            if(currentAngle == playerAngle +3*Math.PI/2){
-                
+            let fixAngle = playerAngle - currentAngle;
+
+            fixAngle = this.checkLimitsAngle(fixAngle);
+
+            RDistance = RDistance*Math.sin(fixAngle);
+
+            if(wallDetected == true){
+                distances[i] = RDistance;
+            }else{
+                distances[i] = Infinity;
             }
+            
         }
-
+        
         return {x: coordinatesX, y: coordinatesY, distance: distances};
     }
     
     hypoCalc(x, y){
         return Math.sqrt(Math.pow(this.playerPosition.x - x, 2) + Math.pow(this.playerPosition.y - y, 2));
+    }
+
+    checkLimitsAngle(angle){
+        if(angle < 0){
+            angle += 2*Math.PI;
+        }else if(angle > 2*Math.PI){
+            angle -= 2*Math.PI;
+        }
+
+        return angle;
     }
 }

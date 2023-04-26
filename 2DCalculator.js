@@ -1,7 +1,7 @@
 let config = {
     type: Phaser.AUTO   ,
     parent: 'phaser-example',
-    backgroundColor: '#0072bc',
+    backgroundColor: '#000000',
     physics: {
         default: 'arcade',
         arcade: {
@@ -68,7 +68,7 @@ pHeCord[5] = pHeCord[3] - 30;
 //Stablishing the velocity standards for the player and elements
 let velocityX;
 let velocityY;
-let defaultVelocity = 500;
+let defaultVelocity = 300;
 
 //Stablishing the initial values for the player movement through its x,y components.
 let Xcomponent = Math.cos(playerAngle + Math.PI/2) * -defaultVelocity;
@@ -79,6 +79,8 @@ let angleOperator = 0.05;
 
 //Stablishing the raycaster elements.
 let raycaster;
+let rayDrawing;
+
 let rays2DAmount = 100;
 let rays = Array(rays2DAmount);
 let ray2DCoordinates;
@@ -87,11 +89,10 @@ let ray2DCoordinates;
 let YEquation;
 let XEquation;
 
-
 // let rays3DCameraWidth = 8;
 // let rays3DCameraAmount = parseInt(canvasSizeX/rays3DCameraWidth);
 
-let rays3DCameraAmount = 100;
+let rays3DCameraAmount = rays2DAmount;
 let rays3DCameraWidth = canvasSizeX/rays3DCameraAmount;
 
 let rays3DCamera = Array(rays3DCameraAmount);
@@ -178,6 +179,15 @@ function create(){
                 }
             }
 
+            for(let k = 0; k < wallNumberRatioX; k++){
+                wallOrder[0][k] = true;
+                wallOrder[wallNumberRatioY - 1][k] = true;
+            }
+
+            for(let j = 0; j < wallNumberRatioY; j++){
+                wallOrder[j][0] = true;
+                wallOrder[j][wallNumberRatioX - 1] = true;
+            }
             //With the matrix wall created we stablish it with to the raycaster.
             raycaster.setMatrix = wallOrder;
 
@@ -258,7 +268,7 @@ function create(){
     rayDrawing.setDistance = ray2DCoordinates.distance;
 
     for(let i = 0; i < rays3DCameraAmount; i++){
-        rays3DCamera[i] = this.add.rectangle(rays3DCameraWidth/2 + i*rays3DCameraWidth, canvasSizeY + 0.5*canvasSizeY, rays3DCameraWidth, canvasSizeY,"0xff0000");
+        rays3DCamera[i] = this.add.rectangle(rays3DCameraWidth/2 + i*rays3DCameraWidth, canvasSizeY + 0.5*canvasSizeY, rays3DCameraWidth, canvasSizeY/3,"0x00ff00");
         this.physics.add.existing(rays3DCamera[i], false);
     }
 
@@ -358,13 +368,9 @@ function redrawRay2D(){
 function redrawRay3D(){
     //This method allows the recalculation of the 3D ray coordinates and redraws it.
     for(let i = 0; i < rays3DCameraAmount; i++){
-        if(i + 1 >= rays3DCameraAmount){
-            break;
-        }else{
-            rayDrawing.setDistance = ray2DCoordinates.distance[i];
-            rays3DCamera[i].setSize(rays3DCameraWidth, rayDrawing.getDistance());
-            // Phaser.Geom.Rectangle.Inflate(rays3DCamera[i], rays3DCameraWidth, rayDrawing.getDistance());
-        }
+        rayDrawing.setHeight = ray2DCoordinates.distance[i];
+        rays3DCamera[i].setPosition(rays3DCameraWidth/2 + i*    rays3DCameraWidth, (canvasSizeY + 0.8*canvasSizeY ) - rayDrawing.getHeight()/2);
+        rays3DCamera[i].setSize(rays3DCameraWidth, rayDrawing.getHeight());
     }
 }
 

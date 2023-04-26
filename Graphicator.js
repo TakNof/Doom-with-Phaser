@@ -6,24 +6,18 @@ class Graphicator{
         this.raysAmount = raysAmount;
     }
 
-    set setDistance(distance){
-        this.distance = distance;
-
-        this.drawHeight = (this.blockSize*this.canvasSize.y)/this.distance;
-        if(this.drawHeight > this.canvasSize.y){
-            this.drawHeight = this.canvasSize.y;
-        }
+    set setHeight(distance){
+        if(!isFinite(distance)){
+            this.drawHeight = 0;
+        }else{
+            this.drawHeight = (this.blockSize*this.canvasSize.y)/distance;
+            if(this.drawHeight > 1.3*this.canvasSize.y){
+                this.drawHeight = 1.3*this.canvasSize.y;
+            }
+        }   
     }
 
-    getDistance(){
+    getHeight(){
         return this.drawHeight;
     }
-
-    drawRays3D(){
-        for(let i = 0; i < this.raysAmount; i++){
-            
-        }
-    }
-
-
 }
