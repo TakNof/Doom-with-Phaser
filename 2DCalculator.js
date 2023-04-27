@@ -335,7 +335,7 @@ function create(){
 
     //Here we stablish the rectangles of the 3D graphics
     for(let i = 0; i < rays3DCameraAmount; i++){
-        rays3DCamera[i] = this.add.rectangle(rays3DCameraWidth/2 + i*rays3DCameraWidth, canvasSizeY + 0.5*canvasSizeY, rays3DCameraWidth, canvasSizeY/3,"0x00ff00");
+        rays3DCamera[i] = this.add.rectangle(rays3DCameraWidth/2 + i*rays3DCameraWidth, canvasSizeY + 0.5*canvasSizeY, rays3DCameraWidth, canvasSizeY/3,"0x00ff00").setDepth(1);;
         this.physics.add.existing(rays3DCamera[i], false);
     }
 
@@ -532,8 +532,8 @@ function drawEnemy(){
     }else if(enemyAngleInv - Math.PI/4 <= Math.PI/4){
         rangeAngles[0] = rangeAngles[0] - 2*Math.PI;
     }
-    
-    if(enemyAngleInv > rangeAngles[0] && enemyAngleInv < rangeAngles[1] && distance[0] < distance[1]){
+       
+    if(enemyAngleInv > rangeAngles[0] && enemyAngleInv < rangeAngles[1] ){
         // console.log("drawing demon");
         cacodemon.visible = true;
 
@@ -550,10 +550,14 @@ function drawEnemy(){
         cacodemon.x = drawElementByPlayerPov(enemyAngleInv, rangeAngles[1]);
         cacodemon.y = (canvasSizeY + 0.5*canvasSizeY ) - enemyHeight/2;
 
-        cacodemon.setDepth(2);
+        cacodemon.setDepth(3);
         
     }else{
         cacodemon.visible = false;
+    }
+
+    if(distance[0] > distance[1]){
+        cacodemon.setDepth(0);
     }
 }
 
