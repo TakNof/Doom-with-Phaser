@@ -56,7 +56,8 @@ class Raycaster{
 
         let coordinatesX = Array(this.rayAmount);
         let coordinatesY = Array(this.rayAmount);
-        let distances = Array(this.rayDistance);
+        let distances = Array(this.rayAmount);
+        let kindOfHit = Array(this.rayAmount);
 
         let checks = {horizontal: true, vertical: true};
             
@@ -77,6 +78,8 @@ class Raycaster{
             let adjustMatrixPosition ={x: 0, y:0};
             
             let wallDetected = false;
+
+            kindOfHit[i] = "";
 
             //Horizontal check
 
@@ -206,13 +209,14 @@ class Raycaster{
                 // console.log("Finished vertical procedure");
             }
 
-            if(checks.horizontal === true && checks.vertical === true){
+            if(checks.horizontal && checks.vertical){
                 // console.log(`total distance x: ${totalDistance.x} y: ${totalDistance.y}`);
                 if(totalDistance.x < totalDistance.y){
                     // console.log("Using vertical total distance");
                     rayXposition = vertical.x;
                     rayYposition = vertical.y;
                     RDistance = totalDistance.x;
+                    kindOfHit[i] = "vertical";
                 }else if(totalDistance.x > totalDistance.y){
                     // console.log("Using horizontal total distance");
                     rayXposition = horizontal.x;
@@ -223,8 +227,8 @@ class Raycaster{
                     rayYposition = Math.sin(currentAngle) * depthOfFieldLimit*32 + this.playerPosition.y;
                     RDistance = this.hypoCalc(rayXposition, rayYposition);
                 }
-            }else if(checks.horizontal === true ^ checks.vertical === true){
-                if(checks.horizontal === true){
+            }else if(checks.horizontal ^ checks.vertical){
+                if(checks.horizontal){
                     // console.log("Using horizontal distance");
                     rayXposition = horizontal.x;
                     rayYposition = horizontal.y;
@@ -248,7 +252,7 @@ class Raycaster{
 
             RDistance = RDistance*Math.sin(fixAngle);
 
-            if(wallDetected == true){
+            if(wallDetected){
                 distances[i] = RDistance;
             }else{
                 distances[i] = Infinity;
@@ -256,7 +260,7 @@ class Raycaster{
             
         }
         
-        return {x: coordinatesX, y: coordinatesY, distance: distances};
+        return {x: coordinatesX, y: coordinatesY, distance: distances, typeOfHit: kindOfHit};
     }
     
     hypoCalc(x, y){

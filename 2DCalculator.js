@@ -190,7 +190,7 @@ function create(){
     enemyHeader.body.setCollideWorldBounds(true);
 
     //Here we create the map walls.
-    if(generateWalls == true && generateRandomWalls == true){
+    if(generateWalls && generateRandomWalls){
         //If true, random walls will be generated.
 
         //Creating the group for the walls.
@@ -258,7 +258,7 @@ function create(){
             }
         }
         
-    }else if(generateWalls == true && generateRandomWalls == false){
+    }else if(generateWalls && !generateRandomWalls){
         //If generateRandomWalls is false, then it means some tests are going to be
         //done, so we generate a limited number of walls to make the test run.
 
@@ -475,6 +475,12 @@ function redrawRay3D(){
         rayDrawing.setHeight = ray2DCoordinates.distance[i];
         rays3DCamera[i].setPosition(rays3DCameraWidth/2 + i*    rays3DCameraWidth, (canvasSizeY + 0.8*canvasSizeY ) - rayDrawing.getHeight()/2);
         rays3DCamera[i].setSize(rays3DCameraWidth, rayDrawing.getHeight());
+
+        if(ray2DCoordinates.typeOfHit[i] === "vertical"){
+            rays3DCamera[i].setFillStyle("0x004200");
+        }else{
+            rays3DCamera[i].setFillStyle("0x00ff00");
+        }
     }
 }
 
@@ -527,9 +533,7 @@ function drawEnemy(){
         rangeAngles[0] = rangeAngles[0] - 2*Math.PI;
     }
     
-    if(distance[1] < distance[0]){
-        cacodemon.setDepth(0);
-    }else if(enemyAngleInv > rangeAngles[0] && enemyAngleInv < rangeAngles[1] && distance[0] < distance[1]){
+    if(enemyAngleInv > rangeAngles[0] && enemyAngleInv < rangeAngles[1] && distance[0] < distance[1]){
         // console.log("drawing demon");
         cacodemon.visible = true;
 
@@ -555,7 +559,6 @@ function drawEnemy(){
 
 function drawElementByPlayerPov(angle, playerAngle){
     let newArcLenght = 7*Math.abs(angle - playerAngle);
-    console.log(newArcLenght);
     return (-(canvasSizeX*newArcLenght/arcLength) + canvasSizeX);
 }
 
