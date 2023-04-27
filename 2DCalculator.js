@@ -115,6 +115,9 @@ let rays3DCameraWidth = canvasSizeX/rays3DCameraAmount;
 
 let rays3DCamera = Array(rays3DCameraAmount);
 
+//The length of the arc generated through the raycast of the player.
+let arcLength = 7*Math.PI/2;
+
 //With the preload method we preload the sprites and we generate the object from the raycaster class.
 function preload(){
     this.load.image("wall", "assets/wall.png", {frameWidth: 32, frameHeight: 32});
@@ -369,6 +372,9 @@ function update(){
 
         enemyRay.body.velocity.x = updateEnemyPosition()[0];
         enemyRay.body.velocity.y = updateEnemyPosition()[1];
+    }else{
+        enemy.rotation = enemyRaycaster.getRayAngle - 3*Math.PI/2;
+        enemyHeader.rotation = enemyAngle - 3*Math.PI/2;
     }
 
     //And here we stablish the atributes for the rays.
@@ -511,22 +517,24 @@ function updateEnemyPosition(){
 function drawEnemy(){
     // console.log(playerAngle + 5*Math.PI/4, enemyRaycaster.getRayAngle + Math.PI, playerAngle + 7*Math.PI/4);
     let distance = distanceEnemyWallPlayer();
-    let enemyAngle = enemyRaycaster.getRayAngle;
-    let rangeAngles = [raycaster.checkLimitsAngle(playerAngle + 5*Math.PI/4) , raycaster.checkLimitsAngle(playerAngle + 7*Math.PI/4)];
-
-    if(rangeAngles[0] < enemyAngle + Math.PI && raycaster.checkLimitsAngle(enemyAngle + Math.PI) < rangeAngles[1] && distance[0] < distance[1]){
-        console.log("drawing demon")
+    let enemyAngleInv = raycaster.checkLimitsAngle(enemyRaycaster.getRayAngle +  Math.PI);
+    let globalPlayerAngle = raycaster.checkLimitsAngle(playerAngle + 3*Math.PI/2);
+    let rangeAngles = [raycaster.checkLimitsAngle(globalPlayerAngle - Math.PI/4) , raycaster.checkLimitsAngle(globalPlayerAngle + Math.PI/4)];
+    
+    if(enemyAngleInv + Math.PI/4 >= 2*Math.PI){
+        rangeAngles[1] = rangeAngles[1] + 2*Math.PI;
+    }else if(enemyAngleInv - Math.PI/4 <= Math.PI/4){
+        rangeAngles[0] = rangeAngles[0] - 2*Math.PI;
+    }
+    
+    if(distance[1] < distance[0]){
+        cacodemon.setDepth(0);
+    }else if(enemyAngleInv > rangeAngles[0] && enemyAngleInv < rangeAngles[1] && distance[0] < distance[1]){
+        // console.log("drawing demon");
         cacodemon.visible = true;
 
         let enemyHeight = rayDrawing.setHeightEnemy(raycaster.hypoCalc(enemy.x, enemy.y));
-        let xRelative = {neg: Math.tan(playerAngle + Math.PI) * distance[0], pos: Math.tan(playerAngle) * distance[0]};
-
         
-        let newAngle1 = raycaster.checkLimitsAngle(enemyAngle - playerAngle + Math.PI);
-        let newAngle2 = raycaster.checkLimitsAngle(enemyAngle - playerAngle);
-
-        cacodemon.x =(hypoCalc(Math.cos(newAngle1) * xRelative.neg, 0 ,Math.sin(newAngle1) * xRelative.neg, 0)) + (hypoCalc(Math.cos(newAngle2) * xRelative.pos, 0 ,Math.sin(newAngle2) * xRelative.pos, 0));
-        cacodemon.y = (canvasSizeY + 0.5*canvasSizeY ) - rayDrawing.getHeight()/2;
         if(enemyHeight/100 > 2.5){
             cacodemon.scaleY = 2.5;
             cacodemon.scaleX = 2.5;
@@ -535,10 +543,22 @@ function drawEnemy(){
             cacodemon.scaleX = enemyHeight/100;
         }
         
+        cacodemon.x = drawElementByPlayerPov(enemyAngleInv, rangeAngles[1]);
+        cacodemon.y = (canvasSizeY + 0.5*canvasSizeY ) - enemyHeight/2;
+
+        cacodemon.setDepth(2);
+        
     }else{
         cacodemon.visible = false;
     }
 }
+
+function drawElementByPlayerPov(angle, playerAngle){
+    let newArcLenght = 7*Math.abs(angle - playerAngle);
+    console.log(newArcLenght);
+    return (-(canvasSizeX*newArcLenght/arcLength) + canvasSizeX);
+}
+
 function generateWallMatrix(){
     //With this method we can generate the matrix for the walls.
     raycaster.setMatrixDimensions = [wallNumberRatioX, wallNumberRatioY];
