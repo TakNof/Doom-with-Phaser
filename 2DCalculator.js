@@ -152,8 +152,7 @@ function create(){
 
     player.body.setCollideWorldBounds(true);
 
-    
-    player2 = new Player(this, [canvasSizeX/3, canvasSizeY/3, 0], defaultVelocity, "player", wallBlockSizeX*2, angleOperator);
+    player2 = new Player(this, [canvasSizeX/3, canvasSizeY/3, 0], "player", wallBlockSizeX*2, defaultVelocity, angleOperator);
 
     //Creating the indicator for the pov of the player.
     playerHeader = this.add.triangle(playerPositionX, playerPositionY, pHeCord[0], pHeCord[1], pHeCord[2], pHeCord[3], pHeCord[4], pHeCord[5], "0xff0000");

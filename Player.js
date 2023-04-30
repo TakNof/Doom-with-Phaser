@@ -1,13 +1,25 @@
+/**
+ * This class extends to @param Living class, due the "ilving" sprites could be
+ * players or enemies. Furthermore, this class implements all the movemente controlers for the player/s.
+ */
+
 class Player extends Living{
-    constructor(scene, playerOriginInfo, defaultVelocity, playerImgStr, size, playerAngleOperator){
-        super(scene, playerOriginInfo, defaultVelocity, playerImgStr, size);
+    /**
+    * The constructor ofLiving Class.
+    * @param scene The current scene of the game to place the sprite.
+    * @param originInfo  A list with the intial positioning information for the sprite.
+    * @param spriteImgStr An str of the image name given in the preload method of the main class.
+    * @param size The size of the sprite in pixels.
+    * @param defaultVelocity The default velocity for the sprite.
+    * @param playerAngleOperator The player angle operator in order to rotate the sprite arround.
+    * 
+    */
+    constructor(scene, playerOriginInfo, playerImgStr, size, defaultVelocity, playerAngleOperator){
+        super(scene, playerOriginInfo, playerImgStr, size, defaultVelocity);
 
         this.playerAngleOperator = playerAngleOperator;
 
         this.setRotation = this.originInfo.ang;
-
-        // this.Xcomponent = Math.cos(this.originInfo.ang + Math.PI/2) * -this.defaultVelocity;
-        // this.Ycomponent = Math.sin(this.originInfo.ang + Math.PI/2) * -this.defaultVelocity;
 
         this.setXcomponent();
         this.setYcomponent();
