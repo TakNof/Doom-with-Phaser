@@ -1,6 +1,6 @@
 class Living extends Sprite{
-    constructor(scene, originInfo, velocity, spriteImgStr, size){
-        super(scene, originInfo, velocity, spriteImgStr);
+    constructor(scene, originInfo, defaultVelocity, spriteImgStr, size){
+        super(scene, originInfo, defaultVelocity, spriteImgStr);
 
         this.scene.physics.add.existing(this.sprite, false);
         this.sprite.body.setSize(size, size, true);

@@ -402,6 +402,7 @@ function update(){
     player2.move();
 
     if(cursors.up.isDown ^ cursors.down.isDown){
+        console.log("VelocityX ", player.body.velocity.x, "VelocityY ", player.body.velocity.y);
         velocityX = player.body.velocity.x + Xcomponent;
         velocityY = player.body.velocity.y + Ycomponent;      
 
