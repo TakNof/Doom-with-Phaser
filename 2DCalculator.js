@@ -55,6 +55,8 @@ let playerPositionX = canvasSizeX/2;
 let playerPositionY = canvasSizeY/2;
 let playerAngle = 0;
 
+let player2;
+
 //Stablishing the enemy and its initial position.
 let enemy;
 let enemyHeader;
@@ -70,7 +72,7 @@ let cacodemonAngle = 0;
 
 //Stablishing the player header, which was useful at the beginning of the development.
 let playerHeader;
-let pHeCord = [0, 0, 0, 0, 0, 0]
+let pHeCord = [0, 0, 0, 0, 0, 0];
 pHeCord[0] = 0;
 pHeCord[1] = -18;
 pHeCord[2] = pHeCord[0] + 32;
@@ -144,10 +146,14 @@ function create(){
 
     this.physics.add.existing(player, false);
 
+    player.body.setSize(64, 64, true);
+
     player.body.setAllowRotation(true);
 
     player.body.setCollideWorldBounds(true);
 
+    
+    player2 = new Player(this, [canvasSizeX/3, canvasSizeY/3, 0], defaultVelocity, "player", wallBlockSizeX*2, angleOperator);
 
     //Creating the indicator for the pov of the player.
     playerHeader = this.add.triangle(playerPositionX, playerPositionY, pHeCord[0], pHeCord[1], pHeCord[2], pHeCord[3], pHeCord[4], pHeCord[5], "0xff0000");
@@ -169,6 +175,7 @@ function create(){
     enemy.body.setAllowRotation(true);
 
     enemy.body.setCollideWorldBounds(true);
+
 
     cacodemon = this.add.sprite(playerPositionX, canvasSizeY*3, 'cacodemon');
 
@@ -353,7 +360,7 @@ function update(){
     playerHeader.body.setVelocity(0);       
     player.rotation = playerAngle;
     playerHeader.rotation = playerAngle;
-
+    
     //Here we stablish the atributes for the enemy.
     enemyRaycaster.setRayAngle = player;
     enemyAngle = enemyRaycaster.getRayAngle;
@@ -392,11 +399,11 @@ function update(){
     redrawRay3D();
     drawEnemy();
 
+    player2.move();
+
     if(cursors.up.isDown ^ cursors.down.isDown){
         velocityX = player.body.velocity.x + Xcomponent;
-        velocityY = player.body.velocity.y + Ycomponent;
-
-        // console.log(`Vx: ${velocityX} Vy: ${velocityY}`);
+        velocityY = player.body.velocity.y + Ycomponent;      
 
         if (cursors.up.isDown){   
             //Here we use the velocity calculated, and we change its sign accordingly to the direction of movement.
@@ -505,8 +512,8 @@ function updateEnemyPosition(){
     //with the wall.
     if (distance[0] <= chaseDistance && distance[0] > 10 && (distance[0] < distance[1] || distance[1] == undefined)) {
         let angle = enemyRaycaster.getRayAngle;
-        let enemyXcomponent = Math.cos(angle) * (defaultVelocity/1.8);
-        let enemyYcomponent = Math.sin(angle) * (defaultVelocity/1.8);
+        let enemyXcomponent = Math.cos(angle) * (defaultVelocity/3);
+        let enemyYcomponent = Math.sin(angle) * (defaultVelocity/3);
         let enemyVelocityX = player.body.velocity.x + enemyXcomponent;
         let enemyVelocityY = player.body.velocity.y + enemyYcomponent;
 
