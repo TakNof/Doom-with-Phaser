@@ -530,9 +530,9 @@ function updateEnemyPosition(){
 function drawEnemy(){
     // console.log(playerAngle + 5*Math.PI/4, enemyRaycaster.getRayAngle + Math.PI, playerAngle + 7*Math.PI/4);
     let distance = distanceEnemyWallPlayer();
-    let enemyAngleInv = raycaster.checkLimitsAngle(enemyRaycaster.getRayAngle +  Math.PI);
-    let globalPlayerAngle = raycaster.checkLimitsAngle(playerAngle + 3*Math.PI/2);
-    let rangeAngles = [raycaster.checkLimitsAngle(globalPlayerAngle - Math.PI/4) , raycaster.checkLimitsAngle(globalPlayerAngle + Math.PI/4)];
+    let enemyAngleInv = raycaster.adjustAngleValue(enemyRaycaster.getRayAngle +  Math.PI);
+    let globalPlayerAngle = raycaster.adjustAngleValue(playerAngle + 3*Math.PI/2);
+    let rangeAngles = [raycaster.adjustAngleValue(globalPlayerAngle - Math.PI/4) , raycaster.adjustAngleValue(globalPlayerAngle + Math.PI/4)];
     
     if(enemyAngleInv + Math.PI/4 >= 2*Math.PI){
         rangeAngles[1] = rangeAngles[1] + 2*Math.PI;

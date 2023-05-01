@@ -17,5 +17,20 @@ class Sprite{
         this.sprite = scene.add.sprite(this.originInfo.x, this.originInfo.y, spriteImgStr);
     }
 
+    set setPositionX(value){
+        this.sprite.x = value;
+    }
+
+    get getPositionX(){
+        return this.sprite.x;
+    }
+
+    set setPositionY(value){
+        this.sprite.y = value;
+    }
+
+    get getPositionY(){
+        return this.sprite.y;
+    }
 
 }
