@@ -10,12 +10,13 @@ class Player extends Living{
     * @param originInfo  A list with the intial positioning information for the sprite.
     * @param spriteImgStr An str of the image name given in the preload method of the main class.
     * @param size The size of the sprite in pixels.
+    * @param depth The depth of rendering of the sprite.
     * @param defaultVelocity The default velocity for the sprite.
     * @param playerAngleOperator The player angle operator in order to rotate the sprite arround.
     * 
     */
-    constructor(scene, playerOriginInfo, playerImgStr, size, defaultVelocity, playerAngleOperator){
-        super(scene, playerOriginInfo, playerImgStr, size, defaultVelocity);
+    constructor(scene, playerOriginInfo, playerImgStr, size, depth, defaultVelocity, playerAngleOperator){
+        super(scene, playerOriginInfo, playerImgStr, size, depth, defaultVelocity);
 
         this.playerAngleOperator = playerAngleOperator;
 

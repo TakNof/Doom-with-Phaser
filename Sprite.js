@@ -8,13 +8,14 @@ class Sprite{
     * @param originInfo  A list with the intial positioning information for the sprite.
     * @param spriteImgStr An str of the image name given in the preload method of the main class.
     * @param size The size of the sprite in pixels.
-    * 
+    * @param depth The depth of rendering of the sprite.
     */
-    constructor(scene, originInfo, spriteImgStr, size){
+    constructor(scene, originInfo, spriteImgStr, size, depth){
         this.scene = scene;
         this.originInfo = {x: originInfo[0], y: originInfo[1], ang: originInfo[2]};
         this.size = size;
-        this.sprite = scene.add.sprite(this.originInfo.x, this.originInfo.y, spriteImgStr);
+        this.depth = depth;
+        this.sprite = scene.add.sprite(this.originInfo.x, this.originInfo.y, spriteImgStr).setDepth(this.depth);
     }
 
     set setPositionX(value){
@@ -33,4 +34,12 @@ class Sprite{
         return this.sprite.y;
     }
 
+    set setDepth(value){
+        this.depth = value;
+        this.sprite.setDepth(this.depth);
+    }
+
+    get getDepth(){
+        return this.depth;
+    }   
 }
