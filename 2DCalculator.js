@@ -55,6 +55,8 @@ let playerPositionX = canvasSizeX/2;
 let playerPositionY = canvasSizeY/2;
 let playerAngle = 0;
 
+let player2;
+
 //Stablishing the enemy and its initial position.
 let enemy;
 let enemyHeader;
@@ -70,7 +72,7 @@ let cacodemonAngle = 0;
 
 //Stablishing the player header, which was useful at the beginning of the development.
 let playerHeader;
-let pHeCord = [0, 0, 0, 0, 0, 0]
+let pHeCord = [0, 0, 0, 0, 0, 0];
 pHeCord[0] = 0;
 pHeCord[1] = -18;
 pHeCord[2] = pHeCord[0] + 32;
@@ -126,7 +128,7 @@ function preload(){
     this.load.image("cacodemon", "assets/cacodemon.png");
 
     raycaster = new Raycaster(playerAngle, playerPositionX, playerPositionY, rays2DAmount);
-    enemyRaycaster = new EnemyRaycaster(enemyPositionX, enemyPositionY, playerPositionX,playerPositionY);
+    enemyRaycaster = new EnemyRaycaster(enemyPositionX, enemyPositionY, playerPositionX, playerPositionY);
     rayDrawing = new Graphicator(wallBlockSizeX, canvasSize, rays3DCameraWidth, rays3DCameraAmount);
 }
 
@@ -144,10 +146,13 @@ function create(){
 
     this.physics.add.existing(player, false);
 
+    player.body.setSize(64, 64, true);
+
     player.body.setAllowRotation(true);
 
     player.body.setCollideWorldBounds(true);
 
+    player2 = new Player(this, [canvasSizeX/3, canvasSizeY/3, 0], "player", wallBlockSizeX*2, 0, defaultVelocity, angleOperator);
 
     //Creating the indicator for the pov of the player.
     playerHeader = this.add.triangle(playerPositionX, playerPositionY, pHeCord[0], pHeCord[1], pHeCord[2], pHeCord[3], pHeCord[4], pHeCord[5], "0xff0000");
@@ -170,6 +175,7 @@ function create(){
 
     enemy.body.setCollideWorldBounds(true);
 
+
     cacodemon = this.add.sprite(playerPositionX, canvasSizeY*3, 'cacodemon');
 
     this.physics.add.existing(cacodemon,false);
@@ -189,112 +195,12 @@ function create(){
 
     enemyHeader.body.setCollideWorldBounds(true);
 
-    //Here we create the map walls.
-    if(generateWalls && generateRandomWalls){
-        //If true, random walls will be generated.
+    walls = new WallsBuilder(this, "wall", [canvasSizeX, canvasSizeY], wallBlockSizeX, amountWalls, generateWalls, generateRandomWalls);
+    walls.createWalls();
 
-        //Creating the group for the walls.
-        walls = this.physics.add.staticGroup();
-
-        //Creating the matrix with booleans through method.
-        wallOrder = generateWallMatrix();
-        
-        for(let i = 0; i < amountWalls; i++){
-            //within this loop we generate the walls through random positioning
-            //and scale of each wall.
-
-            //In order to make things more simple we generate the walls acording to the grid we generated
-            //and the scale of the walls. So instead of asking for the coordinates of the wall we ask for its
-            //position in the grid.
-
-            //We stablish the starting grid point of the wall in x,y.
-            let wallStartX = getRndInteger(0, wallNumberRatioX);
-            let wallStartY = getRndInteger(0, wallNumberRatioY);
-
-            //And then the extension of the wall in x,y as well.
-            let blockExtentionX;
-            let blockExtentionY;
-
-            //This while loop will prevent the walls from being generated out of bounds.
-            do{
-                blockExtentionX = getRndInteger(1, 5);
-                blockExtentionY = getRndInteger(1, 5);
-                
-            }while(blockExtentionX + wallStartX > wallNumberRatioX ||
-                blockExtentionY + wallStartY > wallNumberRatioY);    
-
-            //Then we use two for loops to change the value in the matrix by true;
-            for(let j = wallStartY; j < blockExtentionY + wallStartY; j++){
-                for(let k = wallStartX; k < blockExtentionX + wallStartX; k++){
-                    if(wallStartX < playerPositionX/32 < blockExtentionX + wallStartX){
-                        wallOrder[j][k] = true;
-                    }
-                }
-            }
-
-            for(let k = 0; k < wallNumberRatioX; k++){
-                wallOrder[0][k] = true;
-                wallOrder[wallNumberRatioY - 1][k] = true;
-            }
-
-            for(let j = 0; j < wallNumberRatioY; j++){
-                wallOrder[j][0] = true;
-                wallOrder[j][wallNumberRatioX - 1] = true;
-            }
-            //With the matrix wall created we stablish it with to the raycaster and enemyRaycaster.
-            raycaster.setMatrix = wallOrder;
-            enemyRaycaster.setMatrix = wallOrder;
-
-            //Now with the wall positions being true in the matrix the only thing that lefts to do is to
-            //traverse the matrix looking for the true values, if found, a wall object will be generated.
-            for(let i = 0; i < wallNumberRatioY; i++){
-                for(let j = 0; j < wallNumberRatioX; j++){
-                    if(wallOrder[i][j] === true){
-                        let wallPositionX = (j*32) + 16;
-                        let wallPositionY = (i*32) + 16;
-                        walls.create(wallPositionX , wallPositionY, this.add.sprite(wallPositionX , wallPositionY, "wall").setDepth(1));
-                    }
-                }
-            }
-        }
-        
-    }else if(generateWalls && !generateRandomWalls){
-        //If generateRandomWalls is false, then it means some tests are going to be
-        //done, so we generate a limited number of walls to make the test run.
-
-        //The logic its the same as the previous part.
-        walls = this.physics.add.staticGroup();
-        wallOrder = generateWallMatrix();
-
-        let wallStartX = 15;
-        let wallStartY = getRndInteger(0, 8);
-
-        let blockExtentionX = 3;
-        let blockExtentionY = 3;
-
-        for(let j = wallStartY; j < blockExtentionY + wallStartY; j++){
-            for(let k = wallStartX; k < blockExtentionX + wallStartX; k++){
-                if(wallStartX < playerPositionX/32 < blockExtentionX + wallStartX){
-                    wallOrder[j][k] = true;
-                }
-            }
-        }
-        
-        raycaster.setMatrix = wallOrder;
-        enemyRaycaster.setMatrix = wallOrder;
-
-        for(let i = 0; i < wallNumberRatioY; i++){
-            for(let j = 0; j < wallNumberRatioX; j++){
-                if(wallOrder[i][j] === true){
-                    let wallPositionX = (j*32) + 16;
-                    let wallPositionY = (i*32) + 16;
-                    walls.create(wallPositionX , wallPositionY, this.add.sprite(wallPositionX , wallPositionY, "wall").setDepth(1));
-                }
-            }
-        }
-
-    }
-
+    raycaster.setMatrix = walls.getWallMatrix;
+    enemyRaycaster.setMatrix = walls.getWallMatrix;
+    
     //Here we stablish the raycasting.
 
     //first we have to calculate all the rays distance for the player and the enemy.
@@ -353,7 +259,7 @@ function update(){
     playerHeader.body.setVelocity(0);       
     player.rotation = playerAngle;
     playerHeader.rotation = playerAngle;
-
+    
     //Here we stablish the atributes for the enemy.
     enemyRaycaster.setRayAngle = player;
     enemyAngle = enemyRaycaster.getRayAngle;
@@ -392,11 +298,12 @@ function update(){
     redrawRay3D();
     drawEnemy();
 
-    if(cursors.up.isDown ^ cursors.down.isDown){
-        velocityX = player.body.velocity.x + Xcomponent;
-        velocityY = player.body.velocity.y + Ycomponent;
+    player2.move();
 
-        // console.log(`Vx: ${velocityX} Vy: ${velocityY}`);
+    if(cursors.up.isDown ^ cursors.down.isDown){
+        // console.log("VelocityX ", player.body.velocity.x, "VelocityY ", player.body.velocity.y);
+        velocityX = player.body.velocity.x + Xcomponent;
+        velocityY = player.body.velocity.y + Ycomponent;      
 
         if (cursors.up.isDown){   
             //Here we use the velocity calculated, and we change its sign accordingly to the direction of movement.
@@ -505,8 +412,8 @@ function updateEnemyPosition(){
     //with the wall.
     if (distance[0] <= chaseDistance && distance[0] > 10 && (distance[0] < distance[1] || distance[1] == undefined)) {
         let angle = enemyRaycaster.getRayAngle;
-        let enemyXcomponent = Math.cos(angle) * (defaultVelocity/1.8);
-        let enemyYcomponent = Math.sin(angle) * (defaultVelocity/1.8);
+        let enemyXcomponent = Math.cos(angle) * (defaultVelocity/3);
+        let enemyYcomponent = Math.sin(angle) * (defaultVelocity/3);
         let enemyVelocityX = player.body.velocity.x + enemyXcomponent;
         let enemyVelocityY = player.body.velocity.y + enemyYcomponent;
 
@@ -523,9 +430,9 @@ function updateEnemyPosition(){
 function drawEnemy(){
     // console.log(playerAngle + 5*Math.PI/4, enemyRaycaster.getRayAngle + Math.PI, playerAngle + 7*Math.PI/4);
     let distance = distanceEnemyWallPlayer();
-    let enemyAngleInv = raycaster.checkLimitsAngle(enemyRaycaster.getRayAngle +  Math.PI);
-    let globalPlayerAngle = raycaster.checkLimitsAngle(playerAngle + 3*Math.PI/2);
-    let rangeAngles = [raycaster.checkLimitsAngle(globalPlayerAngle - Math.PI/4) , raycaster.checkLimitsAngle(globalPlayerAngle + Math.PI/4)];
+    let enemyAngleInv = raycaster.adjustAngleValue(enemyRaycaster.getRayAngle +  Math.PI);
+    let globalPlayerAngle = raycaster.adjustAngleValue(playerAngle + 3*Math.PI/2);
+    let rangeAngles = [raycaster.adjustAngleValue(globalPlayerAngle - Math.PI/4) , raycaster.adjustAngleValue(globalPlayerAngle + Math.PI/4)];
     
     if(enemyAngleInv + Math.PI/4 >= 2*Math.PI){
         rangeAngles[1] = rangeAngles[1] + 2*Math.PI;
@@ -564,38 +471,6 @@ function drawEnemy(){
 function drawElementByPlayerPov(angle, playerAngle){
     let newArcLenght = 7*Math.abs(angle - playerAngle);
     return (-(canvasSizeX*newArcLenght/arcLength) + canvasSizeX);
-}
-
-function generateWallMatrix(){
-    //With this method we can generate the matrix for the walls.
-    raycaster.setMatrixDimensions = [wallNumberRatioX, wallNumberRatioY];
-    enemyRaycaster.setMatrixDimensions = [wallNumberRatioX, wallNumberRatioY];
-    
-    let wallOrder = [];
-
-    let row = Array(wallNumberRatioX);
-
-    for(let j = 0; j < wallNumberRatioX; j++){
-        row[j] = false;
-    }
-
-    for(let i = 0; i < wallNumberRatioY; i++){
-        wallOrder.push(row.concat());
-    }
-
-    return wallOrder;
-}
-
-function getRndInteger(min, max) {
-    return Math.floor(Math.random() * (max - min) ) + min;
-}
-
-function readMatrix(){
-    for(let i = 0; i < wallNumberRatioY; i++){
-        for(let j = 0; j < wallNumberRatioX; j++){
-            console.log(wallOrder[i][j]);
-        }
-    }
 }
 
 function hypoCalc(x1, x2, y1, y2){

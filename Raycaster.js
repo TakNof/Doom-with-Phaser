@@ -3,18 +3,20 @@ class Raycaster{
     constructor(playerAngle, playerPositionX, playerPositionY, rayAmount){
         this.rayAngle = playerAngle + 5*Math.PI/4;
 
-        this.rayAngle = this.checkLimitsAngle(this.rayAngle);
-        
+        this.rayAngle = this.adjustAngleValue(this.rayAngle);
+
         this.playerPosition = {x: playerPositionX, y: playerPositionY};
 
         this.rayAmount = rayAmount;
 
-        this.angleOffset = (90/this.rayAmount)*Math.PI/180; 
+        this.angleOffset = (90/this.rayAmount)*Math.PI/180;
+
+        this.matrix = [[]];
     }
 
     set setRayAngle(playerAngle){
         this.rayAngle = playerAngle + 5*Math.PI/4;
-        this.rayAngle = this.checkLimitsAngle(this.rayAngle);    
+        this.rayAngle = this.adjustAngleValue(this.rayAngle);    
     }
 
     get getRayAngle(){
@@ -23,14 +25,15 @@ class Raycaster{
 
     set setMatrix(matrix){
         this.matrix = matrix;
+        this.setMatrixDimensions();
     }
 
     get getMatrix(){
         return this.matrix;
     }
 
-    set setMatrixDimensions(matrixDimensions){
-        this.matrixDimensions = {xdim: matrixDimensions[0], ydim: matrixDimensions[1]};
+    setMatrixDimensions(){
+        this.matrixDimensions = {xdim: this.matrix[0].length, ydim: this.matrix.length};
     }
 
     get getMatrixDimensions(){
@@ -51,7 +54,7 @@ class Raycaster{
 
         let rayYoffset;
         let rayXoffset;
-        
+
         let currentAngle = this.rayAngle;
 
         let coordinatesX = Array(this.rayAmount);
@@ -60,8 +63,8 @@ class Raycaster{
         let kindOfHit = Array(this.rayAmount);
 
         let checks = {horizontal: true, vertical: true};
-            
-        let depthOfFieldLimit = 10;
+
+        let depthOfFieldLimit = 7;
 
         let RDistance;
 
@@ -76,7 +79,7 @@ class Raycaster{
             let vertical  = {x: 0, y: 0};          
 
             let adjustMatrixPosition ={x: 0, y:0};
-            
+
             let wallDetected = false;
 
             kindOfHit[i] = "";
@@ -84,7 +87,7 @@ class Raycaster{
             //Horizontal check
 
             if(checks.horizontal === true){
-                    
+
                 let depthOfField = 0; 
 
                 if(currentAngle == 0 || currentAngle == Math.PI || currentAngle == 2*Math.PI){
@@ -101,9 +104,9 @@ class Raycaster{
 
                     rayYoffset = -32;
                     rayXoffset = -rayYoffset*NegInvTan;
-                    
+
                     adjustMatrixPosition.y = 1;
-                    
+
                 }else if(currentAngle < Math.PI){
                     // console.log("Less", currentAngle)
                     rayYposition = parseInt((this.playerPosition.y + 32)/32)*32;
@@ -112,7 +115,7 @@ class Raycaster{
                     rayYoffset = 32;
                     rayXoffset = -rayYoffset*NegInvTan;
                 }
-                
+
                 horizontal = {x: rayXposition, y: rayYposition};
 
                 while(depthOfField < depthOfFieldLimit){     
@@ -122,11 +125,11 @@ class Raycaster{
                     }
 
                     let wallPlace = matrixPosition.y * this.matrixDimensions.xdim + matrixPosition.x;
-                    
+
                     if(matrixPosition.x < 0 || matrixPosition.y < 0 || wallPlace > this.matrixDimensions.xdim * this.matrixDimensions.ydim){
                         break;
                     }
-                    
+
                     horizontal = {x: rayXposition, y: rayYposition};
 
                     if(wallPlace < this.matrixDimensions.xdim * this.matrixDimensions.ydim && this.matrix[matrixPosition.y][matrixPosition.x] === true){
@@ -141,14 +144,14 @@ class Raycaster{
                         depthOfField += 1;
                     }
                 }
-                
+
                 // console.log("Finished horizontal procedure");
             }
-            
+
             adjustMatrixPosition ={x: 0, y:0};
 
             if(checks.vertical === true){
-                
+
                 let depthOfField = 0; 
 
                 if(currentAngle == Math.PI/2 || currentAngle ==  3*Math.PI/2){
@@ -176,9 +179,9 @@ class Raycaster{
                     rayXoffset = 32;
                     rayYoffset = -rayXoffset*NegTan;
                 }
-                
+
                 vertical = {x: rayXposition, y: rayYposition};
-        
+
                 while(depthOfField < depthOfFieldLimit){
                     matrixPosition = {
                         x: parseInt((rayXposition)/32) - 1*adjustMatrixPosition.x,
@@ -190,7 +193,7 @@ class Raycaster{
                     if(matrixPosition.x < 0 || matrixPosition.y < 0 || wallPlace > this.matrixDimensions.xdim * this.matrixDimensions.ydim){
                         break;
                     }
-                    
+
                     vertical = {x: rayXposition, y: rayYposition};
 
                     if(wallPlace < this.matrixDimensions.xdim * this.matrixDimensions.ydim && this.matrix[matrixPosition.y][matrixPosition.x] === true){
@@ -205,7 +208,7 @@ class Raycaster{
                         depthOfField += 1;
                     }
                 }
-                
+
                 // console.log("Finished vertical procedure");
             }
 
@@ -238,17 +241,17 @@ class Raycaster{
                     rayYposition = vertical.y;
                 }
             }          
-            
+
             currentAngle = currentAngle + this.angleOffset;
 
-            currentAngle = this.checkLimitsAngle(currentAngle);
-            
+            currentAngle = this.adjustAngleValue(currentAngle);
+
             coordinatesX[i] = rayXposition;
             coordinatesY[i] = rayYposition;
 
             let fixAngle = playerAngle - currentAngle;
 
-            fixAngle = this.checkLimitsAngle(fixAngle);
+            fixAngle = this.adjustAngleValue(fixAngle);
 
             RDistance = RDistance*Math.sin(fixAngle);
 
@@ -257,17 +260,17 @@ class Raycaster{
             }else{
                 distances[i] = Infinity;
             }
-            
+
         }
-        
+
         return {x: coordinatesX, y: coordinatesY, distance: distances, typeOfHit: kindOfHit};
     }
-    
+
     hypoCalc(x, y){
         return Math.sqrt(Math.pow(this.playerPosition.x - x, 2) + Math.pow(this.playerPosition.y - y, 2));
     }
 
-    checkLimitsAngle(angle){
+    adjustAngleValue(angle){
         if(angle < 0){
             angle += 2*Math.PI;
         }else if(angle > 2*Math.PI){

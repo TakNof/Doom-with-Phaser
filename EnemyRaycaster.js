@@ -16,6 +16,8 @@ class EnemyRaycaster{
         this.rayAmount = 1;
 
         this.angleOffset = (90/this.rayAmount)*Math.PI/180;
+
+        this.matrix = [[]];
     }
 
     set setRayAngle(player){
@@ -24,9 +26,6 @@ class EnemyRaycaster{
         }else{
             this.rayAngle = Math.atan((this.enemyPosition.y - player.y)/(this.enemyPosition.x - player.x));
         }
-        
-
-
 
         if(this.rayAngle < 0){
             this.rayAngle += 2*Math.PI;
@@ -41,14 +40,15 @@ class EnemyRaycaster{
 
     set setMatrix(matrix){
         this.matrix = matrix;
+        this.setMatrixDimensions();
     }
 
     get getMatrix(){
         return this.matrix;
     }
 
-    set setMatrixDimensions(matrixDimensions){
-        this.matrixDimensions = {xdim: matrixDimensions[0], ydim: matrixDimensions[1]};
+    setMatrixDimensions(){
+        this.matrixDimensions = {xdim: this.matrix[0][0].length, ydim: this.matrix[0].length};
     }
 
     get getMatrixDimensions(){
