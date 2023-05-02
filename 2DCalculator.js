@@ -195,10 +195,11 @@ function create(){
 
     enemyHeader.body.setCollideWorldBounds(true);
 
+    //Here we create the walls of the map.
     walls = new WallsBuilder(this, "wall", [canvasSizeX, canvasSizeY], wallBlockSizeX, amountWalls, generateWalls, generateRandomWalls);
     walls.createWalls();
 
-    raycaster.setMatrix = walls.getWallMatrix;
+    raycaster.setMatrix = walls.getWallMatrix;   
     enemyRaycaster.setMatrix = walls.getWallMatrix;
     
     //Here we stablish the raycasting.
