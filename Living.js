@@ -4,13 +4,13 @@
  */
 class Living extends Sprite{
     /**
-    * The constructor ofLiving Class.
-    * @param scene The current scene of the game to place the sprite.
-    * @param originInfo  A list with the intial positioning information for the sprite.
-    * @param spriteImgStr An str of the image name given in the preload method of the main class.
-    * @param size The size of the sprite in pixels.
-    * @param depth The depth of rendering of the sprite.
-    * @param defaultVelocity The default velocity for the  living sprite.
+    * The constructor of Living Class.
+    * @param {scene} scene The current scene of the game to place the sprite.
+    * @param {number[]} originInfo  A list with the initial positioning information for the sprite.
+    * @param {string} spriteImgStr An str of the image name given in the preload method of the main class.
+    * @param {number}size The size of the sprite in pixels.
+    * @param {number} depth The depth of rendering of the sprite.
+    * @param {number} defaultVelocity The default velocity for the living sprite.
     * 
     */
     constructor(scene, originInfo, spriteImgStr, size, depth, defaultVelocity){
@@ -25,16 +25,96 @@ class Living extends Sprite{
     }
 
     /**
-     * 
+     * Sets the velocity in the X component of the living sprite.
+     * @param {number} value
+     */
+    set setVelocityX(value){
+        this.sprite.body.setVelocityX(value);
+    }
+
+    /**
+     * Gets the velocity in the X component of the living sprite.
+     * @returns {number}
+     */
+    get getVelocityX(){
+        return this.sprite.body.velocity.x;
+    }
+
+    /**
+     * Sets the velocity in the Y component of the living sprite.
+     * @param {number} value
+     */
+    set setVelocityY(value){
+        this.sprite.body.setVelocityY(value);
+    }
+
+    /**
+     * Gets the velocity in the Y component of the living sprite.
+     * @returns {number}
+     */
+    get getVelocityY(){
+        return this.sprite.body.velocity.y;
+    }
+
+    /**
+     * Sets the velocity in both axis of the living sprite.
+     * @param {number} value
+     */
+    set setVelocity(value){
+        this.setVelocityX = value;
+        this.setVelocityY = value;
+    }
+
+    /**
+     * Sets the rotation of the living sprite.
+     * @param {number} value
      */
     set setRotation(value){
         this.sprite.rotation = value;
     }
 
+    /**
+     * Gets the rotation of the living sprite.
+     * @returns {number}
+     */
     get getRotation(){
         return this.sprite.rotation;
     }
 
+    /**
+     * Sets the X component of the velocity according to the rotation stablished of the living sprite.
+     */
+    setXcomponent(){
+        this.Xcomponent = Math.cos(this.sprite.rotation + Math.PI/2) * -this.defaultVelocity;
+    }
+
+    /**
+     * Gets the X component of the velocity according to the rotation stablished of the living sprite.
+     * @returns {number}
+     */
+    get getXcomponent(){
+        return this.Xcomponent;
+    }
+
+    /**
+     * Sets the Y component of the velocity according to the rotation stablished of the living sprite.
+     */
+    setYcomponent(){
+        this.Ycomponent = Math.sin(this.sprite.rotation + Math.PI/2) * -this.defaultVelocity;
+    }
+
+    /**
+     * Gets the Y component of the velocity according to the rotation stablished of the living sprite.
+     * @returns {number}
+     */
+    get getYcomponent(){
+        return this.Ycomponent;
+    }
+
+
+    /**
+     * Allows to adjust the angle value of the rotation to be within the range of 0 and 2PI.
+     */
     adjustAngleValue(){
         if(this.sprite.rotation < 0){
             this.sprite.rotation += 2*Math.PI;

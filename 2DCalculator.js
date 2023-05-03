@@ -47,7 +47,7 @@ let wallNumberRatioX = parseInt(canvasSizeX/wallBlockSizeX);
 let wallNumberRatioY = parseInt(canvasSizeY/wallBlockSizeY);
 let amountWalls = 21;
 let generateWalls = true;
-let generateRandomWalls = true;
+let generateRandomWalls = false;
 
 //Stablishing the player and its initial position.
 let player;
@@ -64,7 +64,7 @@ let enemyPositionX = canvasSizeX/4;
 let enemyPositionY = canvasSizeY/4;
 let enemyAngle = 0;
 let chaseDistance = 300;
-let allowChase = true;
+let allowChase = false;
 
 
 let cacodemon;
@@ -90,7 +90,7 @@ let Xcomponent = Math.cos(playerAngle + Math.PI/2) * -defaultVelocity;
 let Ycomponent = Math.sin(playerAngle + Math.PI/2) * -defaultVelocity;
 
 //Rotation coeficient.
-let angleOperator = 0.05;
+let angleOperator = 0.01;
 
 //Stablishing the raycaster elements.
 let raycaster;
@@ -127,7 +127,7 @@ function preload(){
     this.load.image("enemy", "assets/enemy.jpg", {frameWidth: 64, frameHeight: 64});
     this.load.image("cacodemon", "assets/cacodemon.png");
 
-    raycaster = new Raycaster(playerAngle, playerPositionX, playerPositionY, rays2DAmount);
+    raycaster = new Raycaster(playerAngle, playerPositionX, playerPositionY, 1);
     enemyRaycaster = new EnemyRaycaster(enemyPositionX, enemyPositionY, playerPositionX, playerPositionY);
     rayDrawing = new Graphicator(wallBlockSizeX, canvasSize, rays3DCameraWidth, rays3DCameraAmount);
 }
@@ -289,7 +289,7 @@ function update(){
         ray.body.setVelocity(0);
     }
     
-    raycaster.setPlayerPosition = player;
+    raycaster.setSpritePosition = player;
     enemyRaycaster.setPlayerPosition = player;
     enemyRaycaster.setEnemyPosition = enemy;
 
@@ -359,6 +359,12 @@ function update(){
         //Because we are changing the angle, we have to load it to the reycaster
         raycaster.setRayAngle = playerAngle;
     }
+    
+    if(keySpace.isDown){
+        console.log(ray2DCoordinates.distance[0]);
+        console.log(raycaster.adjustAngleValue(playerAngle - 5*Math.PI/4));
+    }
+
 }
 
 function redrawRay2D(){
@@ -381,7 +387,7 @@ function redrawRay3D(){
     //This method allows the recalculation of the 3D ray coordinates and redraws it.
     for(let i = 0; i < rays3DCameraAmount; i++){
         rayDrawing.setHeight = ray2DCoordinates.distance[i];
-        rays3DCamera[i].setPosition(rays3DCameraWidth/2 + i*    rays3DCameraWidth, (canvasSizeY + 0.8*canvasSizeY ) - rayDrawing.getHeight()/2);
+        rays3DCamera[i].setPosition(rays3DCameraWidth/2 + i * rays3DCameraWidth, (canvasSizeY + 0.8*canvasSizeY ) - rayDrawing.getHeight()/2);
         rays3DCamera[i].setSize(rays3DCameraWidth, rayDrawing.getHeight());
 
         if(ray2DCoordinates.typeOfHit[i] === "vertical"){

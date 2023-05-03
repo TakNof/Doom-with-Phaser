@@ -1,18 +1,18 @@
 /**
- * This class extends to @param Living class, due the "ilving" sprites could be
- * players or enemies. Furthermore, this class implements all the movemente controlers for the player/s.
+ * This class extends to Living class, due the "living" sprites could be
+ * players or enemies. Furthermore, this class implements all the movement controlers for the player/s.
  */
 
 class Player extends Living{
     /**
     * The constructor of Player Class.
-    * @param scene The current scene of the game to place the sprite.
-    * @param originInfo  A list with the intial positioning information for the sprite.
-    * @param spriteImgStr An str of the image name given in the preload method of the main class.
-    * @param size The size of the sprite in pixels.
-    * @param depth The depth of rendering of the sprite.
-    * @param defaultVelocity The default velocity for the sprite.
-    * @param playerAngleOperator The player angle operator in order to rotate the sprite arround.
+    * @param {scene} scene The current scene of the game to place the sprite.
+    * @param {number[]} playerOriginInfo  A list with the initial positioning information for the sprite.
+    * @param {string} playerImgStr An str of the image name given in the preload method of the main class.
+    * @param {number} size The size of the sprite in pixels.
+    * @param {number} depth The depth of rendering of the sprite.
+    * @param {number} defaultVelocity The default velocity for the living sprite.
+    * @param {number} playerAngleOperator The player angle operator in order to rotate the sprite arround.
     * 
     */
     constructor(scene, playerOriginInfo, playerImgStr, size, depth, defaultVelocity, playerAngleOperator){
@@ -28,78 +28,7 @@ class Player extends Living{
         this.cursors = this.scene.input.keyboard.createCursorKeys();
         this.keySpace = this.scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
 
-        // this.playerRaycaster = Raycaster()
-    }
-
-    /**
-     * Sets the velocity in the X component of the player.
-     * @param {number} value
-     */
-    set setVelocityX(value){
-        this.sprite.body.setVelocityX(value);
-    }
-
-    /**
-     * Gets the velocity in the X component of the player.
-     * @returns {number}
-     */
-    get getVelocityX(){
-        return this.sprite.body.velocity.x;
-    }
-
-    /**
-     * Sets the velocity in the Y component of the player.
-     * @param {number} value
-     */
-    set setVelocityY(value){
-        this.sprite.body.setVelocityY(value);
-    }
-
-    /**
-     * Gets the velocity in the Y component of the player.
-     * @returns {number}
-     */
-    get getVelocityY(){
-        return this.sprite.body.velocity.y;
-    }
-
-    /**
-     * Sets the velocity in both axis of the player.
-     * @param {number} value
-     */
-    set setVelocity(value){
-        this.setVelocityX = value;
-        this.setVelocityY = value;
-    }
-
-    /**
-     * Sets the X component of the velocity according to the rotation stablished of the player.
-     */
-    setXcomponent(){
-        this.Xcomponent = Math.cos(this.sprite.rotation + Math.PI/2) * -this.defaultVelocity;
-    }
-
-    /**
-     * Gets the X component of the velocity according to the rotation stablished of the player.
-     * @returns {number}
-     */
-    get getXcomponent(){
-        return this.Xcomponent;
-    }
-
-    /**
-     * Sets the Y component of the velocity according to the rotation stablished of the player.
-     */
-    setYcomponent(){
-        this.Ycomponent = Math.sin(this.sprite.rotation + Math.PI/2) * -this.defaultVelocity;
-    }
-
-    /**
-     * Gets the Y component of the velocity according to the rotation stablished of the player.
-     * @returns {number}
-     */
-    get getYcomponent(){
-        return this.Ycomponent;
+        this.playerRaycaster = new Raycaster()
     }
 
     /**

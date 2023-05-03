@@ -11,8 +11,8 @@ class Graphicator{
             this.drawHeight = 0;
         }else{
             this.drawHeight = (this.blockSize*this.canvasSize.y)/distance;
-            if(this.drawHeight > 1.3*this.canvasSize.y){
-                this.drawHeight = 1.3*this.canvasSize.y;
+            if(this.drawHeight > 0.3*this.canvasSize.y){
+                this.drawHeight = 0.3*this.canvasSize.y;
             }
         }   
     }
@@ -27,9 +27,9 @@ class Graphicator{
         if(!isFinite(distance)){
             drawHeight = 0;
         }else{
-            drawHeight = (this.blockSize*this.canvasSize.y)/distance;
-            if(drawHeight > 0.3*this.canvasSize.y){
-                drawHeight = 0.3*this.canvasSize.y;
+            drawHeight = Math.abs(this.blockSize*this.canvasSize.y)/distance;
+            if(drawHeight > 1.3*this.canvasSize.y){
+                drawHeight = 1.3*this.canvasSize.y;
             }
         }
 

@@ -54,7 +54,7 @@ class WallsBuilder{
                     
                 }else{
                     wallStart.x = 15;
-                    wallStart.y = getRndInteger(0, 8);
+                    wallStart.y = this.getRndInteger(0, 8);
         
                     blockExtension.x = 3;
                     blockExtension.y = 3;
