@@ -127,7 +127,7 @@ function preload(){
     this.load.image("enemy", "assets/enemy.jpg", {frameWidth: 64, frameHeight: 64});
     this.load.image("cacodemon", "assets/cacodemon.png");
 
-    raycaster = new Raycaster(playerAngle, playerPositionX, playerPositionY, rays2DAmount);
+    raycaster = new Raycaster(playerAngle, playerPositionX, playerPositionY, 1);
     enemyRaycaster = new EnemyRaycaster(enemyPositionX, enemyPositionY, playerPositionX, playerPositionY);
     rayDrawing = new Graphicator(wallBlockSizeX, canvasSize, rays3DCameraWidth, rays3DCameraAmount);
 }
