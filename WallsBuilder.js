@@ -1,4 +1,12 @@
 class WallsBuilder{
+    /**
+     * @constructor
+     * @param {Scene} scene The current scene of the game to place the sprite.
+     * @param {number[]} originInfo  A list with the initial positioning information for the sprite.
+     * @param {string} spriteImgStr An str of the image name given in the preload method of the main class.
+     * @param {number}size The size of the sprite in pixels.
+     * @param {number} depth The depth of rendering of the sprite.
+     */
     constructor(scene, spriteImgStr, canvasSize, blockSize, amountWalls, generateWalls, generateRandomWalls){
         this.scene = scene;
 

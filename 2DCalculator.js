@@ -64,7 +64,7 @@ let enemyPositionX = canvasSizeX/4;
 let enemyPositionY = canvasSizeY/4;
 let enemyAngle = 0;
 let chaseDistance = 300;
-let allowChase = false;
+let allowChase = true;
 
 
 let cacodemon;
@@ -128,7 +128,6 @@ function preload(){
     this.load.image("cacodemon", "assets/cacodemon.png");
 
     raycaster = new Raycaster(playerAngle, playerPositionX, playerPositionY, rays2DAmount);
-    // raycaster = new Raycaster(playerAngle, playerPositionX, playerPositionY, 1);
     enemyRaycaster = new EnemyRaycaster(enemyPositionX, enemyPositionY, playerPositionX, playerPositionY);
     rayDrawing = new Graphicator(wallBlockSizeX, canvasSize, rays3DCameraWidth, rays3DCameraAmount);
 }
@@ -249,7 +248,6 @@ function create(){
 
     //Then we redraw them.
     redrawRay3D();
-
     drawEnemy();
 }
 

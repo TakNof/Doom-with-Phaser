@@ -64,10 +64,6 @@ class Raycaster{
         let RDistance;
 
         for(let i = 0; i < this.rayAmount; i++){
-            let matrixPosition;       
-
-            let adjustMatrixPosition = {x: 0, y: 0};
-
             let totalDistance = {x: 10000, y: 10000};
             let horizontal = {x: 0, y: 0};
             let vertical  = {x: 0, y: 0};          
