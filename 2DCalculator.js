@@ -47,7 +47,7 @@ let wallNumberRatioX = parseInt(canvasSizeX/wallBlockSizeX);
 let wallNumberRatioY = parseInt(canvasSizeY/wallBlockSizeY);
 let amountWalls = 21;
 let generateWalls = true;
-let generateRandomWalls = false;
+let generateRandomWalls = true;
 
 //Stablishing the player and its initial position.
 let player;
@@ -127,7 +127,8 @@ function preload(){
     this.load.image("enemy", "assets/enemy.jpg", {frameWidth: 64, frameHeight: 64});
     this.load.image("cacodemon", "assets/cacodemon.png");
 
-    raycaster = new Raycaster(playerAngle, playerPositionX, playerPositionY, 1);
+    raycaster = new Raycaster(playerAngle, playerPositionX, playerPositionY, rays2DAmount);
+    // raycaster = new Raycaster(playerAngle, playerPositionX, playerPositionY, 1);
     enemyRaycaster = new EnemyRaycaster(enemyPositionX, enemyPositionY, playerPositionX, playerPositionY);
     rayDrawing = new Graphicator(wallBlockSizeX, canvasSize, rays3DCameraWidth, rays3DCameraAmount);
 }
@@ -242,7 +243,7 @@ function create(){
 
     //Here we stablish the rectangles of the 3D graphics
     for(let i = 0; i < rays3DCameraAmount; i++){
-        rays3DCamera[i] = this.add.rectangle(rays3DCameraWidth/2 + i*rays3DCameraWidth, canvasSizeY + 0.5*canvasSizeY, rays3DCameraWidth, canvasSizeY/3,"0x00ff00").setDepth(1);;
+        rays3DCamera[i] = this.add.rectangle(rays3DCameraWidth/2 + i*rays3DCameraWidth, canvasSizeY + 0.5*canvasSizeY, rays3DCameraWidth, canvasSizeY/3,"0x00ff00").setDepth(2);;
         this.physics.add.existing(rays3DCamera[i], false);
     }
 

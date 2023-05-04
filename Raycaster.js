@@ -49,10 +49,7 @@ class Raycaster{
     drawRays2D(){
         let rayYposition;
         let rayXposition;
-
-        let rayYoffset;
-        let rayXoffset;
-        
+                
         let currentAngle = this.rayAngle;
 
         let coordinatesX = Array(this.rayAmount);
@@ -67,150 +64,33 @@ class Raycaster{
         let RDistance;
 
         for(let i = 0; i < this.rayAmount; i++){
-            let NegInvTan = -(1/Math.tan(currentAngle));
-            let NegTan = -Math.tan(currentAngle);
+            let matrixPosition;       
 
-            let matrixPosition;
+            let adjustMatrixPosition = {x: 0, y: 0};
 
             let totalDistance = {x: 10000, y: 10000};
             let horizontal = {x: 0, y: 0};
             let vertical  = {x: 0, y: 0};          
 
-            let adjustMatrixPosition ={x: 0, y:0};
+            let horizontalCheckResults;
+            let verticalCheckResults;
             
             let wallDetected = false;
 
             kindOfHit[i] = "";
+    
+            horizontalCheckResults = this.generalCheck(currentAngle, depthOfFieldLimit, totalDistance, true);
 
-            //Horizontal check
+            totalDistance.y = horizontalCheckResults[0];
+            horizontal = horizontalCheckResults[1];
 
-            if(checks.horizontal === true){
-                    
-                let depthOfField = 0; 
+            verticalCheckResults = this.generalCheck(currentAngle, depthOfFieldLimit, totalDistance);
 
-                if(currentAngle == 0 || currentAngle == Math.PI || currentAngle == 2*Math.PI){
+            totalDistance.x = verticalCheckResults[0];
+            vertical = verticalCheckResults[1];
 
-                    rayXposition = this.spritePosition.x;
-                    rayYposition = this.spritePosition.y;
-
-                    depthOfField = depthOfFieldLimit;
-
-                }else if(currentAngle > Math.PI){
-                    // console.log("Higher", currentAngle)
-                    rayYposition = parseInt((this.spritePosition.y - 0.0001)/32)*32;
-                    rayXposition = (this.spritePosition.y - rayYposition) * NegInvTan + this.spritePosition.x;
-
-                    rayYoffset = -32;
-                    rayXoffset = -rayYoffset*NegInvTan;
-                    
-                    adjustMatrixPosition.y = 1;
-                    
-                }else if(currentAngle < Math.PI){
-                    // console.log("Less", currentAngle)
-                    rayYposition = parseInt((this.spritePosition.y + 32)/32)*32;
-                    rayXposition = (this.spritePosition.y - rayYposition) * NegInvTan + this.spritePosition.x;
-
-                    rayYoffset = 32;
-                    rayXoffset = -rayYoffset*NegInvTan;
-                }
-                
-                horizontal = {x: rayXposition, y: rayYposition};
-
-                while(depthOfField < depthOfFieldLimit){     
-                    matrixPosition = {
-                        x: parseInt((rayXposition)/32),
-                        y: parseInt((rayYposition)/32) - 1*adjustMatrixPosition.y
-                    }
-
-                    let wallPlace = matrixPosition.y * this.matrixDimensions.xdim + matrixPosition.x;
-                    
-                    if(matrixPosition.x < 0 || matrixPosition.y < 0 || wallPlace > this.matrixDimensions.xdim * this.matrixDimensions.ydim){
-                        break;
-                    }
-                    
-                    horizontal = {x: rayXposition, y: rayYposition};
-
-                    if(wallPlace < this.matrixDimensions.xdim * this.matrixDimensions.ydim && this.matrix[matrixPosition.y][matrixPosition.x] === true){
-                        wallDetected = true;
-                        totalDistance.y = this.hypoCalc(horizontal.x, horizontal.y);
-                        depthOfField  = depthOfFieldLimit;
-                    }else{
-                        rayXposition += rayXoffset;
-                        rayYposition += rayYoffset;
-
-                        depthOfField += 1;
-                    }
-                }
-                
-                // console.log("Finished horizontal procedure");
-            }
+            wallDetected = horizontalCheckResults[2] || verticalCheckResults[2];
             
-            totalDistance.y = this.generalCheck(currentAngle, depthOfFieldLimit, totalDistance, true);
-
-            adjustMatrixPosition ={x: 0, y:0};
-
-            if(checks.vertical === true){
-                
-                let depthOfField = 0; 
-
-                if(currentAngle == Math.PI/2 || currentAngle ==  3*Math.PI/2){
-
-                    rayYposition = this.spritePosition.x;
-                    rayXposition = this.spritePosition.y;
-
-                    depthOfField = depthOfFieldLimit;
-
-                }else if(currentAngle > Math.PI/2 && currentAngle < 3*Math.PI/2){
-                    // console.log("Left", currentAngle)
-                    rayXposition = parseInt((this.spritePosition.x - 0.0001)/32)*32;
-                    rayYposition = (this.spritePosition.x - rayXposition) * NegTan + this.spritePosition.y;
-
-                    rayXoffset = -32;
-                    rayYoffset = -rayXoffset*NegTan;
-
-                    adjustMatrixPosition.x = 1;
-
-                }else if(currentAngle < Math.PI/2 || currentAngle > 3*Math.PI/2){
-                    // console.log("Right", currentAngle)
-                    rayXposition = parseInt((this.spritePosition.x + 32)/32)*32;
-                    rayYposition = (this.spritePosition.x - rayXposition) * NegTan + this.spritePosition.y;
-
-                    rayXoffset = 32;
-                    rayYoffset = -rayXoffset*NegTan;
-                }
-                
-                vertical = {x: rayXposition, y: rayYposition};
-        
-                while(depthOfField < depthOfFieldLimit){
-                    matrixPosition = {
-                        x: parseInt((rayXposition)/32) - 1*adjustMatrixPosition.x,
-                        y: parseInt((rayYposition)/32)
-                    }
-
-                    let wallPlace = matrixPosition.y * this.matrixDimensions.xdim + matrixPosition.x;
-
-                    if(matrixPosition.x < 0 || matrixPosition.y < 0 || wallPlace > this.matrixDimensions.xdim * this.matrixDimensions.ydim){
-                        break;
-                    }
-                    
-                    vertical = {x: rayXposition, y: rayYposition};
-
-                    if(wallPlace < this.matrixDimensions.xdim * this.matrixDimensions.ydim && this.matrix[matrixPosition.y][matrixPosition.x] === true){
-                        // console.log(`Horizontal wall detected at ${matrixPosition.x}, y:${matrixPosition.y}`);
-                        wallDetected = true;
-                        totalDistance.x = this.hypoCalc(vertical.x, vertical.y);
-                        depthOfField  = depthOfFieldLimit;
-                    }else{
-                        rayXposition += rayXoffset;
-                        rayYposition += rayYoffset;
-
-                        depthOfField += 1;
-                    }
-                }
-                
-                // console.log("Finished vertical procedure");
-            }
-
             if(checks.horizontal && checks.vertical){
                 // console.log(`total distance x: ${totalDistance.x} y: ${totalDistance.y}`);
                 if(totalDistance.x < totalDistance.y){
@@ -267,70 +147,76 @@ class Raycaster{
     }
     
 
-    generalCheck(angle, depthOfFieldLimit, totalDistance, isHorizontal){
+    generalCheck(angle, depthOfFieldLimit, totalDistance, isHorizontal = false){
         let angleLimitations;
-
-        let NegInvTan = -(1/Math.tan(angle));
-        let NegTan = -Math.tan(angle);
 
         let tanFuncUsed;
         let totalDistanceUsed;
 
         let wallPlace;
+        let spritePosition;
+        let rayPosition = [0, 0];
+        let rayOffset = [0, 0];
+        let raySelector;
 
         if(isHorizontal){
-            tanFuncUsed = NegInvTan;
+            tanFuncUsed = -(1/Math.tan(angle));
             angleLimitations = [angle == 0 || angle == Math.PI || angle == 2*Math.PI, angle > Math.PI, angle < Math.PI];
             totalDistanceUsed = totalDistance.y;
+            spritePosition = {"fir": this.spritePosition.y, "sec": this.spritePosition.x};
+
+            raySelector = {"fir": 1, "sec": 0}
+
         }else{
-            tanFuncUsed = NegTan;
+            tanFuncUsed =-Math.tan(angle);
             angleLimitations = [angle == Math.PI/2 || angle ==  3*Math.PI/2, angle > Math.PI/2 && angle < 3*Math.PI/2, angle < Math.PI/2 || angle > 3*Math.PI/2];
             totalDistanceUsed = totalDistance.x;
+            spritePosition = {"fir": this.spritePosition.x, "sec": this.spritePosition.y};
+
+            raySelector = {"fir": 0, "sec": 1}
         }
     
-        let rayYposition;
-        let rayXposition;
-
-        let rayYoffset;
-        let rayXoffset;
-
         let matrixPosition;       
 
-        let adjustMatrixPosition ={x: 0, y:0};
+        let adjustMatrixPosition = {x: 0, y: 0};
                 
-        let coordinates;
+        let coordinates =  {x: 0, y: 0};
 
         let wallDetected = false;
           
-        let depthOfField = 0; 
+        let depthOfField = 0;         
 
         if(angleLimitations[0]){
 
-            rayXposition = this.spritePosition.x;
-            rayYposition = this.spritePosition.y;
+            rayPosition[0] = this.spritePosition.x;
+            rayPosition[1] = this.spritePosition.y;
 
             depthOfField = depthOfFieldLimit;
         }else if(angleLimitations[1]){
-            rayYposition = parseInt((this.spritePosition.y - 0.0001)/32)*32;
-            rayXposition = (this.spritePosition.y - rayYposition) * tanFuncUsed + this.spritePosition.x;
+            rayPosition[raySelector.fir] = parseInt((spritePosition.fir - 0.0001)/32)*32;
+            rayPosition[raySelector.sec] = (spritePosition.fir - rayPosition[raySelector.fir]) * tanFuncUsed + spritePosition.sec;
 
-            rayYoffset = -32;
-            rayXoffset = -rayYoffset*tanFuncUsed;
+            rayOffset[raySelector.fir] = -32;
+            rayOffset[raySelector.sec] = -rayOffset[raySelector.fir]*tanFuncUsed;
             
-            adjustMatrixPosition.y = 1;
+            if(isHorizontal){
+                adjustMatrixPosition.y = 1;
+            }else{
+                adjustMatrixPosition.x = 1;
+            }
             
         }else if(angleLimitations[2]){
-            rayYposition = parseInt((this.spritePosition.y + 32)/32)*32;
-            rayXposition = (this.spritePosition.y - rayYposition) * tanFuncUsed + this.spritePosition.x;
+            rayPosition[raySelector.fir] = parseInt((spritePosition.fir + 32)/32)*32;
+            rayPosition[raySelector.sec] = (spritePosition.fir - rayPosition[raySelector.fir]) * tanFuncUsed + spritePosition.sec;
 
-            rayYoffset = 32;
-            rayXoffset = -rayYoffset*NegInvTan;
+            rayOffset[raySelector.fir] = 32;
+            rayOffset[raySelector.sec] = -rayOffset[raySelector.fir]*tanFuncUsed;
         }
 
         while(depthOfField < depthOfFieldLimit){     
             matrixPosition = {
-                x: parseInt((rayXposition)/32),
-                y: parseInt((rayYposition)/32) - 1*adjustMatrixPosition.y
+                x: parseInt((rayPosition[0])/32)- 1*adjustMatrixPosition.x,
+                y: parseInt((rayPosition[1])/32) - 1*adjustMatrixPosition.y
             }
 
             wallPlace = matrixPosition.y * this.matrixDimensions.xdim + matrixPosition.x;
@@ -339,21 +225,21 @@ class Raycaster{
                 break;
             }
             
-            coordinates = {x: rayXposition, y: rayYposition};
+            coordinates = {x: rayPosition[0], y: rayPosition[1]};
 
             if(wallPlace < this.matrixDimensions.xdim * this.matrixDimensions.ydim && this.matrix[matrixPosition.y][matrixPosition.x] === true){
                 wallDetected = true;
                 totalDistanceUsed = this.hypoCalc(coordinates.x, coordinates.y);
                 depthOfField  = depthOfFieldLimit;
             }else{
-                rayXposition += rayXoffset;
-                rayYposition += rayYoffset;
+                rayPosition[raySelector.fir] += rayOffset[raySelector.fir];
+                rayPosition[raySelector.sec] += rayOffset[raySelector.sec];
 
                 depthOfField += 1;
             }
         }
         
-        return totalDistanceUsed;
+        return [totalDistanceUsed, coordinates, wallDetected];
     }
 
     hypoCalc(x, y){
