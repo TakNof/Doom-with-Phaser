@@ -33,6 +33,14 @@ class Player extends Living{
     setRays(){
         this.playerRays = new Rays(this.scene, this.raysAmount, this.getPosition, 5*Math.PI/4);
     }
+    
+    setGraphicator(canvasSize){
+        this.playerGraphicator = new Graphicator2(this.scene, this.size, canvasSize, this.raysAmount);
+    }
+
+    get getGraphicator(){
+        return this.playerGraphicator;
+    }
 
     /**
      * This method allows the player to have the basic controls of movement according to the stablished parameters.

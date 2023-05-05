@@ -1,5 +1,6 @@
 class WallsBuilder{
     /**
+     * The constructor of the walls builder class.
      * @constructor
      * @param {Scene} scene The current scene of the game to place the sprite.
      * @param {number[]} originInfo  A list with the initial positioning information for the sprite.
@@ -71,9 +72,7 @@ class WallsBuilder{
                 //Then we use two for loops to change the value in the matrix by true;
                 for(let j = wallStart.y; j < blockExtension.y + wallStart.y; j++){
                     for(let k = wallStart.x; k < blockExtension.x + wallStart.x; k++){
-                        if(wallStart.x < playerPositionX/32 < blockExtension.x + wallStart.x){
-                            this.wallMatrix[j][k] = true;
-                        }
+                        this.wallMatrix[j][k] = true;
                     }
                 }
 
@@ -86,11 +85,6 @@ class WallsBuilder{
                     this.wallMatrix[j][0] = true;
                     this.wallMatrix[j][this.wallNumberRatio.x - 1] = true;
                 }
-
-
-                //With the matrix wall created we stablish it with to the raycaster and enemyRaycaster.
-                raycaster.setMatrix = this.wallMatrix;
-                enemyRaycaster.setMatrix = this.wallMatrix;
 
                 //Now with the wall positions being true in the matrix the only thing that lefts to do is to
                 //traverse the matrix looking for the true values, if found, a wall object will be generated.

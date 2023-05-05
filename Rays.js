@@ -3,7 +3,7 @@
  */
 class Rays{
     /**
-     * The constructor of the Ray class.
+     * The constructor of the Rays class.
      * @param {Scene} scene The current scene of the game to place the ray.
      * @param {number} raysAmount The amount of rays to graph.
      */
@@ -46,6 +46,7 @@ class Rays{
     }
 
     /**
+     * This method redraws the created rays to the new coordinates given by the raycaster and the sprite's position.
      * @param {{x: number, y: number}} position The position of the sprite form where the rays are being generated.
      * @param {Raycaster} raycaster The raycaster to obtain the graph information.
      */

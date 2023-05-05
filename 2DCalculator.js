@@ -50,10 +50,10 @@ let generateWalls = true;
 let generateRandomWalls = true;
 
 //Stablishing the player and its initial position.
-let player;
-let playerPositionX = canvasSizeX/2;
-let playerPositionY = canvasSizeY/2;
-let playerAngle = 0;
+// let player;
+// let playerPositionX = canvasSizeX/2;
+// let playerPositionY = canvasSizeY/2;
+// let playerAngle = 0;
 
 let player2;
 
@@ -71,7 +71,7 @@ let cacodemon;
 let cacodemonAngle = 0;
 
 //Stablishing the player header, which was useful at the beginning of the development.
-let playerHeader;
+// let playerHeader;
 let pHeCord = [0, 0, 0, 0, 0, 0];
 pHeCord[0] = 0;
 pHeCord[1] = -18;
@@ -86,8 +86,8 @@ let velocityY;
 let defaultVelocity = 300;
 
 //Stablishing the initial values for the player movement through its x,y components.
-let Xcomponent = Math.cos(playerAngle + Math.PI/2) * -defaultVelocity;
-let Ycomponent = Math.sin(playerAngle + Math.PI/2) * -defaultVelocity;
+// let Xcomponent = Math.cos(playerAngle + Math.PI/2) * -defaultVelocity;
+// let Ycomponent = Math.sin(playerAngle + Math.PI/2) * -defaultVelocity;
 
 //Rotation coeficient.
 let angleOperator = 0.05;
@@ -127,9 +127,9 @@ function preload(){
     this.load.image("enemy", "assets/enemy.jpg", {frameWidth: 64, frameHeight: 64});
     this.load.image("cacodemon", "assets/cacodemon.png");
 
-    raycaster = new Raycaster(playerAngle + 5*Math.PI/4, playerPositionX, playerPositionY, rays2DAmount);
-    enemyRaycaster = new EnemyRaycaster(enemyPositionX, enemyPositionY, playerPositionX, playerPositionY);
-    rayDrawing = new Graphicator(wallBlockSizeX, canvasSize, rays3DCameraWidth, rays3DCameraAmount);
+    // raycaster = new Raycaster(playerAngle + 5*Math.PI/4, playerPositionX, playerPositionY, rays2DAmount);
+    enemyRaycaster = new EnemyRaycaster(enemyPositionX, enemyPositionY, canvasSizeX/2, canvasSizeY/2);
+    // rayDrawing = new Graphicator(wallBlockSizeX, canvasSize, rays3DCameraWidth, rays3DCameraAmount);
 }
 
 function create(){
@@ -142,26 +142,26 @@ function create(){
 
 
     //Creating the main character.
-    player = this.add.sprite(playerPositionX, playerPositionY, 'player');
+    // player = this.add.sprite(playerPositionX, playerPositionY, 'player');
 
-    this.physics.add.existing(player, false);
+    // this.physics.add.existing(player, false);
 
-    player.body.setSize(64, 64, true);
+    // player.body.setSize(64, 64, true);
 
-    player.body.setAllowRotation(true);
+    // player.body.setAllowRotation(true);
 
-    player.body.setCollideWorldBounds(true);
+    // player.body.setCollideWorldBounds(true);
 
     //Creating the indicator for the pov of the player.
-    playerHeader = this.add.triangle(playerPositionX, playerPositionY, pHeCord[0], pHeCord[1], pHeCord[2], pHeCord[3], pHeCord[4], pHeCord[5], "0xff0000");
+    // playerHeader = this.add.triangle(playerPositionX, playerPositionY, pHeCord[0], pHeCord[1], pHeCord[2], pHeCord[3], pHeCord[4], pHeCord[5], "0xff0000");
 
-    this.physics.add.existing(playerHeader, false);
+    // this.physics.add.existing(playerHeader, false);
     
-    playerHeader.body.setSize(64, 64, true);
+    // playerHeader.body.setSize(64, 64, true);
     
-    playerHeader.body.setAllowRotation(true);
+    // playerHeader.body.setAllowRotation(true);
 
-    playerHeader.body.setCollideWorldBounds(true);
+    // playerHeader.body.setCollideWorldBounds(true);
 
     //Here we are creating the enemy.
 
@@ -174,7 +174,7 @@ function create(){
     enemy.body.setCollideWorldBounds(true);
 
 
-    cacodemon = this.add.sprite(playerPositionX, canvasSizeY*3, 'cacodemon');
+    cacodemon = this.add.sprite(canvasSizeX/2, canvasSizeY*3, 'cacodemon');
 
     this.physics.add.existing(cacodemon,false);
 
@@ -197,30 +197,34 @@ function create(){
     walls = new WallsBuilder(this, "wall", [canvasSizeX, canvasSizeY], wallBlockSizeX, amountWalls, generateWalls, generateRandomWalls);
     walls.createWalls();
 
-    raycaster.setMatrix = walls.getWallMatrix;   
+    // raycaster.setMatrix = walls.getWallMatrix;   
     enemyRaycaster.setMatrix = walls.getWallMatrix;
     
-    player2 = new Player(this, [canvasSizeX/3, canvasSizeY/3, 0], "player", wallBlockSizeX*2, 0, defaultVelocity, angleOperator);
+    player2 = new Player(this, [canvasSizeX/2, canvasSizeY/2, 0], "player", wallBlockSizeX*2, 0, defaultVelocity, angleOperator);
+
     player2.setRaycaster(rays2DAmount, 5*Math.PI/4);
     player2.getRaycaster.setMatrix = walls.getWallMatrix;
+
     player2.setRays();
+
+    player2.setGraphicator(canvasSize);
 
     //Here we stablish the raycasting.
 
     //first we have to calculate all the rays distance for the player and the enemy.
-    ray2DCoordinates = raycaster.calculateRayData();
+    // ray2DCoordinates = raycaster.calculateRayData();
     ray2DEnemyCoordinates = enemyRaycaster.detectWalls();
     
     //Then we have to add all the lines to the array we created, with the same properties and atributes as the previous objects.
-    for(let i = 0; i < rays2DAmount; i++){
-        rays[i] = this.add.line(playerPositionX, playerPositionY, 0, 0, 0, 0, "0x00ff00");
-        rays[i].setTo(0, 0, 0, -playerPositionY);
-        this.physics.add.existing(rays[i], false);
-        rays[i].body.setAllowRotation(true);
-        rays[i].body.setSize(64, 64, true);
-        rays[i].body.setCollideWorldBounds(true);
-        this.physics.add.collider(rays[i], walls);
-    }
+    // for(let i = 0; i < rays2DAmount; i++){
+    //     rays[i] = this.add.line(playerPositionX, playerPositionY, 0, 0, 0, 0, "0x00ff00");
+    //     rays[i].setTo(0, 0, 0, -playerPositionY);
+    //     this.physics.add.existing(rays[i], false);
+    //     rays[i].body.setAllowRotation(true);
+    //     rays[i].body.setSize(64, 64, true);
+    //     rays[i].body.setCollideWorldBounds(true);
+    //     this.physics.add.collider(rays[i], walls);
+    // }
     
     //The same goes with the enemyRay
     enemyRay = this.add.line(enemyPositionX, enemyPositionY, 0, 0, 0, 0, "0x000000");
@@ -232,25 +236,25 @@ function create(){
     this.physics.add.collider(enemyRay, walls);
 
     //With the rays calculated we redraw the lines from the sight of the player.
-    redrawRay2D();   
+    // redrawRay2D();   
 
     //Here we add the interaction collider between the objects and the walls.
-    this.physics.add.collider(player, walls);
-    this.physics.add.collider(playerHeader, walls);
+    // this.physics.add.collider(player, walls);
+    // this.physics.add.collider(playerHeader, walls);
     this.physics.add.collider(enemy, walls);
     this.physics.add.collider(enemyHeader, walls);
 
     //The distance of each ray is needed to draw the 3D graphics, so we load the to the object.
-    rayDrawing.setDistance = ray2DCoordinates.distance;
+    // rayDrawing.setDistance = ray2DCoordinates.distance;
 
     //Here we stablish the rectangles of the 3D graphics
-    for(let i = 0; i < rays3DCameraAmount; i++){
-        rays3DCamera[i] = this.add.rectangle(rays3DCameraWidth/2 + i*rays3DCameraWidth, canvasSizeY + 0.5*canvasSizeY, rays3DCameraWidth, canvasSizeY/3,"0x00ff00").setDepth(2);;
-        this.physics.add.existing(rays3DCamera[i], false);
-    }
+    // for(let i = 0; i < rays3DCameraAmount; i++){
+    //     rays3DCamera[i] = this.add.rectangle(rays3DCameraWidth/2 + i*rays3DCameraWidth, canvasSizeY + 0.5*canvasSizeY, rays3DCameraWidth, canvasSizeY/3,"0x00ff00").setDepth(2);;
+    //     this.physics.add.existing(rays3DCamera[i], false);
+    // }
 
     //Then we redraw them.
-    redrawRay3D();
+    // redrawRay3D();
     drawEnemy();
 }
 
@@ -258,13 +262,13 @@ function update(){
     //This function updates each certain time working like the game clock.
 
     //Here we stablish the atributes for the player.
-    player.body.setVelocity(0);
-    playerHeader.body.setVelocity(0);       
-    player.rotation = playerAngle;
-    playerHeader.rotation = playerAngle;
+    // player.body.setVelocity(0);
+    // playerHeader.body.setVelocity(0);       
+    // player.rotation = playerAngle;
+    // playerHeader.rotation = playerAngle;
     
     //Here we stablish the atributes for the enemy.
-    enemyRaycaster.setRayAngle = player;
+    enemyRaycaster.setRayAngle = player2.getPosition;
     enemyAngle = enemyRaycaster.getRayAngle;
     
     enemy.body.setVelocity(0);
@@ -287,97 +291,100 @@ function update(){
     }
 
     //And here we stablish the atributes for the rays.
-    for(let ray of rays){
-        ray.body.setVelocity(0);
-    }
+    // for(let ray of rays){
+    //     ray.body.setVelocity(0);
+    // }
     
-    raycaster.setSpritePosition = player;
-    enemyRaycaster.setPlayerPosition = player;
+    // raycaster.setSpritePosition = player;
+    enemyRaycaster.setPlayerPosition = player2.getPosition;
     enemyRaycaster.setEnemyPosition = enemy;
 
 
-    ray2DCoordinates = raycaster.calculateRayData();
-    redrawRay2D(); 
-    redrawRay3D();
+    // ray2DCoordinates = raycaster.calculateRayData();
+    // redrawRay2D(); 
+    // redrawRay3D();
+
     drawEnemy();
 
     player2.move();
 
-    if(cursors.up.isDown ^ cursors.down.isDown){
-        // console.log("VelocityX ", player.body.velocity.x, "VelocityY ", player.body.velocity.y);
-        velocityX = player.body.velocity.x + Xcomponent;
-        velocityY = player.body.velocity.y + Ycomponent;      
+    player2.getGraphicator.redraw3DScaling(player2.getRaycaster);
 
-        if (cursors.up.isDown){   
-            //Here we use the velocity calculated, and we change its sign accordingly to the direction of movement.
-            player.body.setVelocityX(velocityX);
-            player.body.setVelocityY(velocityY);
+    // if(cursors.up.isDown ^ cursors.down.isDown){
+    //     // console.log("VelocityX ", player.body.velocity.x, "VelocityY ", player.body.velocity.y);
+    //     velocityX = player.body.velocity.x + Xcomponent;
+    //     velocityY = player.body.velocity.y + Ycomponent;      
+
+    //     if (cursors.up.isDown){   
+    //         //Here we use the velocity calculated, and we change its sign accordingly to the direction of movement.
+    //         player.body.setVelocityX(velocityX);
+    //         player.body.setVelocityY(velocityY);
     
-            playerHeader.body.setVelocityX(velocityX);
-            playerHeader.body.setVelocityY(velocityY);
+    //         playerHeader.body.setVelocityX(velocityX);
+    //         playerHeader.body.setVelocityY(velocityY);
             
-            for(let ray of rays){
-                ray.body.setVelocityX(velocityX);
-                ray.body.setVelocityY(velocityY);
-            }
+    //         for(let ray of rays){
+    //             ray.body.setVelocityX(velocityX);
+    //             ray.body.setVelocityY(velocityY);
+    //         }
             
-        }else if(cursors.down.isDown){    
-            player.body.setVelocityX(-velocityX);
-            player.body.setVelocityY(-velocityY);
+    //     }else if(cursors.down.isDown){    
+    //         player.body.setVelocityX(-velocityX);
+    //         player.body.setVelocityY(-velocityY);
     
-            playerHeader.body.setVelocityX(-velocityX);
-            playerHeader.body.setVelocityY(-velocityY);
+    //         playerHeader.body.setVelocityX(-velocityX);
+    //         playerHeader.body.setVelocityY(-velocityY);
     
-            for(let ray of rays){
-                ray.body.setVelocityX(-velocityX);
-                ray.body.setVelocityY(-velocityY);
-            }
-        }
-    }
+    //         for(let ray of rays){
+    //             ray.body.setVelocityX(-velocityX);
+    //             ray.body.setVelocityY(-velocityY);
+    //         }
+    //     }
+    // }
 
-    if(cursors.left.isDown ^ cursors.right.isDown){
-        //Here we use trigonometrics to calculate the x and y component of the velocity.
+    // if(cursors.left.isDown ^ cursors.right.isDown){
+    //     //Here we use trigonometrics to calculate the x and y component of the velocity.
 
-        Xcomponent = Math.cos(playerAngle + Math.PI/2) * -defaultVelocity;
-        Ycomponent = Math.sin(playerAngle + Math.PI/2) * -defaultVelocity;
+    //     Xcomponent = Math.cos(playerAngle + Math.PI/2) * -defaultVelocity;
+    //     Ycomponent = Math.sin(playerAngle + Math.PI/2) * -defaultVelocity;
 
 
-        if (cursors.left.isDown){
-            playerAngle -= angleOperator;
+    //     if (cursors.left.isDown){
+    //         playerAngle -= angleOperator;
 
-            //If the angle ends being less than zero then we add 2pi to make it rotate one lap.
-            if(playerAngle < 0){
-                playerAngle += 2*Math.PI;
-            }
-        }else if(cursors.right.isDown){
-            playerAngle += angleOperator;
+    //         //If the angle ends being less than zero then we add 2pi to make it rotate one lap.
+    //         if(playerAngle < 0){
+    //             playerAngle += 2*Math.PI;
+    //         }
+    //     }else if(cursors.right.isDown){
+    //         playerAngle += angleOperator;
 
-            //If the angle ends being more than 2Pi then we substract 2pi to make it rotate one lap.
-            if(playerAngle > 2*Math.PI){
-                playerAngle -= 2*Math.PI;
-            }
-        }
+    //         //If the angle ends being more than 2Pi then we substract 2pi to make it rotate one lap.
+    //         if(playerAngle > 2*Math.PI){
+    //             playerAngle -= 2*Math.PI;
+    //         }
+    //     }
 
         //Because we are changing the angle, we have to load it to the reycaster
-        raycaster.setRayAngle = playerAngle + 5*Math.PI/4;
-    }
+        // raycaster.setRayAngle = playerAngle + 5*Math.PI/4;
+    // }
     
-    if(keySpace.isDown){
-        console.log(ray2DCoordinates.distance[0]);
-        console.log(raycaster.adjustAngleValue(playerAngle - 5*Math.PI/4));
-    }
+    // if(keySpace.isDown){
+    //     console.log(ray2DCoordinates.distance[0]);
+    //     console.log(raycaster.adjustAngleValue(playerAngle - 5*Math.PI/4));
+    // }
 
 }
 
 function redrawRay2D(){
     //This method allows the recalculation of the ray coordinates and redraws it.
-    for(let i = 0; i < rays2DAmount; i++){
-        //The XEquation and YEquation are needed due to the fact that the ray is drawn according to "local" coordinates,
-        //so we have to convert them to global coordinates.
-        XEquation = - player.x + ray2DCoordinates.x[i];
-        YEquation = - player.y + ray2DCoordinates.y[i];
-        rays[i].setTo(0, 0, XEquation, YEquation);
-    }
+    // for(let i = 0; i < rays2DAmount; i++){
+    //     //The XEquation and YEquation are needed due to the fact that the ray is drawn according to "local" coordinates,
+    //     //so we have to convert them to global coordinates.
+    //     XEquation = - player.x + ray2DCoordinates.x[i];
+    //     YEquation = - player.y + ray2DCoordinates.y[i];
+    //     rays[i].setTo(0, 0, XEquation, YEquation);
+    // }
 
     //We to the same with the enemy ray.
     XEquation = - enemy.x + ray2DEnemyCoordinates.x[0];
@@ -385,27 +392,27 @@ function redrawRay2D(){
     enemyRay.setTo(0, 0, XEquation, YEquation);
 }
 
-function redrawRay3D(){
-    //This method allows the recalculation of the 3D ray coordinates and redraws it.
-    for(let i = 0; i < rays3DCameraAmount; i++){
-        rayDrawing.setHeight = ray2DCoordinates.distance[i];
-        rays3DCamera[i].setPosition(rays3DCameraWidth/2 + i * rays3DCameraWidth, (canvasSizeY + 0.8*canvasSizeY ) - rayDrawing.getHeight()/2);
-        rays3DCamera[i].setSize(rays3DCameraWidth, rayDrawing.getHeight());
+// function redrawRay3D(){
+//     //This method allows the recalculation of the 3D ray coordinates and redraws it.
+//     for(let i = 0; i < rays3DCameraAmount; i++){
+//         rayDrawing.setHeight = ray2DCoordinates.distance[i];
+//         rays3DCamera[i].setPosition(rays3DCameraWidth/2 + i * rays3DCameraWidth, (canvasSizeY + 0.8*canvasSizeY ) - rayDrawing.getHeight()/2);
+//         rays3DCamera[i].setSize(rays3DCameraWidth, rayDrawing.getHeight());
 
-        if(ray2DCoordinates.typeOfHit[i] === "vertical"){
-            rays3DCamera[i].setFillStyle("0x004200");
-        }else{
-            rays3DCamera[i].setFillStyle("0x00ff00");
-        }
-    }
-}
+//         if(ray2DCoordinates.typeOfHit[i] === "vertical"){
+//             rays3DCamera[i].setFillStyle("0x004200");
+//         }else{
+//             rays3DCamera[i].setFillStyle("0x00ff00");
+//         }
+//     }
+// }
 
 function distanceEnemyWallPlayer(){
     //Its imporntant to know the player distance regards to the enemy, same with the wall the enemy is
     //aiming at.
 
     //With these distances we can know if the wall is infront of the player or not.
-    let distancePlayer = raycaster.hypoCalc(enemy.x, enemy.y);
+    let distancePlayer = hypoCalc(enemy.x, player2.getPositionX, enemy.y, player2.getPositionY);
     let distanceWall = enemyRaycaster.hypoCalc(ray2DEnemyCoordinates.x, ray2DEnemyCoordinates.y);
 
     return [distancePlayer, distanceWall];
@@ -423,8 +430,8 @@ function updateEnemyPosition(){
         let angle = enemyRaycaster.getRayAngle;
         let enemyXcomponent = Math.cos(angle) * (defaultVelocity/3);
         let enemyYcomponent = Math.sin(angle) * (defaultVelocity/3);
-        let enemyVelocityX = player.body.velocity.x + enemyXcomponent;
-        let enemyVelocityY = player.body.velocity.y + enemyYcomponent;
+        let enemyVelocityX = enemyXcomponent;
+        let enemyVelocityY = enemyYcomponent;
 
         //We want the enemy to react when we are 
         enemy.rotation = enemyRaycaster.getRayAngle - 3*Math.PI/2;
@@ -439,9 +446,9 @@ function updateEnemyPosition(){
 function drawEnemy(){
     // console.log(playerAngle + 5*Math.PI/4, enemyRaycaster.getRayAngle + Math.PI, playerAngle + 7*Math.PI/4);
     let distance = distanceEnemyWallPlayer();
-    let enemyAngleInv = raycaster.adjustAngleValue(enemyRaycaster.getRayAngle +  Math.PI);
-    let globalPlayerAngle = raycaster.adjustAngleValue(playerAngle + 3*Math.PI/2);
-    let rangeAngles = [raycaster.adjustAngleValue(globalPlayerAngle - Math.PI/4) , raycaster.adjustAngleValue(globalPlayerAngle + Math.PI/4)];
+    let enemyAngleInv = adjustAngleValue(enemyRaycaster.getRayAngle +  Math.PI);
+    let globalPlayerAngle = adjustAngleValue(player2.getRotation + 3*Math.PI/2);
+    let rangeAngles = [adjustAngleValue(globalPlayerAngle - Math.PI/4) , adjustAngleValue(globalPlayerAngle + Math.PI/4)];
     
     if(enemyAngleInv + Math.PI/4 >= 2*Math.PI){
         rangeAngles[1] = rangeAngles[1] + 2*Math.PI;
@@ -453,7 +460,7 @@ function drawEnemy(){
         // console.log("drawing demon");
         cacodemon.visible = true;
 
-        let enemyHeight = rayDrawing.setHeightEnemy(raycaster.hypoCalc(enemy.x, enemy.y));
+        let enemyHeight = player2.getGraphicator.setHeightEnemy(distance[0]);
         
         if(enemyHeight/100 > 2.5){
             cacodemon.scaleY = 2.5;
@@ -484,4 +491,14 @@ function drawElementByPlayerPov(angle, playerAngle){
 
 function hypoCalc(x1, x2, y1, y2){
     return Math.sqrt(Math.pow(x1 - x2, 2) + Math.pow(y1 - y2, 2))
+}
+
+function adjustAngleValue(angle){
+    if(angle < 0){
+        angle += 2*Math.PI;
+    }else if(angle > 2*Math.PI){
+        angle -= 2*Math.PI;
+    }
+
+    return angle;
 }
