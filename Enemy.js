@@ -23,10 +23,7 @@ class Enemy extends Living{
 
         this.setXcomponent();
         this.setYcomponent();
-
-        this.cursors = this.scene.input.keyboard.createCursorKeys();
-        this.keySpace = this.scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
-        
+                
         this.chaseDistance = chaseDistance;
         this.allowChase = allowChase;
         

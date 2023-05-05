@@ -54,25 +54,20 @@ class Player extends Living{
 
 
         if(this.cursors.up.isDown ^ this.cursors.down.isDown){
-    
+            
             if (this.cursors.up.isDown){
                 //Here we use the velocity calculated, and we change its sign accordingly to the direction of movement.
                 this.setVelocityX = this.getXcomponent;
-                this.setVelocityY = this.getYcomponent;
+                this.setVelocityY = this.getYcomponent;  
 
-                for(let ray of this.playerRays.rays){
-                    ray.body.setVelocityX(this.getVelocityX);
-                    ray.body.setVelocityY(this.getVelocityY);
-                }
-                
             }else if(this.cursors.down.isDown){    
                 this.setVelocityX = -this.getXcomponent;
                 this.setVelocityY = -this.getYcomponent;
-                
-                for(let ray of this.playerRays.rays){
-                    ray.body.setVelocityX(-velocityX);
-                    ray.body.setVelocityY(-velocityY);
-                }
+            }
+
+            for(let ray of this.playerRays.rays){
+                ray.body.setVelocityX(this.getVelocityX);
+                ray.body.setVelocityY(this.getVelocityY);
             }
         }
     
