@@ -90,7 +90,7 @@ let defaultVelocity = 300;
 // let Ycomponent = Math.sin(playerAngle + Math.PI/2) * -defaultVelocity;
 
 //Rotation coeficient.
-let angleOperator = 0.08;
+let angleOperator = 0.05;
 
 //Stablishing the raycaster elements.
 let raycaster;
@@ -247,7 +247,7 @@ function update(){
 
     player2.move();
 
-    player2.getGraphicator.redraw3DScaling(player2.getRaycaster);
+    player2.getGraphicator.redraw3DScaling(player2.getRayData.distance, player2.getRayData.typeOfHit);
 }
 
 function redrawRay2D(){

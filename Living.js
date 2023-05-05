@@ -121,6 +121,14 @@ class Living extends Sprite{
         return this.raycaster;
     }
 
+    setRayData(){
+        this.rayData = this.raycaster.calculateRayData();
+    }
+
+    get getRayData(){
+        return this.rayData;
+    }
+
     /**
      * Allows to adjust the angle value of the rotation to be within the range of 0 and 2PI.
      */

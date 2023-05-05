@@ -25,16 +25,17 @@ class Graphicator2{
 
     /**
      * This method redraws the size of the created rectangles acording to the distance given by the raycaster.
-     * @param {Raycaster} raycaster The raycaster to obtain the graph information.
+     * @param {Array<number>} rayDistance The ray distance to graph the rectangles size.
+     * @param {Array<String>} typeOfHit The type of hit of the ray to select its colour.
      */
-    redraw3DScaling(raycaster){
+    redraw3DScaling(rayDistance, typeOfHit) {
         //This method allows the recalculation of the 3D ray coordinates and redraws it.
         for(let i = 0; i < this.rectanglesAmount; i++){
-            this.setHeight = raycaster.calculateRayData().distance[i];
+            this.setHeight = rayDistance[i];
             this.rectangles[i].setPosition(this.rectanglesWidth/2 + i*this.rectanglesWidth, (this.canvasSize.y + 0.8*this.canvasSize.y) - this.getHeight()/2);
             this.rectangles[i].setSize(this.rectanglesWidth, this.getHeight());
     
-            if(raycaster.calculateRayData().typeOfHit[i] === "vertical"){
+            if(typeOfHit[i] === "vertical"){
                 this.rectangles[i].setFillStyle("0x004200");
             }else{
                 this.rectangles[i].setFillStyle("0x00ff00");

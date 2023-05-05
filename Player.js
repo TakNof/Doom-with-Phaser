@@ -49,7 +49,10 @@ class Player extends Living{
     move(){
         this.setVelocity = 0;
         this.playerRays.setVelocity(0);
-        this.playerRays.redrawRay2D(this.getPosition, this.getRaycaster);
+
+        this.setRayData();
+
+        this.playerRays.redrawRay2D(this.getPosition, this.rayData);
         this.raycaster.setSpritePosition = this.getPosition;
 
 
