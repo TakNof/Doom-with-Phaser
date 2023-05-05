@@ -112,6 +112,14 @@ class Living extends Sprite{
         return this.Ycomponent;
     }
 
+    setRaycaster(raysAmount, angleOffset = 0) {
+        this.raysAmount = raysAmount;
+        this.raycaster = new Raycaster(this.getRotation + angleOffset, this.getPositionX, this.getPositionY, raysAmount);
+    }
+
+    get getRaycaster(){
+        return this.raycaster;
+    }
 
     /**
      * Allows to adjust the angle value of the rotation to be within the range of 0 and 2PI.

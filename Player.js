@@ -28,8 +28,10 @@ class Player extends Living{
 
         this.cursors = this.scene.input.keyboard.createCursorKeys();
         this.keySpace = this.scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
+    }
 
-        this.playerRaycaster = new Raycaster()
+    setRays(){
+        this.playerRays = new Rays(this.scene, this.raysAmount, this.getPosition, 5*Math.PI/4);
     }
 
     /**
@@ -38,7 +40,11 @@ class Player extends Living{
      */
     move(){
         this.setVelocity = 0;
-        
+        this.playerRays.setVelocity(0);
+        this.playerRays.redrawRay2D(this.getPosition, this.getRaycaster);
+        this.raycaster.setSpritePosition = this.getPosition;
+
+
         if(this.cursors.up.isDown ^ this.cursors.down.isDown){
     
             if (this.cursors.up.isDown){
@@ -46,19 +52,19 @@ class Player extends Living{
                 this.setVelocityX = this.getXcomponent;
                 this.setVelocityY = this.getYcomponent;
 
-                // for(let ray of rays){
-                //     ray.body.setVelocityX(velocityX);
-                //     ray.body.setVelocityY(velocityY);
-                // }
+                for(let ray of this.playerRays.rays){
+                    ray.body.setVelocityX(this.getVelocityX);
+                    ray.body.setVelocityY(this.getVelocityY);
+                }
                 
             }else if(this.cursors.down.isDown){    
                 this.setVelocityX = -this.getXcomponent;
                 this.setVelocityY = -this.getYcomponent;
                 
-                // for(let ray of rays){
-                //     ray.body.setVelocityX(-velocityX);
-                //     ray.body.setVelocityY(-velocityY);
-                // }
+                for(let ray of this.playerRays.rays){
+                    ray.body.setVelocityX(-velocityX);
+                    ray.body.setVelocityY(-velocityY);
+                }
             }
         }
     
@@ -78,5 +84,7 @@ class Player extends Living{
                 this.adjustAngleValue();
             }
         }
+
+        this.raycaster.setRayAngle = this.getRotation + this.playerRays.getInitialRayAngleOffset;
     }
 }

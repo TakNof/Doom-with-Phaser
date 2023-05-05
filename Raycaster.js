@@ -1,7 +1,7 @@
 class Raycaster{
 
     constructor(spriteAngle, spritePositionX, spritePositionY, rayAmount){
-        this.rayAngle = spriteAngle + 5*Math.PI/4;
+        this.rayAngle = spriteAngle;
 
         this.rayAngle = this.adjustAngleValue(this.rayAngle);
         
@@ -13,8 +13,7 @@ class Raycaster{
     }
 
     set setRayAngle(spriteAngle){
-        this.rayAngle = spriteAngle + 5*Math.PI/4;
-        this.rayAngle = this.adjustAngleValue(this.rayAngle);    
+        this.rayAngle = this.adjustAngleValue(spriteAngle);    
     }
 
     get getRayAngle(){
@@ -46,7 +45,7 @@ class Raycaster{
         return this.spritePosition;
     }
 
-    drawRays2D(){
+    calculateRayData(){
         let rayYposition;
         let rayXposition;
                 

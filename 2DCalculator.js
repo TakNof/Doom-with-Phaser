@@ -127,7 +127,7 @@ function preload(){
     this.load.image("enemy", "assets/enemy.jpg", {frameWidth: 64, frameHeight: 64});
     this.load.image("cacodemon", "assets/cacodemon.png");
 
-    raycaster = new Raycaster(playerAngle, playerPositionX, playerPositionY, rays2DAmount);
+    raycaster = new Raycaster(playerAngle + 5*Math.PI/4, playerPositionX, playerPositionY, rays2DAmount);
     enemyRaycaster = new EnemyRaycaster(enemyPositionX, enemyPositionY, playerPositionX, playerPositionY);
     rayDrawing = new Graphicator(wallBlockSizeX, canvasSize, rays3DCameraWidth, rays3DCameraAmount);
 }
@@ -151,8 +151,6 @@ function create(){
     player.body.setAllowRotation(true);
 
     player.body.setCollideWorldBounds(true);
-
-    player2 = new Player(this, [canvasSizeX/3, canvasSizeY/3, 0], "player", wallBlockSizeX*2, 0, defaultVelocity, angleOperator);
 
     //Creating the indicator for the pov of the player.
     playerHeader = this.add.triangle(playerPositionX, playerPositionY, pHeCord[0], pHeCord[1], pHeCord[2], pHeCord[3], pHeCord[4], pHeCord[5], "0xff0000");
@@ -202,10 +200,15 @@ function create(){
     raycaster.setMatrix = walls.getWallMatrix;   
     enemyRaycaster.setMatrix = walls.getWallMatrix;
     
+    player2 = new Player(this, [canvasSizeX/3, canvasSizeY/3, 0], "player", wallBlockSizeX*2, 0, defaultVelocity, angleOperator);
+    player2.setRaycaster(rays2DAmount, 5*Math.PI/4);
+    player2.getRaycaster.setMatrix = walls.getWallMatrix;
+    player2.setRays();
+
     //Here we stablish the raycasting.
 
     //first we have to calculate all the rays distance for the player and the enemy.
-    ray2DCoordinates = raycaster.drawRays2D();
+    ray2DCoordinates = raycaster.calculateRayData();
     ray2DEnemyCoordinates = enemyRaycaster.detectWalls();
     
     //Then we have to add all the lines to the array we created, with the same properties and atributes as the previous objects.
@@ -293,7 +296,7 @@ function update(){
     enemyRaycaster.setEnemyPosition = enemy;
 
 
-    ray2DCoordinates = raycaster.drawRays2D();
+    ray2DCoordinates = raycaster.calculateRayData();
     redrawRay2D(); 
     redrawRay3D();
     drawEnemy();
@@ -356,7 +359,7 @@ function update(){
         }
 
         //Because we are changing the angle, we have to load it to the reycaster
-        raycaster.setRayAngle = playerAngle;
+        raycaster.setRayAngle = playerAngle + 5*Math.PI/4;
     }
     
     if(keySpace.isDown){

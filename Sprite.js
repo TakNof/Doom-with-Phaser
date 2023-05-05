@@ -56,6 +56,14 @@ class Sprite{
     }
 
     /**
+     * Gets the position in X and Y axis of the sprite.
+     * @returns {number}
+     */
+    get getPosition(){
+        return {x: this.sprite.x, y: this.sprite.y};
+    }
+
+    /**
      * Sets the depth of rendering of the sprite.
      * @param {number} value
      */
