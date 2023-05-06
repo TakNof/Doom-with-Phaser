@@ -71,7 +71,7 @@ class Living extends Sprite{
      * @param {number} value
      */
     set setRotation(value){
-        this.sprite.rotation = value;
+        this.sprite.rotation = this.adjustAngleValue(value);
     }
 
     /**
@@ -112,9 +112,17 @@ class Living extends Sprite{
         return this.Ycomponent;
     }
 
-    setRaycaster(raysAmount, angleOffset = 0) {
+
+    /**
+     * This method created the raycaster objecto of the sprite.
+     * @param {number} raysAmount The amount of rays that the raycaster should calculate.
+     * @param {number} angleOffset The angle offset of the projected rays from the sprite.
+     */
+    setRaycaster(raysAmount, angleOffset = 0, wallMatrix) {
         this.raysAmount = raysAmount;
+        this.angleOffset = angleOffset;
         this.raycaster = new Raycaster(this.getRotation + angleOffset, this.getPositionX, this.getPositionY, raysAmount);
+        this.raycaster.setMatrix(wallMatrix);
     }
 
     get getRaycaster(){
@@ -130,13 +138,36 @@ class Living extends Sprite{
     }
 
     /**
+     * This method sets the graphical representation of the rays thrown by the raycaster.
+     * @param {String} colorOfRays The color of the rays.
+     */
+    setRays(colorOfRays){
+        this.spriteRays = new Rays(this.scene, this.raysAmount, this.getPosition, colorOfRays);
+        this.spriteRays.setInitialRayAngleOffset = this.angleOffset;
+    }
+
+    /**
      * Allows to adjust the angle value of the rotation to be within the range of 0 and 2PI.
      */
-    adjustAngleValue(){
-        if(this.sprite.rotation < 0){
-            this.sprite.rotation += 2*Math.PI;
-        }else if(this.sprite.rotation > 2*Math.PI){
-            this.sprite.rotation -= 2*Math.PI;
+    adjustAngleValue(angle){
+        if(angle < 0){
+            angle += 2*Math.PI;
+        }else if(angle > 2*Math.PI){
+            angle -= 2*Math.PI;
         }
+
+        return angle;
+    }
+
+    /**
+     * 
+     * @param {number} x1 The x coordinate of the first sprite.  
+     * @param {number} x2 The x coordinate of the second sprite. 
+     * @param {number} y1 The y coordinate of the first sprite. 
+     * @param {number} y2 The y coordinate of the second sprite. 
+     * @returns {number} The hyphypotenuse according to the specified coordinates.
+     */
+    hypoCalc(x1, x2, y1, y2){
+        return Math.sqrt(Math.pow(x1 - x2, 2) + Math.pow(y1 - y2, 2))
     }
 }

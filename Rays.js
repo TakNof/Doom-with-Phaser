@@ -7,20 +7,22 @@ class Rays{
      * @param {Scene} scene The current scene of the game to place the ray.
      * @param {number} raysAmount The amount of rays to graph.
      */
-    constructor(scene, raysAmount, spritePosition, initialRayAngleOffset){
+    constructor(scene, raysAmount, spritePosition, colorOfRays){
         this.scene = scene;
         this.raysAmount = raysAmount;
         this.rays = Array(raysAmount);
 
-        this.initialRayAngleOffset = initialRayAngleOffset;
-
         for(let i = 0; i < this.raysAmount; i++){
-            this.rays[i] = this.scene.add.line(spritePosition.x, spritePosition.y, 0, 0, 0, 0, "0x00ff00");
+            this.rays[i] = this.scene.add.line(spritePosition.x, spritePosition.y, 0, 0, 0, 0, colorOfRays);
             this.scene.physics.add.existing(this.rays[i], false);
             this.rays[i].body.setAllowRotation(true);
             this.rays[i].body.setSize(64, 64, true);
             this.rays[i].body.setCollideWorldBounds(true);
         }
+    }
+
+    set setInitialRayAngleOffset(rayAngleOffset){
+        this.initialRayAngleOffset = rayAngleOffset;
     }
 
     get getInitialRayAngleOffset(){

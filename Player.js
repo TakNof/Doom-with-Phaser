@@ -29,30 +29,34 @@ class Player extends Living{
         this.cursors = this.scene.input.keyboard.createCursorKeys();
         this.keySpace = this.scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
     }
-
-    setRays(){
-        this.playerRays = new Rays(this.scene, this.raysAmount, this.getPosition, 5*Math.PI/4);
-    }
     
     setGraphicator(canvasSize){
-        this.playerGraphicator = new Graphicator2(this.scene, this.size, canvasSize, this.raysAmount);
+        this.playerGraphicator = new Graphicator(this.scene, this.size, canvasSize, this.raysAmount);
     }
 
     get getGraphicator(){
         return this.playerGraphicator;
     }
 
+    setCamera(canvasSize, fov, enemies2D){
+        this.playerCamera = new Camera(this.scene, canvasSize, fov, this, enemies2D);
+    }
+
+    get getCamera(){
+        return this.playerCamera;
+    }
+
     /**
      * This method allows the player to have the basic controls of movement according to the stablished parameters.
-     * The movemente only works through the key arrows.
+     * The movement only works through the key arrows.
      */
     move(){
         this.setVelocity = 0;
-        this.playerRays.setVelocity(0);
+        this.spriteRays.setVelocity(0);
 
         this.setRayData();
 
-        this.playerRays.redrawRay2D(this.getPosition, this.rayData);
+        this.spriteRays.redrawRay2D(this.getPosition, this.rayData);
         this.raycaster.setSpritePosition = this.getPosition;
 
 
@@ -68,7 +72,7 @@ class Player extends Living{
                 this.setVelocityY = -this.getYcomponent;
             }
 
-            for(let ray of this.playerRays.rays){
+            for(let ray of this.spriteRays.rays){
                 ray.body.setVelocityX(this.getVelocityX);
                 ray.body.setVelocityY(this.getVelocityY);
             }
@@ -81,16 +85,14 @@ class Player extends Living{
             this.setYcomponent();    
     
             if (this.cursors.left.isDown){
-                this.setRotation =  this.getRotation - this.playerAngleOperator;
-    
-                this.adjustAngleValue();
+                this.setRotation =  this.adjustAngleValue(this.getRotation - this.playerAngleOperator);
+                
             }else if(this.cursors.right.isDown){
-                this.setRotation = this.getRotation + this.playerAngleOperator;
-    
-                this.adjustAngleValue();
+                this.setRotation = this.adjustAngleValue(this.getRotation + this.playerAngleOperator);
             }
         }
 
-        this.raycaster.setRayAngle = this.getRotation + this.playerRays.getInitialRayAngleOffset;
+        this.raycaster.setRayAngle = this.getRotation + this.spriteRays.getInitialRayAngleOffset;
+        this.spriteRays.setInitialRayAngleOffset = this.angleOffset;
     }
 }

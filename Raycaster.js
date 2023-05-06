@@ -1,15 +1,19 @@
 class Raycaster{
 
     constructor(spriteAngle, spritePositionX, spritePositionY, rayAmount){
-        this.rayAngle = spriteAngle;
-
-        this.rayAngle = this.adjustAngleValue(this.rayAngle);
+        this.rayAngle = this.adjustAngleValue(spriteAngle);
         
         this.spritePosition = {x: spritePositionX, y: spritePositionY};
 
         this.rayAmount = rayAmount;
+    }
 
-        this.angleOffset = (90/this.rayAmount)*Math.PI/180; 
+    setAngleStep(fov = 1){
+        this.angleStep = fov/this.rayAmount;
+    }
+
+    get getAngleStep(){
+        return this.angleStep;
     }
 
     set setRayAngle(spriteAngle){
@@ -64,8 +68,8 @@ class Raycaster{
 
         for(let i = 0; i < this.rayAmount; i++){
             let totalDistance = {x: 10000, y: 10000};
-            let horizontal = {x: 0, y: 0};
-            let vertical  = {x: 0, y: 0};          
+            let horizontal;
+            let vertical;          
 
             let horizontalCheckResults;
             let verticalCheckResults;
@@ -116,7 +120,7 @@ class Raycaster{
                 }
             }          
             
-            currentAngle = currentAngle + this.angleOffset;
+            currentAngle = currentAngle + this.getAngleStep;
 
             currentAngle = this.adjustAngleValue(currentAngle);
             

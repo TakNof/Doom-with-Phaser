@@ -22,6 +22,14 @@ class Sprite{
         this.sprite = scene.add.sprite(this.originInfo.x, this.originInfo.y, spriteImgStr).setDepth(this.depth);
     }
 
+    set setSize(size){
+        this.size = size;
+    }
+
+    get getSize(){
+        return this.size;
+    }
+
 
     /**
      * Sets the position in X axis of the sprite.
@@ -64,6 +72,23 @@ class Sprite{
     }
 
     /**
+     * Sets the visibility of the sprite.
+     * @param {boolean} visible Whether the sprite is visible or not.
+     */
+    set setVisible(visible = true){
+        this.visible = visible;
+        this.sprite.visible = this.visible;
+    }
+
+    /**
+     * Gets the visibility of the sprite.
+     * @returns {boolean}
+     */
+    get getVisible(){
+        return this.sprite.visible;
+    }
+
+    /**
      * Sets the depth of rendering of the sprite.
      * @param {number} value
      */
@@ -78,5 +103,5 @@ class Sprite{
      */
     get getDepth(){
         return this.depth;
-    }   
+    } 
 }
