@@ -21,9 +21,7 @@ class Camera{
         this.amountEnemies2D = enemies2D.length
         this.enemyAngleToPlayerInv = Array(this.amountEnemies2D);
 
-        for(let i = 0; i < this.amountEnemies2D; i++){
-            this.enemyAngleToPlayerInv[i] = this.enemies2D[0].adjustAngleValue(this.enemies2D[i].getAngleToPlayer + Math.PI);
-        }
+        this.setEnemyAngleToPlayerInv();
         
     }
 
@@ -46,25 +44,36 @@ class Camera{
     get getPlayerGlobalAngle(){
         return this.playerGlobalAngle;
     }
+
+    setEnemyAngleToPlayerInv(){
+        for(let i = 0; i < this.amountEnemies2D; i++){
+            this.enemyAngleToPlayerInv[i] = this.enemies2D[0].adjustAngleValue(this.enemies2D[i].getAngleToPlayer + Math.PI);
+        }
+    }
+
+    get getEnemyAngleToPlayerInv(){
+        return this.enemyAngleToPlayerInv;
+    }
     
     draw3DWorld(){
         this.player.getGraphicator.redraw3DScaling(this.player.getRayData.distance, this.player.getRayData.typeOfHit);
         this.setPlayerGlobalAngle();
+        this.setEnemyAngleToPlayerInv();
         this.drawEnemy();
     }
 
     drawElementByPlayerPov(index){
-        return (-(this.canvasSize.x*(7*Math.abs(this.enemyAngleToPlayerInv[index] - this.arcAngles.x1024))/this.fovArcLenght) + this.canvasSize.x);
+        return (-(this.canvasSize.x*7*Math.abs(this.enemyAngleToPlayerInv[index] - this.getArcAngles.x1024))/this.fovArcLenght) + this.canvasSize.x;
     }
 
     drawEnemy(){
+
         for(let i = 0; i < this.amountEnemies2D; i++){
             if(this.enemyAngleToPlayerInv[i] + Math.PI/4 >= 2*Math.PI){
                 this.getArcAngles.x1024 = this.getArcAngles.x1024 + 2*Math.PI;
             }else if(this.enemyAngleToPlayerInv[i] - Math.PI/4 <= Math.PI/4){
                 this.getArcAngles.x0 = this.getArcAngles.x0 - 2*Math.PI;
             }
-
             if(this.enemyAngleToPlayerInv[i] > this.getArcAngles.x0 && this.enemyAngleToPlayerInv[i] < this.getArcAngles.x1024){
                 this.enemies2D[i].getEnemy3D.setVisible = true;
         
@@ -80,6 +89,8 @@ class Camera{
                 
                 this.enemies2D[i].getEnemy3D.setPositionX = this.drawElementByPlayerPov(i);
                 this.enemies2D[i].getEnemy3D.setPositionY = (this.canvasSize.y + 0.5*this.canvasSize.y) - enemyHeight/2;
+
+                console.log(this.enemies2D[i].getEnemy3D.getPosition);
         
                 this.enemies2D[i].getEnemy3D.setDepth = 3;
                 

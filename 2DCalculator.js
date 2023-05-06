@@ -42,7 +42,7 @@ let wallNumberRatioX = parseInt(canvasSizeX/wallBlockSizeX);
 let wallNumberRatioY = parseInt(canvasSizeY/wallBlockSizeY);
 let amountWalls = 21;
 let generateWalls = true;
-let generateRandomWalls = true;
+let generateRandomWalls = false;
 
 //Stablishing the player and its initial position.
 let player;
@@ -55,7 +55,7 @@ let enemy;
 let enemyangleOffset = Math.PI/2;
 let enemyAngle = 0;
 let chaseDistance = 300;
-let allowChase = true;
+let allowChase = false;
 
 
 //Stablishing the velocity standards for the player and enemies.
