@@ -122,7 +122,7 @@ class Living extends Sprite{
         this.raysAmount = raysAmount;
         this.angleOffset = angleOffset;
         this.raycaster = new Raycaster(this.getRotation + angleOffset, this.getPositionX, this.getPositionY, raysAmount);
-        this.raycaster.setMatrix(wallMatrix);
+        this.raycaster.setMatrix = wallMatrix;
     }
 
     get getRaycaster(){
