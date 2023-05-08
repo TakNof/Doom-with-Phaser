@@ -35,11 +35,7 @@ let grid;
 //Stablishing the walls, their size, how much there will be and some conditionals for testing purposes.
 let walls;
 let wallOrder;
-let wallBlockSize = "32x32";
-let wallBlockSizeX = parseInt(wallBlockSize.split("x")[0]);
-let wallBlockSizeY = parseInt(wallBlockSize.split("x")[1]);
-let wallNumberRatioX = parseInt(canvasSizeX/wallBlockSizeX);
-let wallNumberRatioY = parseInt(canvasSizeY/wallBlockSizeY);
+let wallBlockSize = 32;
 let amountWalls = 21;
 let generateWalls = true;
 let generateRandomWalls = true;
@@ -51,10 +47,9 @@ let playerAngleOffset = 3*Math.PI/2
 let playerFOVangleOffset = playerAngleOffset - playerFOV/2
 
 //Stablishing the enemy and its initial position.
-let enemies = Array(3);
+let enemies = Array(10);
 
 let enemyangleOffset = Math.PI/2;
-let enemyAngle = 0;
 let chaseDistance = 300;
 let allowChase = true;
 
@@ -66,7 +61,7 @@ let defaultVelocity = 300;
 let angleOperator = 0.05;
 
 //Stablishing the raycaster elements.
-let rays2DAmount = 200;
+let raysAmount = 200;
 
 //Stablishing the default color codes for drawing elements.
 let limeGreen = "0x00ff00";
@@ -86,14 +81,14 @@ function create(){
     grid = this.add.grid(0, 0, canvasSizeX*2, canvasSizeY*2, 32, 32, 0x00b9f2).setAltFillStyle(0x016fce).setOutlineStyle();
 
     //Here we create the walls of the map.
-    walls = new WallsBuilder(this, "wall", [canvasSizeX, canvasSizeY], wallBlockSizeX, amountWalls, generateWalls, generateRandomWalls);
+    walls = new WallsBuilder(this, "wall", [canvasSizeX, canvasSizeY], wallBlockSize, amountWalls, generateWalls, generateRandomWalls);
     walls.createWalls();
     
     //Here we create the player.
-    player = new Player(this, [canvasSizeX/2, canvasSizeY/2, 0], "player", wallBlockSizeX*2, 0, defaultVelocity, angleOperator);
+    player = new Player(this, [canvasSizeX/2, canvasSizeY/2, 0], "player", wallBlockSize*2, 0, defaultVelocity, angleOperator);
 
     //Here we create the raycaster of the player and we pass it the position of the walls to make the calculations.
-    player.setRaycaster(rays2DAmount,  playerFOVangleOffset, walls.getWallMatrix);
+    player.setRaycaster(walls.getWallMatrix, raysAmount,  playerFOVangleOffset);
     player.getRaycaster.setAngleStep(playerFOV);
 
     //Here we put the color of the rays of the player.
@@ -105,6 +100,9 @@ function create(){
     //We set all the elements we need to collide with the walls.
     player.setColliderElements();
 
+    //We load those elements to the walls object.
+    walls.setColliders(player.getColliderElements);
+
     for(let i = 0; i < enemies.length; i++){
         //Here we create an enemy.
         enemies[i] =  new Enemy(this, [canvasSizeX/(i + 3), canvasSizeY/(i + 2), 0], "enemy", wallBlockSize*2, 1, defaultVelocity, chaseDistance, allowChase);
@@ -113,7 +111,7 @@ function create(){
         enemies[i].setAngleToPlayer = player.getPosition;
         
         //Here we stablish the raycaster of the enemy, we pass it as well the matrix of walls.
-        enemies[i].setRaycaster(1, enemyangleOffset, walls.getWallMatrix);
+        enemies[i].setRaycaster(walls.getWallMatrix, 1, enemyangleOffset);
         enemies[i].getRaycaster.setAngleStep();
         
         //Here we put the color of the rays of the enemy.
@@ -124,12 +122,10 @@ function create(){
 
         //We set all the elements we need to collide with the walls.
         enemies[i].setColliderElements();
+
+        //We load those elements to the walls object.
+        walls.setColliders(enemies[i].getColliderElements);
     }
-
-    
-
-    //We load those elements to the walls object.
-    walls.setColliders(player.getColliderElements, enemies[0].getColliderElements);
 
     //Here we stablish the camera of the player with the raycaster, graphicator and the enemies positions.
     player.setCamera(canvasSize, playerFOV, enemies);  

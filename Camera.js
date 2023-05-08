@@ -156,7 +156,7 @@ class Camera{
                 }
                 
                 this.enemies2D[i].getEnemy3D.setPositionX = this.drawElementByPlayerPov(i);
-                this.enemies2D[i].getEnemy3D.setPositionY = (this.canvasSize.y + 0.5*this.canvasSize.y) - enemyHeight/2;
+                this.enemies2D[i].getEnemy3D.setPositionY = (this.canvasSize.y + 0.5*this.canvasSize.y);
         
                 this.enemies2D[i].getEnemy3D.setDepth = 3;
                 

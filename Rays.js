@@ -24,6 +24,14 @@ class Rays{
     }
 
     /**
+     * Gets the list of rays created.
+     * @returns {Array<rays>}
+     */
+    get getRays(){
+        return this.rays;
+    }
+
+    /**
      * Sets the initial angle ray offset.
      * @param {number} rayAngleOffset
      */

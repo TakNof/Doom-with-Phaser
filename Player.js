@@ -71,11 +71,13 @@ class Player extends Living{
      */
     move(){
         this.setVelocity = 0;
-        this.spriteRays.setVelocity = 0;
-
         this.setRayData();
 
-        this.spriteRays.redrawRay2D(this.getPosition, this.rayData);
+        if(this.getDebug === true){
+            this.spriteRays.setVelocity = 0;
+            this.spriteRays.redrawRay2D(this.getPosition, this.getRayData);
+        }     
+        
         this.raycaster.setSpritePosition = this.getPosition;
 
 
@@ -91,9 +93,11 @@ class Player extends Living{
                 this.setVelocityY = -this.getYcomponent;
             }
 
-            for(let ray of this.spriteRays.rays){
-                ray.body.setVelocityX(this.getVelocityX);
-                ray.body.setVelocityY(this.getVelocityY);
+            if(this.getDebug === true){
+                for(let ray of this.spriteRays.rays){
+                    ray.body.setVelocityX(this.getVelocityX);
+                    ray.body.setVelocityY(this.getVelocityY);
+                }
             }
         }
     
@@ -113,7 +117,10 @@ class Player extends Living{
             }
         }
 
-        this.raycaster.setRayAngle = this.getAngle + this.spriteRays.getInitialRayAngleOffset;
-        this.spriteRays.setInitialRayAngleOffset = this.angleOffset;
+        if(this.getDebug === true){
+            this.spriteRays.setInitialRayAngleOffset = this.getAngleOffset;
+        }
+        
+        this.raycaster.setRayAngle = this.getAngle + this.getAngleOffset;
     }
 }

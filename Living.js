@@ -98,6 +98,22 @@ class Living extends Sprite{
     }
 
     /**
+     * Sets the angle offset of the Living sprite.
+     * @param {number} value
+     */
+    set setAngleOffset(value){
+        this.angleOffset = value;
+    }
+
+    /**
+     * Gets the angle of the Living sprite.
+     * @return {number}
+     */
+    get getAngleOffset(){
+        return this.angleOffset;
+    }
+
+    /**
      * Sets the X component of the velocity according to the rotation stablished of the living sprite.
      */
     setXcomponent(){
@@ -132,9 +148,9 @@ class Living extends Sprite{
      * @param {number} raysAmount The amount of rays that the raycaster should calculate.
      * @param {number} angleOffset The angle offset of the projected rays from the sprite.
      */
-    setRaycaster(raysAmount, angleOffset = 0, wallMatrix) {
+    setRaycaster(wallMatrix, raysAmount, angleOffset = 0) {
         this.raysAmount = raysAmount;
-        this.angleOffset = angleOffset;
+        this.setAngleOffset = angleOffset;
         this.raycaster = new Raycaster(this.getRotation + angleOffset, this.getPositionX, this.getPositionY, raysAmount);
         this.raycaster.setMatrix = wallMatrix;
     }
@@ -167,8 +183,10 @@ class Living extends Sprite{
      * @param {String} colorOfRays The color of the rays.
      */
     setSpriteRays(colorOfRays){
-        this.spriteRays = new Rays(this.scene, this.raysAmount, this.getPosition, colorOfRays);
-        this.spriteRays.setInitialRayAngleOffset = this.angleOffset;
+        if(this.getDebug){
+            this.spriteRays = new Rays(this.scene, this.raysAmount, this.getPosition, colorOfRays);
+            this.spriteRays.setInitialRayAngleOffset = this.getAngleOffset;
+        }
     }
 
     /**
@@ -183,7 +201,11 @@ class Living extends Sprite{
      * Sets the elements to collide with.
      */
     setColliderElements(){
-        this.colliderElements = [...[this.getSprite], ...this.getSpriteRays.rays];
+        if(this.getSpriteRays === undefined){
+            this.colliderElements = this.getSprite;
+        }else{
+            this.colliderElements = [...[this.getSprite], ...this.getSpriteRays.rays];
+        }
     }
 
     /**

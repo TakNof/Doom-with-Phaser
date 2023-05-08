@@ -20,6 +20,8 @@ class Sprite{
         this.size = size;
         this.depth = depth;
         this.sprite = scene.add.sprite(this.originInfo.x, this.originInfo.y, spriteImgStr).setDepth(this.depth);
+
+        this.debug = false;
     }
 
     /**
@@ -134,5 +136,21 @@ class Sprite{
      */
     set setScaleY(value){
         this.sprite.scaleY = value;
+    }  
+    
+    /**
+     * Sets if the sprite should show the rays or not.
+     * @param {boolean} value
+     */
+    set setDebug(value){
+        this.debug = value;
+    }
+
+    /**
+     * Gets if the sprite should show the rays or not.
+     * @returns {boolean}
+     */
+    get getDebug(){
+        return this.debug;
     }
 }

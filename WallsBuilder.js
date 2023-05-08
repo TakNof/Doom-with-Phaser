@@ -112,7 +112,7 @@ class WallsBuilder{
         for(let element of arguments){
             if(typeof(element) == Array){
                 for(let subelement of element){
-                    this.scene.physics.add.collider(element, this.walls);
+                    this.scene.physics.add.collider(subelement, this.walls);
                 }
             }else{
                 this.scene.physics.add.collider(element, this.walls);
@@ -126,13 +126,13 @@ class WallsBuilder{
     setWallMatrix(){    
         this.wallMatrix = [];
     
-        let row = Array(wallNumberRatioX);
+        let row = Array(this.wallNumberRatio.x);
     
-        for(let j = 0; j < wallNumberRatioX; j++){
+        for(let j = 0; j < this.wallNumberRatio.x; j++){
             row[j] = false;
         }
     
-        for(let i = 0; i < wallNumberRatioY; i++){
+        for(let i = 0; i < this.wallNumberRatio.y; i++){
             this.wallMatrix.push(row.concat());
         }
     }

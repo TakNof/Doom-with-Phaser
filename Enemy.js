@@ -89,10 +89,13 @@ class Enemy extends Living{
      */
     move(playerPosition){
         this.setVelocity = 0;
-        this.spriteRays.setVelocity = 0;
         this.setRayData();
 
-        this.spriteRays.redrawRay2D(this.getPosition, this.getRayData);
+        if(this.getDebug === true){
+            this.spriteRays.setVelocity = 0;
+            this.spriteRays.redrawRay2D(this.getPosition, this.getRayData);
+        }   
+
         this.raycaster.setSpritePosition = this.getPosition;
 
         this.setAngleToPlayer = playerPosition;
@@ -110,14 +113,15 @@ class Enemy extends Living{
 
             //We want the enemy to react when we are 
 
-            for(let ray of this.spriteRays.rays){
-                ray.body.setVelocityX(this.getVelocityX);
-                ray.body.setVelocityY(this.getVelocityY);
+            if(this.getDebug === true){
+                for(let ray of this.spriteRays.rays){
+                    ray.body.setVelocityX(this.getVelocityX);
+                    ray.body.setVelocityY(this.getVelocityY);
+                }
             }
         }
         
         this.setAngle = this.getAngleToPlayer + this.angleOffset
         this.setRotation = this.getAngle;
-
     }
 }
