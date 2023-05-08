@@ -23,6 +23,14 @@ class Sprite{
     }
 
     /**
+     * Gets the sprite of the object.
+     * @returns {Sprite}
+     */
+    get getSprite(){
+        return this.sprite;
+    }
+
+    /**
      * Sets the size of the sprite.
      * @param {number} size
      */

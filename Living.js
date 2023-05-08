@@ -166,9 +166,32 @@ class Living extends Sprite{
      * This method sets the graphical representation of the rays thrown by the raycaster.
      * @param {String} colorOfRays The color of the rays.
      */
-    setRays(colorOfRays){
+    setSpriteRays(colorOfRays){
         this.spriteRays = new Rays(this.scene, this.raysAmount, this.getPosition, colorOfRays);
         this.spriteRays.setInitialRayAngleOffset = this.angleOffset;
+    }
+
+    /**
+     * Gets the graphical representation of the rays thrown by the raycaster.
+     * @returns {Rays}
+     */
+    get getSpriteRays(){
+        return this.spriteRays;
+    }
+
+    /**
+     * Sets the elements to collide with.
+     */
+    setColliderElements(){
+        this.colliderElements = [...[this.getSprite], ...this.getSpriteRays.rays];
+    }
+
+    /**
+     * Gets the elements to collide with.
+     * @returns {Array}
+     */
+    get getColliderElements(){
+        return this.colliderElements;
     }
 
     /**

@@ -104,6 +104,21 @@ class WallsBuilder{
             }
         }
     }
+    /**
+     * Sets the colliders of the objects given
+     * @param {?} Objects
+     */
+    setColliders(){
+        for(let element of arguments){
+            if(typeof(element) == Array){
+                for(let subelement of element){
+                    this.scene.physics.add.collider(element, this.walls);
+                }
+            }else{
+                this.scene.physics.add.collider(element, this.walls);
+            }
+        }
+    }
 
     /**
      * This method creates the base matrix fulled of booleans to create the wall.

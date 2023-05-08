@@ -42,7 +42,7 @@ let wallNumberRatioX = parseInt(canvasSizeX/wallBlockSizeX);
 let wallNumberRatioY = parseInt(canvasSizeY/wallBlockSizeY);
 let amountWalls = 21;
 let generateWalls = true;
-let generateRandomWalls = false;
+let generateRandomWalls = true;
 
 //Stablishing the player and its initial position.
 let player;
@@ -51,11 +51,12 @@ let playerAngleOffset = 3*Math.PI/2
 let playerFOVangleOffset = playerAngleOffset - playerFOV/2
 
 //Stablishing the enemy and its initial position.
-let enemy;
+let enemies = Array(3);
+
 let enemyangleOffset = Math.PI/2;
 let enemyAngle = 0;
 let chaseDistance = 300;
-let allowChase = false;
+let allowChase = true;
 
 
 //Stablishing the velocity standards for the player and enemies.
@@ -96,29 +97,42 @@ function create(){
     player.getRaycaster.setAngleStep(playerFOV);
 
     //Here we put the color of the rays of the player.
-    player.setRays(limeGreen);
+    player.setSpriteRays(limeGreen);
 
     //here we create the graphicator of the raycaster of the player.
     player.setGraphicator(canvasSize);
 
-    //Here we create an enemy.
-    enemy = new Enemy(this, [canvasSizeX/3, canvasSizeY/3, 0], "enemy", wallBlockSize*2, 1, defaultVelocity, chaseDistance, allowChase);
+    //We set all the elements we need to collide with the walls.
+    player.setColliderElements();
 
-    //We pass load the player position due we need the enemy to chase the player.
-    enemy.setAngleToPlayer = player.getPosition;
-    
-    //Here we stablish the raycaster of the enemy, we pass it as well the matrix of walls.
-    enemy.setRaycaster(1, enemyangleOffset, walls.getWallMatrix);
-    enemy.getRaycaster.setAngleStep();
-    
-    //Here we put the color of the rays of the enemy.
-    enemy.setRays(blackColor);
+    for(let i = 0; i < enemies.length; i++){
+        //Here we create an enemy.
+        enemies[i] =  new Enemy(this, [canvasSizeX/(i + 3), canvasSizeY/(i + 2), 0], "enemy", wallBlockSize*2, 1, defaultVelocity, chaseDistance, allowChase);
 
-    //We create an sprite that will be the 3D representation of the enemy.
-    enemy.setEnemy3D(canvasSizeX/2, canvasSizeY*1.5, "cacodemon");
+        //We pass load the player position due we need the enemy to chase the player.
+        enemies[i].setAngleToPlayer = player.getPosition;
+        
+        //Here we stablish the raycaster of the enemy, we pass it as well the matrix of walls.
+        enemies[i].setRaycaster(1, enemyangleOffset, walls.getWallMatrix);
+        enemies[i].getRaycaster.setAngleStep();
+        
+        //Here we put the color of the rays of the enemy.
+        enemies[i].setSpriteRays(blackColor);
+
+        //We create an sprite that will be the 3D representation of the enemy.
+        enemies[i].setEnemy3D(canvasSizeX/2, canvasSizeY*1.5, "cacodemon");
+
+        //We set all the elements we need to collide with the walls.
+        enemies[i].setColliderElements();
+    }
+
+    
+
+    //We load those elements to the walls object.
+    walls.setColliders(player.getColliderElements, enemies[0].getColliderElements);
 
     //Here we stablish the camera of the player with the raycaster, graphicator and the enemies positions.
-    player.setCamera(canvasSize, playerFOV, [enemy]);  
+    player.setCamera(canvasSize, playerFOV, enemies);  
 }
 
 function update(){
@@ -126,8 +140,10 @@ function update(){
     player.move();
 
     //The basic movement of the enemy according to the player's position.
-    enemy.move(player.getPosition);
-
+    for(let enemy of enemies){
+        enemy.move(player.getPosition);
+    }
+    
     //Here we draw the 3D representation of the map.
     player.getCamera.draw3DWorld();
 }
