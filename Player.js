@@ -22,6 +22,7 @@ class Player extends Living{
         this.playerAngleOperator = playerAngleOperator;
 
         this.setRotation = this.originInfo.ang;
+        this.setAngle = this.originInfo.ang;
 
         this.setXcomponent();
         this.setYcomponent();
@@ -30,18 +31,36 @@ class Player extends Living{
         this.keySpace = this.scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
     }
     
+    /**
+     * Sets the graphicator object of the player.
+     * @param {String} canvasSize 
+     */
     setGraphicator(canvasSize){
         this.playerGraphicator = new Graphicator(this.scene, this.size, canvasSize, this.raysAmount);
     }
 
+    /**
+     * Gets the graphicator object of the player.
+     * @returns {Graphicator}
+     */
     get getGraphicator(){
         return this.playerGraphicator;
     }
 
+    /**
+     * Sets the camera of the player.
+     * @param {String} canvasSize 
+     * @param {number} fov in radians.
+     * @param {Array<Enemy>} enemies2D 
+     */
     setCamera(canvasSize, fov, enemies2D){
         this.playerCamera = new Camera(this.scene, canvasSize, fov, this, enemies2D);
     }
 
+    /**
+     * Gets the camera of the player.
+     * @returns {Camera}
+     */
     get getCamera(){
         return this.playerCamera;
     }
@@ -52,7 +71,7 @@ class Player extends Living{
      */
     move(){
         this.setVelocity = 0;
-        this.spriteRays.setVelocity(0);
+        this.spriteRays.setVelocity = 0;
 
         this.setRayData();
 
@@ -85,14 +104,16 @@ class Player extends Living{
             this.setYcomponent();    
     
             if (this.cursors.left.isDown){
-                this.setRotation =  this.adjustAngleValue(this.getRotation - this.playerAngleOperator);
-                
+                this.setAngle =  this.adjustAngleValue(this.getAngle - this.playerAngleOperator);
+                this.setRotation = this.getAngle;
+
             }else if(this.cursors.right.isDown){
-                this.setRotation = this.adjustAngleValue(this.getRotation + this.playerAngleOperator);
+                this.setAngle = this.adjustAngleValue(this.getAngle + this.playerAngleOperator);
+                this.setRotation = this.getAngle;
             }
         }
 
-        this.raycaster.setRayAngle = this.getRotation + this.spriteRays.getInitialRayAngleOffset;
+        this.raycaster.setRayAngle = this.getAngle + this.spriteRays.getInitialRayAngleOffset;
         this.spriteRays.setInitialRayAngleOffset = this.angleOffset;
     }
 }

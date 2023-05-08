@@ -13,13 +13,12 @@ class Enemy extends Living{
     * @param {number} size The size of the sprite in pixels.
     * @param {number} depth The depth of rendering of the sprite.
     * @param {number} defaultVelocity The default velocity for the living sprite.
-    * @param enemyAngleOperator The enemy angle operator in order to rotate the sprite arround.
-    * 
     */
     constructor(scene, enemyOriginInfo, enemyImgStr, size, depth, defaultVelocity, chaseDistance, allowChase){
         super(scene, enemyOriginInfo, enemyImgStr, size, depth, defaultVelocity/2);
 
         this.setRotation = this.originInfo.ang;
+        this.setAngle = this.originInfo.ang;
 
         this.setXcomponent();
         this.setYcomponent();
@@ -42,34 +41,55 @@ class Enemy extends Living{
         this.adjustAngleValue(this.AngleToPlayer);
     }
 
+    /**
+     * Gets the angle of the enemy relative to the player.
+     * @return {number}
+     */
     get getAngleToPlayer(){
         return this.AngleToPlayer;
     }
 
-    setDistanceToPlayer(playerPosition){
-        this.distanceToPlayer = this.hypoCalc(this.getPositionX, playerPosition.x, this.getPositionY, playerPosition.y);
+    /**
+     * Sets the distance between the player and the enemy using the player's position.
+     * @param {Object} player 
+     */
+    setDistanceToPlayer(player){
+        this.distanceToPlayer = this.hypoCalc(this.getPositionX, player.x, this.getPositionY, player.y);
     }
 
+    /**
+     * Gets the distance between the player and the enemy.
+     * @return {number}
+     */
     get getDistanceToPlayer(){
         return this.distanceToPlayer;
     }
 
+    /**
+     * Sets the sprite of the enemy which will be its representation in 3D camera.
+     * @param {number} positionX 
+     * @param {number} positionY 
+     * @param {String} enemyImgStr 
+     * @param {boolean} visible 
+     */
     setEnemy3D(positionX, positionY, enemyImgStr, visible = false){
         this.sprite3D = new Sprite(this.scene, [positionX, positionY, 0], enemyImgStr, this.getSize, 3)
         this.sprite3D.setVisible = visible;
     }
 
+    /**
+     * Gets the sprite of the enemy which will be its representation in 3D camera.
+     */
     get getEnemy3D(){
         return this.sprite3D;
     }
 
     /**
      * This method allows the enemy to have the basic controls of movement according to the stablished parameters.
-     * 
      */
     move(playerPosition){
         this.setVelocity = 0;
-        this.spriteRays.setVelocity(0);
+        this.spriteRays.setVelocity = 0;
         this.setRayData();
 
         this.spriteRays.redrawRay2D(this.getPosition, this.getRayData);
@@ -82,8 +102,6 @@ class Enemy extends Living{
         //We want the enemy to follow us if we are in range of sight and if the distance with the player is less than the distance
         //with the wall.
         if (this.allowChase && this.getDistanceToPlayer <= this.chaseDistance &&  this.getDistanceToPlayer > 50 && (this.getDistanceToPlayer <this.getRayData.distance[0] || this.getRayData.distance[0] == undefined)) {
-            // let enemyXcomponent = Math.cos(this.getAngleToPlayer) * (this.defaultVelocity);
-            // let enemyYcomponent = Math.sin(this.getAngleToPlayer) * (this.defaultVelocity);
             this.setXcomponent();
             this.setYcomponent();
 
@@ -97,8 +115,9 @@ class Enemy extends Living{
                 ray.body.setVelocityY(this.getVelocityY);
             }
         }
-
-        this.setRotation = this.getAngleToPlayer + this.angleOffset;
+        
+        this.setAngle = this.getAngleToPlayer + this.angleOffset
+        this.setRotation = this.getAngle;
 
     }
 }

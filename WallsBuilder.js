@@ -1,3 +1,6 @@
+/**
+ * This class allows the creating of the walls of the game.
+ */
 class WallsBuilder{
     /**
      * The constructor of the walls builder class.

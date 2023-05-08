@@ -1,5 +1,5 @@
 /**
- * This class extends to @param Sprite class, due the "ilving" sprites count with
+ * This class extends to @param Sprite class, due the "living" sprites count with
  * some diferente properties then the "not-living" ones.
  */
 class Living extends Sprite{
@@ -83,6 +83,21 @@ class Living extends Sprite{
     }
 
     /**
+     * Sets the angle of the Living sprite.
+     * @param {number} value
+     */
+    set setAngle(value){
+        this.angle = value;
+    }
+
+    /**
+     * Gets the angle of the Living sprite.
+     */
+    get getAngle(){
+        return this.angle;
+    }
+
+    /**
      * Sets the X component of the velocity according to the rotation stablished of the living sprite.
      */
     setXcomponent(){
@@ -112,9 +127,8 @@ class Living extends Sprite{
         return this.Ycomponent;
     }
 
-
     /**
-     * This method created the raycaster objecto of the sprite.
+     * This method created the raycaster object of the sprite.
      * @param {number} raysAmount The amount of rays that the raycaster should calculate.
      * @param {number} angleOffset The angle offset of the projected rays from the sprite.
      */
@@ -125,14 +139,25 @@ class Living extends Sprite{
         this.raycaster.setMatrix = wallMatrix;
     }
 
+    /**
+     * Gets the raycaster object of the sprite.
+     * @returns {Raycaster}
+     */
     get getRaycaster(){
         return this.raycaster;
     }
 
+    /**
+     * Sets the raydata through the raycaster object.
+     */
     setRayData(){
         this.rayData = this.raycaster.calculateRayData();
     }
 
+    /**
+     * Gets the ray data calculated through the raycaster object.
+     * @returns {Array}
+     */
     get getRayData(){
         return this.rayData;
     }
@@ -148,6 +173,8 @@ class Living extends Sprite{
 
     /**
      * Allows to adjust the angle value of the rotation to be within the range of 0 and 2PI.
+     * @param {Number} angle The angle to be within the range of 0 and 2PI.
+     * @returns {Number}
      */
     adjustAngleValue(angle){
         if(angle < 0){
@@ -160,7 +187,7 @@ class Living extends Sprite{
     }
 
     /**
-     * 
+     * This method calculates the distance between 2 coordinates.
      * @param {number} x1 The x coordinate of the first sprite.  
      * @param {number} x2 The x coordinate of the second sprite. 
      * @param {number} y1 The y coordinate of the first sprite. 

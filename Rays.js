@@ -6,6 +6,8 @@ class Rays{
      * The constructor of the Rays class.
      * @param {Scene} scene The current scene of the game to place the ray.
      * @param {number} raysAmount The amount of rays to graph.
+     * @param {Object} spritePosition The position of the sprite.
+     * @param {String} colorOfRays The color of the rays.
      */
     constructor(scene, raysAmount, spritePosition, colorOfRays){
         this.scene = scene;
@@ -21,30 +23,48 @@ class Rays{
         }
     }
 
+    /**
+     * Sets the initial angle ray offset.
+     * @param {number} rayAngleOffset
+     */
     set setInitialRayAngleOffset(rayAngleOffset){
         this.initialRayAngleOffset = rayAngleOffset;
     }
 
+    /**
+     * Gets the initial angle ray offset.
+     */
     get getInitialRayAngleOffset(){
         return this.initialRayAngleOffset;
     }
 
-    setVelocity(velocity){
+    /**
+     * Sets the velocity in the X component of the rays.
+     * @param {number} value
+     */
+    set setVelocityX(value){
         for(let ray of this.rays){
-            ray.body.setVelocity(velocity);
+            ray.body.setVelocityX(value);
         }
     }
 
-    setVelocityX(velocity){
+    /**
+     * Sets the velocity in the Y component of the rays.
+     * @param {number} value
+     */
+    set setVelocityY(value){
         for(let ray of this.rays){
-            ray.body.setVelocityX(velocity);
+            ray.body.setVelocityY(value);
         }
     }
 
-    setVelocityY(velocity){
-        for(let ray of this.rays){
-            ray.body.setVelocitY(velocity);
-        }
+    /**
+     * Sets the velocity in both axis of the rays.
+     * @param {number} value
+     */
+    set setVelocity(value){
+        this.setVelocityX = value;
+        this.setVelocityY = value;
     }
 
     /**

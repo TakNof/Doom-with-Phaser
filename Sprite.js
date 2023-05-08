@@ -22,14 +22,21 @@ class Sprite{
         this.sprite = scene.add.sprite(this.originInfo.x, this.originInfo.y, spriteImgStr).setDepth(this.depth);
     }
 
+    /**
+     * Sets the size of the sprite.
+     * @param {number} size
+     */
     set setSize(size){
         this.size = size;
     }
 
+    /**
+     * Gets the size of the sprite.
+     * @return {number}
+     */
     get getSize(){
         return this.size;
     }
-
 
     /**
      * Sets the position in X axis of the sprite.
@@ -103,5 +110,21 @@ class Sprite{
      */
     get getDepth(){
         return this.depth;
-    } 
+    }
+
+    /**
+     * Sets the scale of the sprite along the X axis.
+     * @param {number} value
+     */
+    set setScaleX(value){
+        this.sprite.scaleX = value;
+    }
+
+    /**
+     * Sets the scale of the sprite along the Y axis.
+     * @param {number} value
+     */
+    set setScaleY(value){
+        this.sprite.scaleY = value;
+    }
 }

@@ -1,3 +1,6 @@
+/**
+ * This class allows the representation 3D of the walls using the distance between one coordinate and multiple other coordinate points.
+ */
 class Graphicator{
     /**
      * @constructor
@@ -63,10 +66,19 @@ class Graphicator{
         }   
     }
 
+    /**
+     * Gets the rectangle height.
+     * @return {number}
+     */
     get getRectangleHeight(){
         return this.drawHeight;
     }
 
+    /**
+     * Calculates the enemy height according to the distance between the enemy and the player.
+     * @param {number} distance 
+     * @returns {number}
+     */
     setEnemyHeight(distance){
         let drawHeight;
 
@@ -74,8 +86,8 @@ class Graphicator{
             drawHeight = 0;
         }else{
             drawHeight = this.blockSize * this.canvasSize.y/distance;
-            if(drawHeight > 1.3*this.canvasSize.y){
-                drawHeight = 1.3*this.canvasSize.y;
+            if(drawHeight > 1.27*this.canvasSize.y){
+                drawHeight = 1.27*this.canvasSize.y;
             }
         }
 
