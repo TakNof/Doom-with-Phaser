@@ -35,7 +35,7 @@ class Player extends Living{
      * Sets the graphicator object of the player.
      * @param {String} canvasSize 
      */
-    setGraphicator(canvasSize){
+    set setGraphicator(canvasSize){
         this.playerGraphicator = new Graphicator(this.scene, this.size, canvasSize, this.raysAmount);
     }
 
@@ -63,6 +63,30 @@ class Player extends Living{
      */
     get getCamera(){
         return this.playerCamera;
+    }
+
+    setWeapons(canvasSizeX, canvasSizeY, spriteImgsStr){
+        let lenght;
+
+        if(typeof(spriteImgsStr) == Array){
+            lenght = spriteImgsStr.lenght;
+        }else{
+            lenght = 1;
+        }
+
+        this.playerWeapons = Array(lenght);
+
+        for(let i = 0; i < lenght; i++){
+            this.playerWeapons[i] = new Weapons(this.scene, [canvasSizeX/2, canvasSizeY/2, 0], spriteImgsStr[i], 512, 0);
+        }
+
+        for(let i = 1; i < lenght; i++){
+            this.playerWeapons[i].setVisible = false;
+        }
+    }
+
+    get getWeapons(){
+        return this.playerWeapons;
     }
 
     /**
@@ -122,5 +146,12 @@ class Player extends Living{
         }
         
         this.raycaster.setRayAngle = this.getAngle + this.getAngleOffset;
+    }
+
+    shoot(){
+        if(this.keySpace.isDown){
+            this.getWeapons[0].getSprite.play(this.getWeapons[0].getAnimationName);
+            console.log("Shooting");
+        }
     }
 }

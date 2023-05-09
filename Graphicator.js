@@ -39,9 +39,9 @@ class Graphicator{
             this.rectangles[i].setSize(this.rectanglesWidth, this.getRectangleHeight);
     
             if(typeOfHit[i] === "vertical"){
-                this.rectangles[i].setFillStyle("0x004200");
+                this.rectangles[i].setFillStyle(colors.limeGreen);
             }else{
-                this.rectangles[i].setFillStyle("0x00ff00");
+                this.rectangles[i].setFillStyle(colors.DarkGreen);
             }
         }
     }

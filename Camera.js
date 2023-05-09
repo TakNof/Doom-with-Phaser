@@ -23,10 +23,12 @@ class Camera{
 
         this.fovArcRadius = this.fovArcLenght/this.fov;
         this.enemies2D = enemies2D;
-        this.amountEnemies2D = enemies2D.length
+        this.amountEnemies2D = enemies2D.length;
         this.enemyAngleToPlayerInv = Array(this.amountEnemies2D);
 
-        this.setEnemyAngleToPlayerInv();
+        if(this.enemies2D[0] instanceof Enemy){
+            this.setEnemyAngleToPlayerInv();
+        }
         
     }
 
@@ -85,7 +87,9 @@ class Camera{
      */
     draw3DWorld(){
         this.player.getGraphicator.redraw3DScaling(this.player.getRayData.distance, this.player.getRayData.typeOfHit);
-        this.drawEnemy();
+        if(this.enemies2D[0] instanceof Enemy){
+            this.drawEnemy();
+        }
     }
 
     /**

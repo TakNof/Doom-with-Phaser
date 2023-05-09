@@ -146,6 +146,14 @@ class WallsBuilder{
     }
 
     /**
+     * Gets the wall number ratio.
+     * @return {Object}
+     */
+    get getWallNumberRatio(){
+        return this.wallNumberRatio;
+    }
+
+    /**
      * This method allows us to get a number between the specified range.
      * @param {number} min 
      * @param {number} max 

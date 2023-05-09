@@ -1,0 +1,49 @@
+class Weapons extends Sprite{
+    /**
+    * The constructor of Weapons Class.
+    * @constructor
+    * @param {Scene} scene The current scene of the game to place the weapon sprite.
+    * @param {number[]} originInfo  A list with the initial positioning information for the weapon sprite.
+    * @param {string} weapon spriteImgStr An str of the image name given in the preload method of the main class.
+    * @param {number}size The size of the weapon sprite in pixels.
+    * @param {number} depth The depth of rendering of the weapon sprite.
+    * 
+    */
+    constructor(scene, originInfo, spriteImgStr, size, depth){
+        super(scene, originInfo, spriteImgStr, size, depth);
+
+        this.defaultVelocity = defaultVelocity;
+
+        this.setAnimationName();
+    }
+    
+    /**
+     * Sets the animation frames to animate the sprite sheet.
+     * @param {Number} start 
+     * @param {Number} end 
+     */
+    setAnimationFrames(end, framerate, repeat){
+        this.scene.anims.create({
+            key: this.getAnimationName,
+            frames: this.scene.anims.generateFrameNumbers(this.getSpriteImgStr, { start: 0, end: end}),
+            frameRate: framerate,
+            repeat: repeat
+        });
+    }
+
+    /**
+     * Sets the animation name.
+     */
+    setAnimationName(){
+        this.animationName = this.getSpriteImgStr + "Animation";
+    }
+
+    /**
+     * Gets the animation name.
+     * @returns {String}
+     */
+    get getAnimationName(){
+        return this.animationName;
+    }
+
+}

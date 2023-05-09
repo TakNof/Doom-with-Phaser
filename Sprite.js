@@ -17,9 +17,10 @@ class Sprite{
         }
         this.scene = scene;
         this.originInfo = {x: originInfo[0], y: originInfo[1], ang: originInfo[2]};
+        this.spriteImgStr = spriteImgStr;
         this.size = size;
         this.depth = depth;
-        this.sprite = scene.add.sprite(this.originInfo.x, this.originInfo.y, spriteImgStr).setDepth(this.depth);
+        this.sprite = scene.add.sprite(this.originInfo.x, this.originInfo.y, spriteImgStr, 0).setDepth(this.depth);
 
         this.debug = false;
     }
@@ -30,6 +31,14 @@ class Sprite{
      */
     get getSprite(){
         return this.sprite;
+    }
+
+    /**
+     * Gets the sprie name.
+     * @returns {String}
+     */
+    get getSpriteImgStr(){
+        return this.spriteImgStr;
     }
 
     /**

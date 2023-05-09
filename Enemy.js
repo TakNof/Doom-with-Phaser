@@ -53,7 +53,7 @@ class Enemy extends Living{
      * Sets the distance between the player and the enemy using the player's position.
      * @param {Object} player 
      */
-    setDistanceToPlayer(player){
+    set setDistanceToPlayer(player){
         this.distanceToPlayer = this.hypoCalc(this.getPositionX, player.x, this.getPositionY, player.y);
     }
 
@@ -100,11 +100,11 @@ class Enemy extends Living{
 
         this.setAngleToPlayer = playerPosition;
         this.getRaycaster.setRayAngle = this.getAngleToPlayer;
-        this.setDistanceToPlayer(playerPosition);
+        this.setDistanceToPlayer = playerPosition;
         
         //We want the enemy to follow us if we are in range of sight and if the distance with the player is less than the distance
         //with the wall.
-        if (this.allowChase && this.getDistanceToPlayer <= this.chaseDistance &&  this.getDistanceToPlayer > 50 && (this.getDistanceToPlayer <this.getRayData.distance[0] || this.getRayData.distance[0] == undefined)) {
+        if (this.allowChase && this.getDistanceToPlayer <= this.chaseDistance &&  this.getDistanceToPlayer > 100 && (this.getDistanceToPlayer <this.getRayData.distance[0] || this.getRayData.distance[0] == undefined)) {
             this.setXcomponent();
             this.setYcomponent();
 

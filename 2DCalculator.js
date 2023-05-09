@@ -38,7 +38,7 @@ let wallOrder;
 let wallBlockSize = 32;
 let amountWalls = 21;
 let generateWalls = true;
-let generateRandomWalls = true;
+let generateRandomWalls = false;
 
 //Stablishing the player and its initial position.
 let player;
@@ -47,11 +47,14 @@ let playerAngleOffset = 3*Math.PI/2
 let playerFOVangleOffset = playerAngleOffset - playerFOV/2
 
 //Stablishing the enemy and its initial position.
-let enemies = Array(10);
+// let enemies = Array(10);
 
+let amountEnemies = 10;
+let enemies = Array(amountEnemies);
+let cacodemons;
 let enemyangleOffset = Math.PI/2;
 let chaseDistance = 300;
-let allowChase = true;
+let allowChase = false;
 
 
 //Stablishing the velocity standards for the player and enemies.
@@ -64,16 +67,18 @@ let angleOperator = 0.05;
 let raysAmount = 200;
 
 //Stablishing the default color codes for drawing elements.
-let limeGreen = "0x00ff00";
-let DarkGreen = "0x004200";
-let blackColor = "0x000000";
+const colors = {limeGreen: "0x00ff00", DarkGreen : "0x004200", black: "0x000000"};
+
+const weapons = {shotgun: "shotgun"};
 
 //With the preload method we preload the sprites and we generate the object from the raycaster class.
 function preload(){
-    this.load.image("wall", "assets/wall.png", {frameWidth: 32, frameHeight: 32});
-    this.load.image("player", "assets/doomguy64x64.png", {frameWidth: 64, frameHeight: 64});
-    this.load.image("enemy", "assets/enemy.jpg", {frameWidth: 64, frameHeight: 64});
-    this.load.image("cacodemon", "assets/cacodemon.png");
+    this.load.image("wall", "./assets/wall.png", {frameWidth: 32, frameHeight: 32});
+    this.load.image("player", "./assets/doomguy64x64.png", {frameWidth: 64, frameHeight: 64});
+    this.load.image("small_cacodemon", "./assets/enemy.jpg", {frameWidth: 64, frameHeight: 64});
+    this.load.image("cacodemon", "./assets/cacodemon.png");
+
+    this.load.spritesheet(weapons.shotgun, "assets/weapons/shotgun_sprite_sheet.png", {frameWidth: 128, frameHeight: 128});
 }
 
 function create(){
@@ -92,53 +97,40 @@ function create(){
     player.getRaycaster.setAngleStep(playerFOV);
 
     //Here we put the color of the rays of the player.
-    player.setSpriteRays(limeGreen);
+    player.setSpriteRays(colors.limeGreen);
 
     //here we create the graphicator of the raycaster of the player.
-    player.setGraphicator(canvasSize);
+    player.setGraphicator = canvasSize ;
 
     //We set all the elements we need to collide with the walls.
     player.setColliderElements();
 
+    player.setWeapons(canvasSizeX, canvasSizeY, [weapons.shotgun]);
+    player.getWeapons[0].setAnimationFrames(8, 6, 0);
+
     //We load those elements to the walls object.
     walls.setColliders(player.getColliderElements);
 
-    for(let i = 0; i < enemies.length; i++){
-        //Here we create an enemy.
-        enemies[i] =  new Enemy(this, [canvasSizeX/(i + 3), canvasSizeY/(i + 2), 0], "enemy", wallBlockSize*2, 1, defaultVelocity, chaseDistance, allowChase);
-
-        //We pass load the player position due we need the enemy to chase the player.
-        enemies[i].setAngleToPlayer = player.getPosition;
-        
-        //Here we stablish the raycaster of the enemy, we pass it as well the matrix of walls.
-        enemies[i].setRaycaster(walls.getWallMatrix, 1, enemyangleOffset);
-        enemies[i].getRaycaster.setAngleStep();
-        
-        //Here we put the color of the rays of the enemy.
-        enemies[i].setSpriteRays(blackColor);
-
-        //We create an sprite that will be the 3D representation of the enemy.
-        enemies[i].setEnemy3D(canvasSizeX/2, canvasSizeY*1.5, "cacodemon");
-
-        //We set all the elements we need to collide with the walls.
-        enemies[i].setColliderElements();
-
-        //We load those elements to the walls object.
-        walls.setColliders(enemies[i].getColliderElements);
-    }
+    //We create a certain amount of cacodemons.
+    cacodemons = new Cacodemon(this, amountEnemies, walls.getWallMatrix, walls.getWallNumberRatio, wallBlockSize, defaultVelocity, chaseDistance, allowChase);
+    cacodemons.create();
 
     //Here we stablish the camera of the player with the raycaster, graphicator and the enemies positions.
-    player.setCamera(canvasSize, playerFOV, enemies);  
+    player.setCamera(canvasSize, playerFOV, cacodemons.getEnemies);  
 }
 
 function update(){
     //The basic movement of the player.
     player.move();
 
+    player.shoot();
+
     //The basic movement of the enemy according to the player's position.
-    for(let enemy of enemies){
+    for(let enemy of cacodemons.getEnemies){
         enemy.move(player.getPosition);
     }
+
+    cacodemons.correctSpriteDepth();
     
     //Here we draw the 3D representation of the map.
     player.getCamera.draw3DWorld();
