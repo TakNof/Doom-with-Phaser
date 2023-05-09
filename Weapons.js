@@ -15,6 +15,7 @@ class Weapons extends Sprite{
         this.defaultVelocity = defaultVelocity;
 
         this.setAnimationName();
+        this.setSoundEffect();
     }
     
     /**
@@ -25,7 +26,12 @@ class Weapons extends Sprite{
     setAnimationFrames(end, framerate, repeat){
         this.scene.anims.create({
             key: this.getAnimationName,
-            frames: this.scene.anims.generateFrameNumbers(this.getSpriteImgStr, { start: 0, end: end}),
+            frames: this.scene.anims.generateFrameNames(this.getSpriteImgStr, {
+                start: 0,
+                end: end,
+                prefix: this.getSpriteImgStr+"_",
+                suffix: ".png"
+            }),
             frameRate: framerate,
             repeat: repeat
         });
@@ -44,6 +50,17 @@ class Weapons extends Sprite{
      */
     get getAnimationName(){
         return this.animationName;
+    }
+
+    /**
+     * Sets the sound effect of the weapon.
+     */
+    setSoundEffect(){
+        this.soundEffectName = this.scene.sound.add(this.getSpriteImgStr + "_sound");
+    }
+
+    playSoundEffect(){
+        this.soundEffectName.play();
     }
 
 }

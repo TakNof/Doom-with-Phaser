@@ -34,7 +34,7 @@ class Sprite{
     }
 
     /**
-     * Gets the sprie name.
+     * Gets the sprite name.
      * @returns {String}
      */
     get getSpriteImgStr(){

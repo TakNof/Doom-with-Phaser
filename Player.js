@@ -77,7 +77,7 @@ class Player extends Living{
         this.playerWeapons = Array(lenght);
 
         for(let i = 0; i < lenght; i++){
-            this.playerWeapons[i] = new Weapons(this.scene, [canvasSizeX/2, canvasSizeY/2, 0], spriteImgsStr[i], 512, 0);
+            this.playerWeapons[i] = new Weapons(this.scene, [canvasSizeX/2, 2*canvasSizeY - 124, 0], spriteImgsStr[i], 512, 20);
         }
 
         for(let i = 1; i < lenght; i++){
@@ -151,7 +151,7 @@ class Player extends Living{
     shoot(){
         if(this.keySpace.isDown){
             this.getWeapons[0].getSprite.play(this.getWeapons[0].getAnimationName);
-            console.log("Shooting");
+            this.getWeapons[0].playSoundEffect();
         }
     }
 }

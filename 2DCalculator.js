@@ -38,7 +38,7 @@ let wallOrder;
 let wallBlockSize = 32;
 let amountWalls = 21;
 let generateWalls = true;
-let generateRandomWalls = false;
+let generateRandomWalls = true;
 
 //Stablishing the player and its initial position.
 let player;
@@ -54,7 +54,7 @@ let enemies = Array(amountEnemies);
 let cacodemons;
 let enemyangleOffset = Math.PI/2;
 let chaseDistance = 300;
-let allowChase = false;
+let allowChase = true;
 
 
 //Stablishing the velocity standards for the player and enemies.
@@ -69,19 +69,21 @@ let raysAmount = 200;
 //Stablishing the default color codes for drawing elements.
 const colors = {limeGreen: "0x00ff00", DarkGreen : "0x004200", black: "0x000000"};
 
-const weapons = {shotgun: "shotgun"};
+const weapons = {shotgun: "shotgun_sprite_sheet"};
 
 //With the preload method we preload the sprites and we generate the object from the raycaster class.
 function preload(){
     this.load.image("wall", "./assets/wall.png", {frameWidth: 32, frameHeight: 32});
     this.load.image("player", "./assets/doomguy64x64.png", {frameWidth: 64, frameHeight: 64});
-    this.load.image("small_cacodemon", "./assets/enemy.jpg", {frameWidth: 64, frameHeight: 64});
+    this.load.image("small_cacodemon", "./assets/enemy.jpg", {frameWidth: 124, frameHeight: 124});
     this.load.image("cacodemon", "./assets/cacodemon.png");
 
-    this.load.spritesheet(weapons.shotgun, "assets/weapons/shotgun_sprite_sheet.png", {frameWidth: 128, frameHeight: 128});
+    // this.load.spritesheet(weapons.shotgun, "assets/weapons/shotgun_sprite_sheet.png", {frameWidth: 128, frameHeight: 128});
+    this.load.atlas(weapons.shotgun, "assets/weapons/shotgun_sprite_sheet.png", "assets/weapons/shotgun_sprite_sheet.json");
+    this.load.audio(weapons.shotgun + '_sound', "assets/sounds/shotgun-sound.mp3");
 }
 
-function create(){
+function create(){ 
     //Creating the grid.
     grid = this.add.grid(0, 0, canvasSizeX*2, canvasSizeY*2, 32, 32, 0x00b9f2).setAltFillStyle(0x016fce).setOutlineStyle();
 
@@ -106,7 +108,7 @@ function create(){
     player.setColliderElements();
 
     player.setWeapons(canvasSizeX, canvasSizeY, [weapons.shotgun]);
-    player.getWeapons[0].setAnimationFrames(8, 6, 0);
+    player.getWeapons[0].setAnimationFrames(8, 10, 0);
 
     //We load those elements to the walls object.
     walls.setColliders(player.getColliderElements);
