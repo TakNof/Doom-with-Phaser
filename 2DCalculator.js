@@ -71,6 +71,8 @@ const colors = {limeGreen: "0x00ff00", DarkGreen : "0x004200", black: "0x000000"
 
 const weapons = {shotgun: "shotgun_sprite_sheet"};
 
+let music;
+
 //With the preload method we preload the sprites and we generate the object from the raycaster class.
 function preload(){
     this.load.image("wall", "./assets/wall.png", {frameWidth: 32, frameHeight: 32});
@@ -78,9 +80,10 @@ function preload(){
     this.load.image("small_cacodemon", "./assets/enemy.jpg", {frameWidth: 124, frameHeight: 124});
     this.load.image("cacodemon", "./assets/cacodemon.png");
 
-    // this.load.spritesheet(weapons.shotgun, "assets/weapons/shotgun_sprite_sheet.png", {frameWidth: 128, frameHeight: 128});
     this.load.atlas(weapons.shotgun, "assets/weapons/shotgun_sprite_sheet.png", "assets/weapons/shotgun_sprite_sheet.json");
     this.load.audio(weapons.shotgun + '_sound', "assets/sounds/shotgun-sound.mp3");
+
+    this.load.audio("at_dooms_gate", "assets/music/at_dooms_gate.mp3");
 }
 
 function create(){ 
@@ -118,7 +121,11 @@ function create(){
     cacodemons.create();
 
     //Here we stablish the camera of the player with the raycaster, graphicator and the enemies positions.
-    player.setCamera(canvasSize, playerFOV, cacodemons.getEnemies);  
+    player.setCamera(canvasSize, playerFOV, cacodemons.getEnemies); 
+
+    music = this.sound.add('at_dooms_gate');
+    music.setVolume(0.2)
+    music.play();
 }
 
 function update(){
