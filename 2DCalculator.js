@@ -124,7 +124,8 @@ function create(){
     player.setCamera(canvasSize, playerFOV, cacodemons.getEnemies); 
 
     music = this.sound.add('at_dooms_gate');
-    music.setVolume(0.2)
+    music.setVolume(0.2);
+    music.loop = true;
     music.play();
 }
 
