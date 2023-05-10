@@ -7,7 +7,7 @@ class Living extends Sprite{
     * The constructor of Living Class.
     * @constructor
     * @param {Scene} scene The current scene of the game to place the sprite.
-    * @param {number[]} originInfo  A list with the initial positioning information for the sprite.
+    * @param {Object} originInfo  A list with the initial positioning information for the sprite.
     * @param {string} spriteImgStr An str of the image name given in the preload method of the main class.
     * @param {number}size The size of the sprite in pixels.
     * @param {number} depth The depth of rendering of the sprite.
@@ -64,6 +64,14 @@ class Living extends Sprite{
     set setVelocity(value){
         this.setVelocityX = value;
         this.setVelocityY = value;
+    }
+
+    /**
+     * Gets the default velocity of the living sprite.
+     * @returns {number}
+     */
+    get getDefaultVelocity(){
+        return this.defaultVelocity;
     }
 
     /**
@@ -214,6 +222,53 @@ class Living extends Sprite{
      */
     get getColliderElements(){
         return this.colliderElements;
+    }
+
+    /**
+     * Sets the max health of the living sprite.
+     * @param {Number} maxHealth
+     */
+    set setMaxHealth(maxHealth){
+        this.maxHealth = maxHealth;
+    }
+
+    /**
+     * Gets the max health of the living sprite.
+     * @returns {Number}
+     */
+    get getMaxHealth(){
+        return this.maxHealth;
+    }
+
+    /**
+     * Sets the current health of the living sprite.
+     * @param {Number} health
+     */
+    set setHealth(health){
+        this.health = health;
+    }
+
+    /**
+     * Gets the current health of the living sprite.
+     */
+    get getHealth(){
+        return this.health;
+    }
+
+    /**
+     * Checks if the living sprite has recived damage or not.
+     * @param {Projectile} projectile 
+     */
+    checkDamage(projectiles){
+        this.scene.physics.collide(projectiles, this, function(projectile, object){
+            projectile.destroy();
+            if(object.getHealth - projectile.getDamage <= 0){
+                object.getobject.destroy();
+                object.destroy();
+            }else{
+                object.setHealth = object.getHealth - projectile.getDamage;
+            }
+        });
     }
 
     /**

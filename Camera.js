@@ -12,14 +12,14 @@ class Camera{
      */
     constructor(scene, canvasSize, fov, player, enemies2D){
         this.scene = scene;
-        this.canvasSize = {x: parseInt(canvasSize.split("x")[0]), y: parseInt(canvasSize.split("x")[1])};
+        this.canvasSize = canvasSize;
 
         this.fov = fov;
         this.player = player;
         this.setPlayerGlobalAngle();
         this.setArcAngles();
 
-        this.fovArcLenght = this.canvasSize.x;
+        this.fovArcLenght = this.canvasSize.width;
 
         this.fovArcRadius = this.fovArcLenght/this.fov;
         this.enemies2D = enemies2D;
@@ -118,13 +118,11 @@ class Camera{
      * This method draws the enemy in the screen, adjusting its coordinates in x and y axis, its scale and its visibility acording to the angle from it is being seen.
      */
     drawEnemy(){
-        /**
-         * This loops depends on the amount of eneimes.
-         */
-
         //Here we update the player's global angle and the enemies inverted angle.
         this.setPlayerGlobalAngle();
         this.setEnemyAngleToPlayerInv();
+
+        let distances = Array(this.amountEnemies2D);
 
         let adjust;
         for(let i = 0; i < this.amountEnemies2D; i++){
@@ -160,18 +158,44 @@ class Camera{
                 }
                 
                 this.enemies2D[i].getEnemy3D.setPositionX = this.drawElementByPlayerPov(i);
-                this.enemies2D[i].getEnemy3D.setPositionY = (this.canvasSize.y + 0.5*this.canvasSize.y);
-        
-                this.enemies2D[i].getEnemy3D.setDepth = 3;
+                this.enemies2D[i].getEnemy3D.setPositionY = (this.canvasSize.height + 0.5*this.canvasSize.height);                
                 
             }else{
                 this.enemies2D[i].getEnemy3D.setVisible = false;
             }
-            
-            //If the wall is closer to the enemy than the player, we need to set the depth of the enemy behind of the depth of the walls.
-            if(this.enemies2D[i].getDistanceToPlayer > this.enemies2D[i].getRayData.distance[0]){
-                this.enemies2D[i].getEnemy3D.setDepth = 0;
+        }
+
+        /**
+         * This for loop is used to analize the distance of each enemy and estimate the depth of drawing of the enemy
+         */
+        for(let i = 0; i < this.amountEnemies2D; i++){
+            if(this.enemies2D[i].getEnemy3D.getVisible == true){
+                for(let j = 0; j < this.amountEnemies2D; j++){
+                    distances[j] = [this.enemies2D[j].getDistanceToPlayer, j];
+                }
+
+                distances.sort(function(a, b) {
+                    return a[0] - b[0];
+                });
+
+                for(let j = 0; j < this.amountEnemies2D; j++){
+                    distances[j][0] = this.amountEnemies2D - j + 2;
+                }
+
+                distances.sort(function(a, b) {
+                    return a[1] - b[1];
+                });
+
+                for(let i = 0; i < this.amountEnemies2D; i++){
+                    //If the wall is closer to the enemy than the player, we need to set the depth of the enemy behind of the depth of the walls.
+                    if(this.enemies2D[i].getDistanceToPlayer > this.enemies2D[i].getRayData.distance[0]){
+                        this.enemies2D[i].getEnemy3D.setDepth = 0;
+                    }else{
+                        this.enemies2D[i].getEnemy3D.setDepth = distances[i][0];
+                    }
+                }
             }
+            
         }
     }
 }

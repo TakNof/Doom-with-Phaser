@@ -5,7 +5,7 @@ let config = {
     physics: {
         default: 'arcade',
         arcade: {
-            debug: false
+            debug: true
         }
     },
     scene: {
@@ -25,9 +25,8 @@ let config = {
 const game = new Phaser.Game(config);
 
 //Stablishing the canvas size and its components.
-let canvasSize = "1024x768";
-let canvasSizeX = parseInt(canvasSize.split("x")[0]);
-let canvasSizeY = parseInt(canvasSize.split("x")[1]);
+let canvasSizeStr = "1024x768";
+let canvasSize = {width: parseInt(canvasSizeStr.split("x")[0]), height: parseInt(canvasSizeStr.split("x")[1])};
 
 //Visual grid to visualize better the space.
 let grid;
@@ -47,14 +46,12 @@ let playerAngleOffset = 3*Math.PI/2
 let playerFOVangleOffset = playerAngleOffset - playerFOV/2
 
 //Stablishing the enemy and its initial position.
-// let enemies = Array(10);
-
 let amountEnemies = 10;
 let enemies = Array(amountEnemies);
 let cacodemons;
 let enemyangleOffset = Math.PI/2;
 let chaseDistance = 300;
-let allowChase = true;
+let allowChase = false;
 
 
 //Stablishing the velocity standards for the player and enemies.
@@ -67,9 +64,15 @@ let angleOperator = 0.05;
 let raysAmount = 200;
 
 //Stablishing the default color codes for drawing elements.
-const colors = {limeGreen: "0x00ff00", DarkGreen : "0x004200", black: "0x000000"};
+const colors = {
+    limeGreen: "0x00ff00",
+    DarkGreen : "0x004200",
+    black: "0x000000",
+    crimsonRed: "0xDC143C",
+    sapphireBlue: "0x0F52BA"
+};
 
-const weapons = {shotgun: "shotgun_sprite_sheet"};
+const weapons = {shotgun: "shotgun"};
 
 let music;
 
@@ -80,53 +83,63 @@ function preload(){
     this.load.image("small_cacodemon", "./assets/enemy.jpg", {frameWidth: 124, frameHeight: 124});
     this.load.image("cacodemon", "./assets/cacodemon.png");
 
-    this.load.atlas(weapons.shotgun, "assets/weapons/shotgun_sprite_sheet.png", "assets/weapons/shotgun_sprite_sheet.json");
+    this.load.atlas(weapons.shotgun, "assets/weapons/shotgun/shotgun.png", "assets/weapons/shotgun/shotgun.json");
     this.load.audio(weapons.shotgun + '_sound', "assets/sounds/shotgun-sound.mp3");
+    this.load.image("bullet", "./assets/bullet.png", {frameWidth: 12, frameHeight: 12})
 
     this.load.audio("at_dooms_gate", "assets/music/at_dooms_gate.mp3");
 }
 
 function create(){ 
+    this.physics.world.setBounds(0, 0, canvasSize.width, canvasSize.height);
+
     //Creating the grid.
-    grid = this.add.grid(0, 0, canvasSizeX*2, canvasSizeY*2, 32, 32, 0x00b9f2).setAltFillStyle(0x016fce).setOutlineStyle();
+    grid = this.add.grid(0, 0, canvasSize.width*2, canvasSize.height*2, 32, 32, 0x00b9f2).setAltFillStyle(0x016fce).setOutlineStyle();
 
     //Here we create the walls of the map.
-    walls = new WallsBuilder(this, "wall", [canvasSizeX, canvasSizeY], wallBlockSize, amountWalls, generateWalls, generateRandomWalls);
+    walls = new WallsBuilder(this, "wall", canvasSize, wallBlockSize, amountWalls, generateWalls, generateRandomWalls);
     walls.createWalls();
     
     //Here we create the player.
-    player = new Player(this, [canvasSizeX/2, canvasSizeY/2, 0], "player", wallBlockSize*2, 0, defaultVelocity, angleOperator);
+    player = new Player(this, {x: canvasSize.width/2, y:canvasSize.height/2}, "player", wallBlockSize*2, 0, defaultVelocity, angleOperator);
 
     //Here we create the raycaster of the player and we pass it the position of the walls to make the calculations.
     player.setRaycaster(walls.getWallMatrix, raysAmount,  playerFOVangleOffset);
     player.getRaycaster.setAngleStep(playerFOV);
 
     //Here we put the color of the rays of the player.
+    // player.setDebug = true;
     player.setSpriteRays(colors.limeGreen);
 
     //here we create the graphicator of the raycaster of the player.
-    player.setGraphicator = canvasSize ;
+    player.setGraphicator = canvasSize;
 
     //We set all the elements we need to collide with the walls.
     player.setColliderElements();
 
-    player.setWeapons(canvasSizeX, canvasSizeY, [weapons.shotgun]);
-    player.getWeapons[0].setAnimationFrames(8, 10, 0);
+    player.setWeapons(canvasSize, [weapons.shotgun]);
+    player.getPlayerCurrentWeapon.setAnimationFrames(8, 10, 0);
 
     //We load those elements to the walls object.
     walls.setColliders(player.getColliderElements);
 
     //We create a certain amount of cacodemons.
     cacodemons = new Cacodemon(this, amountEnemies, walls.getWallMatrix, walls.getWallNumberRatio, wallBlockSize, defaultVelocity, chaseDistance, allowChase);
-    cacodemons.create();
+    cacodemons.create(player.getPosition);
+
+    for(let enemy of cacodemons.getEnemies){
+        walls.setColliders(enemy.getColliderElements);
+    }
+
+    player.setHUD = canvasSize;
 
     //Here we stablish the camera of the player with the raycaster, graphicator and the enemies positions.
     player.setCamera(canvasSize, playerFOV, cacodemons.getEnemies); 
-
+    
     music = this.sound.add('at_dooms_gate');
-    music.setVolume(0.2);
+    music.setVolume(0.1);
     music.loop = true;
-    music.play();
+    // music.play();
 }
 
 function update(){
@@ -136,11 +149,11 @@ function update(){
     player.shoot();
 
     //The basic movement of the enemy according to the player's position.
-    for(let enemy of cacodemons.getEnemies){
-        enemy.move(player.getPosition);
-    }
+    cacodemons.move(player.getPosition);
 
-    cacodemons.correctSpriteDepth();
+    for(let enemy of cacodemons.getEnemies){
+        enemy.checkDamage(player.getPlayerCurrentWeapon.getProjectiles);
+    }
     
     //Here we draw the 3D representation of the map.
     player.getCamera.draw3DWorld();

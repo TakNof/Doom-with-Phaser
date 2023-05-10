@@ -8,7 +8,7 @@ class Enemy extends Living{
     * The constructor of Enemy Class.
     * @constructor
     * @param {Scene} scene The current scene of the game to place the sprite.
-    * @param {number[]} enemyOriginInfo  A list with the initial positioning information for the sprite.
+    * @param {Object} enemyOriginInfo  A list with the initial positioning information for the sprite.
     * @param {string} enemyImgStr An str of the image name given in the preload method of the main class.
     * @param {number} size The size of the sprite in pixels.
     * @param {number} depth The depth of rendering of the sprite.
@@ -25,6 +25,8 @@ class Enemy extends Living{
 
         this.chaseDistance = chaseDistance;
         this.allowChase = allowChase;
+        const style = {font: "bold 48px Impact", fill: colors.limeGreen.replace("0x", "#"), backgroundColor: colors.DarkGreen.replace("0x", "#")};
+        this.text = this.scene.add.text(0, 0, "", style).setDepth(80);
     }
 
     /**
@@ -101,7 +103,7 @@ class Enemy extends Living{
         this.setAngleToPlayer = playerPosition;
         this.getRaycaster.setRayAngle = this.getAngleToPlayer;
         this.setDistanceToPlayer = playerPosition;
-        
+
         //We want the enemy to follow us if we are in range of sight and if the distance with the player is less than the distance
         //with the wall.
         if (this.allowChase && this.getDistanceToPlayer <= this.chaseDistance &&  this.getDistanceToPlayer > 100 && (this.getDistanceToPlayer <this.getRayData.distance[0] || this.getRayData.distance[0] == undefined)) {
@@ -121,6 +123,10 @@ class Enemy extends Living{
             }
         }
         
+        this.text.setText(`${this.getHealth.toFixed(1)}%`);
+        this.text.x = this.getEnemy3D.getPositionX;
+        this.text.y = this.getEnemy3D.getPositionY;
+
         this.setAngle = this.getAngleToPlayer + this.angleOffset
         this.setRotation = this.getAngle;
     }

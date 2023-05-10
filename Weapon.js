@@ -1,4 +1,4 @@
-class Weapons extends Sprite{
+class Weapon extends Sprite{
     /**
     * The constructor of Weapons Class.
     * @constructor
@@ -9,13 +9,14 @@ class Weapons extends Sprite{
     * @param {number} depth The depth of rendering of the weapon sprite.
     * 
     */
-    constructor(scene, originInfo, spriteImgStr, size, depth){
+    constructor(scene, originInfo, spriteImgStr, size, depth, playerPosition){
         super(scene, originInfo, spriteImgStr, size, depth);
 
         this.defaultVelocity = defaultVelocity;
 
         this.setAnimationName();
         this.setSoundEffect();
+        this.setProjectiles(playerPosition);
     }
     
     /**
@@ -63,4 +64,15 @@ class Weapons extends Sprite{
         this.soundEffectName.play();
     }
 
+    setProjectiles(){
+        this.weaponProjectiles = this.scene.physics.add.group();
+    }
+
+    /**
+     * Gets the weapon's projectiles.
+     * @returns {Projectile}
+     */
+    get getProjectiles(){
+        return this.weaponProjectiles;
+    }
 }

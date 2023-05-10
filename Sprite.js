@@ -6,17 +6,14 @@ class Sprite{
     * The constructor of Sprite Class.
     * @constructor
     * @param {Scene} scene The current scene of the game to place the sprite.
-    * @param {number[]} originInfo  A list with the initial positioning information for the sprite.
+    * @param {Object} originInfo  A list with the initial positioning information for the sprite.
     * @param {string} spriteImgStr An str of the image name given in the preload method of the main class.
     * @param {number}size The size of the sprite in pixels.
     * @param {number} depth The depth of rendering of the sprite.
     */
     constructor(scene, originInfo, spriteImgStr, size, depth){
-        if (originInfo.length !== 3) {
-            throw new Error('La lista debe tener exactamente tres elementos.');
-        }
         this.scene = scene;
-        this.originInfo = {x: originInfo[0], y: originInfo[1], ang: originInfo[2]};
+        this.originInfo = originInfo;
         this.spriteImgStr = spriteImgStr;
         this.size = size;
         this.depth = depth;

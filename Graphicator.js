@@ -9,18 +9,18 @@ class Graphicator{
      * @param {{x: number, y: number}} canvasSize The size of the canvas in pixels.
      * @param {number} raysAmount The amount of rays to draw in the canvas.
      */
-    constructor(scene, blockSize, canvasSize, raysAmount){
+    constructor(scene, canvasSize, blockSize, raysAmount){
         this.scene = scene;
         this.blockSize = blockSize;
-        this.canvasSize = {x: parseInt(canvasSize.split("x")[0]), y: parseInt(canvasSize.split("x")[1])};
+        this.canvasSize = canvasSize;
 
         this.rectanglesAmount = raysAmount;
 
-        this.rectanglesWidth = this.canvasSize.x/this.rectanglesAmount;
+        this.rectanglesWidth = this.canvasSize.width/this.rectanglesAmount;
         this.rectangles = Array(raysAmount);
 
         for(let i = 0; i < this.rectanglesAmount; i++){
-            this.rectangles[i] = this.scene.add.rectangle(this.rectanglesWidth/2 + i*this.rectanglesWidth, this.canvasSize.y + 0.8*this.canvasSize.y, this.rectanglesWidth, this.canvasSize.y/3,"0x00ff00").setDepth(2);;
+            this.rectangles[i] = this.scene.add.rectangle(this.rectanglesWidth/2 + i*this.rectanglesWidth, this.canvasSize.height + 0.8*this.canvasSize.height, this.rectanglesWidth, this.canvasSize.height/3,"0x00ff00").setDepth(1);;
             this.scene.physics.add.existing(this.rectangles[i], false);
         }
 
@@ -35,7 +35,7 @@ class Graphicator{
         //This method allows the recalculation of the 3D ray coordinates and redraws it.
         for(let i = 0; i < this.rectanglesAmount; i++){
             this.setRectangleHeight = rayDistance[i];
-            this.rectangles[i].setPosition(this.rectanglesWidth/2 + i*this.rectanglesWidth, (this.canvasSize.y + 0.8*this.canvasSize.y) - this.getRectangleHeight/2);
+            this.rectangles[i].setPosition(this.rectanglesWidth/2 + i*this.rectanglesWidth, (this.canvasSize.height + 0.8*this.canvasSize.height) - this.getRectangleHeight/2);
             this.rectangles[i].setSize(this.rectanglesWidth, this.getRectangleHeight);
     
             if(typeOfHit[i] === "vertical"){
@@ -59,9 +59,9 @@ class Graphicator{
         if(!isFinite(distance)){
             this.drawHeight = 0;
         }else{
-            this.drawHeight = (this.blockSize*this.canvasSize.y)/distance;
-            if(this.drawHeight > 1.27*this.canvasSize.y){
-                this.drawHeight = 1.27*this.canvasSize.y;
+            this.drawHeight = (this.blockSize*this.canvasSize.height)/distance;
+            if(this.drawHeight > 1.27*this.canvasSize.height){
+                this.drawHeight = 1.27*this.canvasSize.height;
             }
         }   
     }
@@ -75,6 +75,15 @@ class Graphicator{
     }
 
     /**
+     * Sets the rectangle depth.
+     * @param {Number} index 
+     * @param {Number} value 
+     */
+    setRectangleDepth(index, value){
+        this.rectangles[index].setDepth(value);
+    }
+
+    /**
      * Calculates the enemy height according to the distance between the enemy and the player.
      * @param {number} distance 
      * @returns {number}
@@ -85,9 +94,9 @@ class Graphicator{
         if(!isFinite(distance)){
             drawHeight = 0;
         }else{
-            drawHeight = this.blockSize * this.canvasSize.y/distance;
-            if(drawHeight > 1.27*this.canvasSize.y){
-                drawHeight = 1.27*this.canvasSize.y;
+            drawHeight = this.blockSize * this.canvasSize.height/distance;
+            if(drawHeight > 1.27*this.canvasSize.height){
+                drawHeight = 1.27*this.canvasSize.height;
             }
         }
 

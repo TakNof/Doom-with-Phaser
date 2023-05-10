@@ -12,7 +12,11 @@ class Cacodemon{
         this.enemies = new Array(this.amount);
     }
 
-    create(){        
+    /**
+     * Here we create all the enemies.
+     * @param {boolean} value 
+     */
+    create(playerPosition, value){
         let enemiesPlaced = 0;
         let enemyPosition;
 
@@ -28,20 +32,23 @@ class Cacodemon{
                 enemyPosition.y = (i*32 + 32);
 
                 //Here we create an enemy.
-                this.enemies[enemiesPlaced] =  new Enemy(this.scene, [enemyPosition.x, enemyPosition.y, 0], "small_cacodemon", wallBlockSize*2, 1, defaultVelocity, chaseDistance, allowChase);
-
+                this.enemies[enemiesPlaced] =  new Enemy(this.scene, enemyPosition, "small_cacodemon", wallBlockSize*2, 1, defaultVelocity, chaseDistance, allowChase);
+                
                 //We pass load the player position due we need the enemy to chase the player.
-                this.enemies[enemiesPlaced].setAngleToPlayer = player.getPosition;
+                this.enemies[enemiesPlaced].setAngleToPlayer = playerPosition;
                 
                 //Here we stablish the raycaster of the enemy, we pass it as well the matrix of walls.
                 this.enemies[enemiesPlaced].setRaycaster(walls.getWallMatrix, 1, enemyangleOffset);
                 this.enemies[enemiesPlaced].getRaycaster.setAngleStep();
                 
                 //Here we put the color of the rays of the enemy.
-                this.enemies[enemiesPlaced].setSpriteRays(colors.blackColor);
+                this.enemies[enemiesPlaced].setDebug = value;
+                this.enemies[enemiesPlaced].setSpriteRays(colors.black);
+
+                this.enemies[enemiesPlaced].setHealth = 300;
 
                 //We create an sprite that will be the 3D representation of the enemy.
-                this.enemies[enemiesPlaced].setEnemy3D(canvasSizeX/2, canvasSizeY*1.5, "cacodemon");
+                this.enemies[enemiesPlaced].setEnemy3D(canvasSize.width/2, canvasSize.height*1.5, "cacodemon");
 
                 //We set all the elements we need to collide with the walls.
                 this.enemies[enemiesPlaced].setColliderElements();
@@ -51,6 +58,12 @@ class Cacodemon{
         }
 
         this.setColliders();
+    }
+
+    move(playerPosition){
+        for(let enemy of this.getEnemies){
+            enemy.move(playerPosition);
+        }
     }
 
     /**
@@ -69,29 +82,6 @@ class Cacodemon{
             for(let enemy2 of this.enemies){
                 this.scene.physics.add.collider(enemy1.getColliderElements, enemy2.getColliderElements);
             }
-        }
-    }
-
-    /**
-     * This method corrects the depth of the 3D sprites of the enemies, due to the new 
-     */
-    correctSpriteDepth(){
-        let distances = Array(this.amount);
-
-        for(let i = 0; i < this.amount; i++){
-            distances[i] = [this.enemies[i].getDistanceToPlayer, i];
-        }
-
-        distances.sort();
-
-        for(let i = 0; i < this.amount; i++){
-            distances[i][0] = this.amount - i;
-        }
-
-        distances.sort();
-
-        for(let i = 0; i < this.amount; i++){
-            this.enemies[i].getEnemy3D.setDepth = distances[i][0];
         }
     }
 

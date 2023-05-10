@@ -8,7 +8,7 @@ class Player extends Living{
     * The constructor of Player Class.
     * @constructor
     * @param {Scene} scene The current scene of the game to place the sprite.
-    * @param {number[]} playerOriginInfo  A list with the initial positioning information for the sprite.
+    * @param {Object} playerOriginInfo  A list with the initial positioning information for the sprite.
     * @param {string} playerImgStr An str of the image name given in the preload method of the main class.
     * @param {number} size The size of the sprite in pixels.
     * @param {number} depth The depth of rendering of the sprite.
@@ -21,14 +21,16 @@ class Player extends Living{
 
         this.playerAngleOperator = playerAngleOperator;
 
-        this.setRotation = this.originInfo.ang;
-        this.setAngle = this.originInfo.ang;
+        this.setRotation = 0;
+        this.setAngle = 0;
 
         this.setXcomponent();
         this.setYcomponent();
 
         this.cursors = this.scene.input.keyboard.createCursorKeys();
         this.keySpace = this.scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
+        this.setMaxHealth = 100;
+        this.setHealth = this.getMaxHealth;
     }
     
     /**
@@ -36,7 +38,7 @@ class Player extends Living{
      * @param {String} canvasSize 
      */
     set setGraphicator(canvasSize){
-        this.playerGraphicator = new Graphicator(this.scene, this.size, canvasSize, this.raysAmount);
+        this.playerGraphicator = new Graphicator(this.scene, canvasSize, this.size, this.raysAmount);
     }
 
     /**
@@ -58,6 +60,19 @@ class Player extends Living{
     }
 
     /**
+     * Sets the HUD object of the player.
+     * @param {Object} canvasSize
+     */
+    set setHUD(canvasSize){
+        this.playerHUD = new HUD(this.scene, canvasSize);
+        this.playerHUD.setHealthValue = player.getHealth;
+    }
+
+    get getHUD(){
+        return this.playerHUD;
+    }
+
+    /**
      * Gets the camera of the player.
      * @returns {Camera}
      */
@@ -65,7 +80,12 @@ class Player extends Living{
         return this.playerCamera;
     }
 
-    setWeapons(canvasSizeX, canvasSizeY, spriteImgsStr){
+    /**
+     * Sets the list of weapons of the player.
+     * @param {Object} canvasSize
+     * @param {Array<String>} spriteImgsStr 
+     */
+    setWeapons(canvasSize, spriteImgsStr){
         let lenght;
 
         if(typeof(spriteImgsStr) == Array){
@@ -77,16 +97,39 @@ class Player extends Living{
         this.playerWeapons = Array(lenght);
 
         for(let i = 0; i < lenght; i++){
-            this.playerWeapons[i] = new Weapons(this.scene, [canvasSizeX/2, 2*canvasSizeY - 124, 0], spriteImgsStr[i], 512, 20);
+            this.playerWeapons[i] = new Weapon(this.scene, {x: canvasSize.width/2, y: canvasSize.height*1.8}, spriteImgsStr[i], 512, 20, this.getPosition);
         }
 
         for(let i = 1; i < lenght; i++){
             this.playerWeapons[i].setVisible = false;
         }
+        this.playerCurrentWeapon = this.playerWeapons[0];
     }
 
+    /**
+     * Gets the list of weapons of the player.
+     * @returns {Array<Weapon>}
+     */
     get getWeapons(){
         return this.playerWeapons;
+    }
+
+    /**
+     * Sets the current weapon of the player.
+     * @param {Number} index
+     */
+    set setPlayerCurrentWeapon(index){
+        this.playerCurrentWeapon.setVisible = false;
+
+        this.playerCurrentWeapon = this.playerWeapons[index].setVisible = true;
+    }
+
+    /**
+     * Gets the current weapon of the player.
+     * @return {Weapon}
+     */
+    get getPlayerCurrentWeapon(){
+        return this.playerCurrentWeapon;
     }
 
     /**
@@ -150,8 +193,11 @@ class Player extends Living{
 
     shoot(){
         if(this.keySpace.isDown){
-            this.getWeapons[0].getSprite.play(this.getWeapons[0].getAnimationName);
-            this.getWeapons[0].playSoundEffect();
+            this.getPlayerCurrentWeapon.getSprite.play(this.getPlayerCurrentWeapon.getAnimationName);
+            let projectile = new Projectile(this.scene, this.getPosition, "bullet", 32, 80, 100, 30);
+            this.getPlayerCurrentWeapon.getProjectiles.add(projectile.getSprite);
+            projectile.shootProjectile(this);
+            this.getPlayerCurrentWeapon.playSoundEffect();
         }
     }
 }

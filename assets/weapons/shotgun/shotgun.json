@@ -1,7 +1,7 @@
 {
 	"textures": [
 		{
-			"image": "shotgun_sprite_sheet.png",
+			"image": "shotgun.png",
 			"format": "RGBA8888",
 			"size": {
 				"w": 720,
@@ -10,7 +10,7 @@
 			"scale": 1,
 			"frames": [
 				{
-					"filename": "shotgun_sprite_sheet_0.png",
+					"filename": "shotgun_0.png",
 					"rotated": false,
 					"trimmed": false,
 					"sourceSize": {
@@ -31,7 +31,7 @@
 					}
 				},
 				{
-					"filename": "shotgun_sprite_sheet_1.png",
+					"filename": "shotgun_1.png",
 					"rotated": false,
 					"trimmed": false,
 					"sourceSize": {
@@ -52,7 +52,7 @@
 					}
 				},
 				{
-					"filename": "shotgun_sprite_sheet_2.png",
+					"filename": "shotgun_2.png",
 					"rotated": false,
 					"trimmed": false,
 					"sourceSize": {
@@ -73,7 +73,7 @@
 					}
 				},
 				{
-					"filename": "shotgun_sprite_sheet_3.png",
+					"filename": "shotgun_3.png",
 					"rotated": false,
 					"trimmed": false,
 					"sourceSize": {
@@ -94,7 +94,7 @@
 					}
 				},
 				{
-					"filename": "shotgun_sprite_sheet_4.png",
+					"filename": "shotgun_4.png",
 					"rotated": false,
 					"trimmed": false,
 					"sourceSize": {
@@ -115,7 +115,7 @@
 					}
 				},
 				{
-					"filename": "shotgun_sprite_sheet_5.png",
+					"filename": "shotgun_5.png",
 					"rotated": false,
 					"trimmed": false,
 					"sourceSize": {
@@ -136,7 +136,7 @@
 					}
 				},
 				{
-					"filename": "shotgun_sprite_sheet_6.png",
+					"filename": "shotgun_6.png",
 					"rotated": false,
 					"trimmed": false,
 					"sourceSize": {
@@ -157,7 +157,7 @@
 					}
 				},
 				{
-					"filename": "shotgun_sprite_sheet_7.png",
+					"filename": "shotgun_7.png",
 					"rotated": false,
 					"trimmed": false,
 					"sourceSize": {
@@ -178,7 +178,7 @@
 					}
 				},
 				{
-					"filename": "shotgun_sprite_sheet_8.png",
+					"filename": "shotgun_8.png",
 					"rotated": false,
 					"trimmed": false,
 					"sourceSize": {
