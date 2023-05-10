@@ -45,8 +45,6 @@ class Cacodemon{
                 this.enemies[enemiesPlaced].setDebug = value;
                 this.enemies[enemiesPlaced].setSpriteRays(colors.black);
 
-                this.enemies[enemiesPlaced].setHealth = 300;
-
                 //We create an sprite that will be the 3D representation of the enemy.
                 this.enemies[enemiesPlaced].setEnemy3D(canvasSize.width/2, canvasSize.height*1.5, "cacodemon");
 
@@ -60,19 +58,19 @@ class Cacodemon{
         this.setColliders();
     }
 
+     /**
+     * Gets the enemies list.
+     * @returns {Array<Enemy>}
+     */
+     get getEnemies(){
+        return this.enemies;
+    }
+
     move(playerPosition){
         for(let enemy of this.getEnemies){
             enemy.move(playerPosition);
         }
-    }
-
-    /**
-     * Gets the enemies list.
-     * @returns {Array<Enemy>}
-     */
-    get getEnemies(){
-        return this.enemies;
-    }
+    }   
 
     /**
      * Sets the colliders of the enemies.

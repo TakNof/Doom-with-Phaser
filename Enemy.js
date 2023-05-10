@@ -27,6 +27,9 @@ class Enemy extends Living{
         this.allowChase = allowChase;
         const style = {font: "bold 48px Impact", fill: colors.limeGreen.replace("0x", "#"), backgroundColor: colors.DarkGreen.replace("0x", "#")};
         this.text = this.scene.add.text(0, 0, "", style).setDepth(80);
+
+        this.setMaxHealth = 300;
+        this.setHealth = this.getMaxHealth;        
     }
 
     /**

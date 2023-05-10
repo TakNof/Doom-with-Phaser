@@ -9,14 +9,15 @@ class Weapon extends Sprite{
     * @param {number} depth The depth of rendering of the weapon sprite.
     * 
     */
-    constructor(scene, originInfo, spriteImgStr, size, depth, playerPosition){
+    constructor(scene, originInfo, spriteImgStr, size, depth,damagePerBullet){
         super(scene, originInfo, spriteImgStr, size, depth);
 
         this.defaultVelocity = defaultVelocity;
+        this.damagePerBullet = damagePerBullet;
 
         this.setAnimationName();
         this.setSoundEffect();
-        this.setProjectiles(playerPosition);
+        this.setProjectiles();
     }
     
     /**
@@ -74,5 +75,9 @@ class Weapon extends Sprite{
      */
     get getProjectiles(){
         return this.weaponProjectiles;
+    }
+
+    get getDamagePerBullet(){
+        return this.damagePerBullet;
     }
 }

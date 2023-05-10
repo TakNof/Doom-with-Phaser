@@ -5,7 +5,7 @@ let config = {
     physics: {
         default: 'arcade',
         arcade: {
-            debug: true
+            debug: false
         }
     },
     scene: {
@@ -117,7 +117,7 @@ function create(){
     //We set all the elements we need to collide with the walls.
     player.setColliderElements();
 
-    player.setWeapons(canvasSize, [weapons.shotgun]);
+    player.setWeapons(canvasSize, [weapons.shotgun], [30]);
     player.getPlayerCurrentWeapon.setAnimationFrames(8, 10, 0);
 
     //We load those elements to the walls object.
@@ -148,13 +148,20 @@ function update(){
 
     player.shoot();
 
+    for(let i = 0; i < cacodemons.amount; i++){
+        // enemy.evalCollision(player.getPlayerCurrentWeapon.getProjectile.getDamage, player.getPlayerCurrentWeapon.getProjectiles);
+        if(cacodemons.getEnemies[i].evalCollision(player.getPlayerCurrentWeapon.getProjectiles, player.getPlayerCurrentWeapon.getDamagePerBullet)){
+            cacodemons.getEnemies.splice(i, 1);
+            cacodemons.amount -= 1;
+            break;
+        }
+    }
+
     //The basic movement of the enemy according to the player's position.
     cacodemons.move(player.getPosition);
 
-    for(let enemy of cacodemons.getEnemies){
-        enemy.checkDamage(player.getPlayerCurrentWeapon.getProjectiles);
-    }
-    
+    player.getCamera.setEnemies2D(cacodemons.getEnemies);
+
     //Here we draw the 3D representation of the map.
     player.getCamera.draw3DWorld();
 }

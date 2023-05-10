@@ -85,7 +85,7 @@ class Player extends Living{
      * @param {Object} canvasSize
      * @param {Array<String>} spriteImgsStr 
      */
-    setWeapons(canvasSize, spriteImgsStr){
+    setWeapons(canvasSize, spriteImgsStr, damagePerBullet){
         let lenght;
 
         if(typeof(spriteImgsStr) == Array){
@@ -97,7 +97,7 @@ class Player extends Living{
         this.playerWeapons = Array(lenght);
 
         for(let i = 0; i < lenght; i++){
-            this.playerWeapons[i] = new Weapon(this.scene, {x: canvasSize.width/2, y: canvasSize.height*1.8}, spriteImgsStr[i], 512, 20, this.getPosition);
+            this.playerWeapons[i] = new Weapon(this.scene, {x: canvasSize.width/2, y: canvasSize.height*1.8}, spriteImgsStr[i], 512, 20, damagePerBullet[i]);
         }
 
         for(let i = 1; i < lenght; i++){
@@ -192,6 +192,7 @@ class Player extends Living{
     }
 
     shoot(){
+        console.log(this.keySpace);
         if(this.keySpace.isDown){
             this.getPlayerCurrentWeapon.getSprite.play(this.getPlayerCurrentWeapon.getAnimationName);
             let projectile = new Projectile(this.scene, this.getPosition, "bullet", 32, 80, 100, 30);

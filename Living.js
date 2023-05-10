@@ -259,16 +259,27 @@ class Living extends Sprite{
      * Checks if the living sprite has recived damage or not.
      * @param {Projectile} projectile 
      */
-    checkDamage(projectiles){
-        this.scene.physics.collide(projectiles, this, function(projectile, object){
-            projectile.destroy();
-            if(object.getHealth - projectile.getDamage <= 0){
-                object.getobject.destroy();
-                object.destroy();
-            }else{
-                object.setHealth = object.getHealth - projectile.getDamage;
+    evalCollision(projectiles, damage){
+        let thisObject = this;
+        let destroyed = false;
+        this.scene.physics.collide(this.getSprite, projectiles,
+            function(sprite, projectile){
+               destroyed = thisObject.checkDamage(projectile, damage);
             }
-        });
+        );
+        return destroyed;
+    }
+
+    checkDamage(projectile, damage){
+        projectile.destroy();
+            if(this.getHealth - damage <= 0){
+                this.getEnemy3D.getSprite.destroy();
+                this.getSprite.destroy();
+                return true;
+            }else{
+                this.setHealth = this.getHealth - damage;
+                return false;
+            }
     }
 
     /**

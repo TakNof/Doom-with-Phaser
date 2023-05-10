@@ -22,14 +22,18 @@ class Camera{
         this.fovArcLenght = this.canvasSize.width;
 
         this.fovArcRadius = this.fovArcLenght/this.fov;
-        this.enemies2D = enemies2D;
-        this.amountEnemies2D = enemies2D.length;
-        this.enemyAngleToPlayerInv = Array(this.amountEnemies2D);
+        this.setEnemies2D(enemies2D);
+        
+    }
 
+
+    setEnemies2D(enemies){
+        this.enemies2D = enemies;
+        this.amountEnemies2D = this.enemies2D.length;
+        this.enemyAngleToPlayerInv = Array(this.amountEnemies2D);
         if(this.enemies2D[0] instanceof Enemy){
             this.setEnemyAngleToPlayerInv();
         }
-        
     }
 
     /**

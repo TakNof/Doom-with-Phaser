@@ -28,7 +28,7 @@ class Projectile extends Living{
      * @return {number}
      */
     get getDamage(){
-        return this.getDamage;
+        return this.damage;
     }
 
     shootProjectile(livingSprite){
