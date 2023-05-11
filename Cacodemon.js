@@ -10,6 +10,10 @@ class Cacodemon{
         this.allowChase = allowChase;
 
         this.enemies = new Array(this.amount);
+
+        this.bulletProperties = {damage: 10, velocity: 200, delay: 4000};
+        this.distanceLimits = {min: 250, max: 1000};
+        
     }
 
     /**
@@ -45,6 +49,8 @@ class Cacodemon{
                 this.enemies[enemiesPlaced].setDebug = value;
                 this.enemies[enemiesPlaced].setSpriteRays(colors.black);
 
+                this.enemies[enemiesPlaced].setMaxHealth = 200;
+
                 //We create an sprite that will be the 3D representation of the enemy.
                 this.enemies[enemiesPlaced].setEnemy3D(canvasSize.width/2, canvasSize.height*1.5, "cacodemon");
 
@@ -66,11 +72,39 @@ class Cacodemon{
         return this.enemies;
     }
 
+    /**
+     * Allows all the enemies to move and chase the player.
+     * @param {OBject} playerPosition 
+     */
     move(playerPosition){
         for(let enemy of this.getEnemies){
             enemy.move(playerPosition);
         }
     }   
+
+    /**
+     * Allos all the enemies to shoot at the player.
+     */
+    shoot(){
+        for(let enemy of this.getEnemies){
+            enemy.shoot(this.bulletProperties);
+        }
+    }
+
+    /**
+     * Gets the bullet properties of the cacodemons.
+     * @returns {Object}
+     */
+    get getBulletProperties(){
+        return this.bulletProperties;
+    }
+
+    /**
+     * Gets the minimum and maximum distance to deal damage concidering the distance to the object.
+     */
+    get getDistanceLimits(){
+        return this.distanceLimits;
+    }
 
     /**
      * Sets the colliders of the enemies.

@@ -7,13 +7,17 @@ class Weapon extends Sprite{
     * @param {string} weapon spriteImgStr An str of the image name given in the preload method of the main class.
     * @param {number}size The size of the weapon sprite in pixels.
     * @param {number} depth The depth of rendering of the weapon sprite.
-    * 
+    * @param {{number, number, number}} bulletProperties 
+    * The damage per bullet, the projectile velocity and the delay in seconds between the shots for the weapon sprite. 
+    * @param {{number, number}} distanceLimits The minimum and maximum distance to deal damage concidering the distance to the object.
+    * @param {number[]} delayBetweenBullets The delay in seconds between the shots the weapon sprite.
+    *  
     */
-    constructor(scene, originInfo, spriteImgStr, size, depth,damagePerBullet){
+    constructor(scene, originInfo, spriteImgStr, size, depth, {damage, velocity, delay}, {min, max}){
         super(scene, originInfo, spriteImgStr, size, depth);
 
-        this.defaultVelocity = defaultVelocity;
-        this.damagePerBullet = damagePerBullet;
+        this.bulletProperties = {damage: damage, velocity: velocity, delay: delay*1000};
+        this.distanceLimits = {min: min, max: max};
 
         this.setAnimationName();
         this.setSoundEffect();
@@ -61,10 +65,16 @@ class Weapon extends Sprite{
         this.soundEffectName = this.scene.sound.add(this.getSpriteImgStr + "_sound");
     }
 
+    /**
+     * Plays the sound effect of the weapon.
+     */
     playSoundEffect(){
         this.soundEffectName.play();
     }
 
+    /**
+     * Sets the group of projectiles of the weapon.
+     */
     setProjectiles(){
         this.weaponProjectiles = this.scene.physics.add.group();
     }
@@ -77,7 +87,35 @@ class Weapon extends Sprite{
         return this.weaponProjectiles;
     }
 
+    /**
+     * Gets the damage of the weapon's projectile.
+     * @returns {Number}
+     */
     get getDamagePerBullet(){
-        return this.damagePerBullet;
+        return this.bulletProperties.damage;
     }
+
+    /**
+     * Gets the velocity of the weapon's projectile
+     */
+    get getBulletVelocity(){
+        return this.bulletProperties.velocity;
+    }
+
+    /**
+     * Gets the minimum and maximum distance to deal damage concidering the distance to the object
+     * of the weapon's projectile.
+     * @returns {Object}
+     */
+    get getDistanceLimits(){
+        return this.distanceLimits;
+    }
+
+    /**
+     * Gets the delay between shots of the weapon.
+     * @returns {number}
+     */
+    get getDelayBetweenShots(){
+        return this.bulletProperties.delay;
+    }   
 }

@@ -11,10 +11,9 @@ class Projectile extends Living{
     * @param {number} defaultVelocity The default velocity for the living sprite.
     * 
     */
-    constructor(scene, originInfo, spriteImgStr, size, depth, defaultVelocity, damage){
+    constructor(scene, originInfo, spriteImgStr, size, depth, defaultVelocity){
         super(scene, originInfo, spriteImgStr, size, depth, defaultVelocity);
-        this.damage = damage;
-
+        
         this.getSprite.body.onWorldBounds = true;
         this.getSprite.body.world.on('worldbounds', function(body) {
             if (body.gameObject === this.getSprite) {
@@ -24,13 +23,9 @@ class Projectile extends Living{
     }
 
     /**
-     * Gets the damage the projectile can deal.
-     * @return {number}
+     * This method allos to shoot the projectile.
+     * @param {Living} livingSprite 
      */
-    get getDamage(){
-        return this.damage;
-    }
-
     shootProjectile(livingSprite){
         this.setPositionX = livingSprite.getPositionX;
         this.setPositionY = livingSprite.getPositionY;

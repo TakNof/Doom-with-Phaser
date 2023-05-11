@@ -29,6 +29,8 @@ class Player extends Living{
 
         this.cursors = this.scene.input.keyboard.createCursorKeys();
         this.keySpace = this.scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
+        this.keySpace.emitOnRepeat = true;
+
         this.setMaxHealth = 100;
         this.setHealth = this.getMaxHealth;
     }
@@ -63,11 +65,15 @@ class Player extends Living{
      * Sets the HUD object of the player.
      * @param {Object} canvasSize
      */
-    set setHUD(canvasSize){
-        this.playerHUD = new HUD(this.scene, canvasSize);
+    setHUD(canvasSize, enemies = undefined){
+        this.playerHUD = new HUD(this.scene, canvasSize, enemies);
         this.playerHUD.setHealthValue = player.getHealth;
     }
 
+    /**
+     * Gets the HUD object of the player.
+     * @returns {HUD}
+     */
     get getHUD(){
         return this.playerHUD;
     }
@@ -83,24 +89,32 @@ class Player extends Living{
     /**
      * Sets the list of weapons of the player.
      * @param {Object} canvasSize
-     * @param {Array<String>} spriteImgsStr 
+     * @param {Array<Object>} properties
      */
-    setWeapons(canvasSize, spriteImgsStr, damagePerBullet){
-        let lenght;
+    setWeapons(canvasSize, properties){
+        let length;
 
-        if(typeof(spriteImgsStr) == Array){
-            lenght = spriteImgsStr.lenght;
+        if(typeof(properties) == Array){
+            length = properties.length;
         }else{
-            lenght = 1;
+            length = 1;
         }
 
-        this.playerWeapons = Array(lenght);
+        this.playerWeapons = Array(length);
 
-        for(let i = 0; i < lenght; i++){
-            this.playerWeapons[i] = new Weapon(this.scene, {x: canvasSize.width/2, y: canvasSize.height*1.8}, spriteImgsStr[i], 512, 20, damagePerBullet[i]);
+        for(let i = 0; i < length; i++){
+            this.playerWeapons[i] = new Weapon(
+                this.scene,
+                {x: canvasSize.width/2, y: canvasSize.height*1.8},
+                properties[i].name,
+                512,
+                80,
+                properties[i].bulletProperties,
+                properties[i].distanceLimits,
+            );
         }
 
-        for(let i = 1; i < lenght; i++){
+        for(let i = 1; i < length; i++){
             this.playerWeapons[i].setVisible = false;
         }
         this.playerCurrentWeapon = this.playerWeapons[0];
@@ -192,13 +206,19 @@ class Player extends Living{
     }
 
     shoot(){
-        console.log(this.keySpace);
         if(this.keySpace.isDown){
-            this.getPlayerCurrentWeapon.getSprite.play(this.getPlayerCurrentWeapon.getAnimationName);
-            let projectile = new Projectile(this.scene, this.getPosition, "bullet", 32, 80, 100, 30);
-            this.getPlayerCurrentWeapon.getProjectiles.add(projectile.getSprite);
-            projectile.shootProjectile(this);
-            this.getPlayerCurrentWeapon.playSoundEffect();
+            let time = this.scene.time.now;
+            if (time - this.lastShotTimer > this.playerCurrentWeapon.getDelayBetweenShots) {
+                this.getPlayerCurrentWeapon.getSprite.play(this.getPlayerCurrentWeapon.getAnimationName);
+                let projectile = new Projectile(this.scene, this.getPosition, "bullet", 32, 80, this.playerCurrentWeapon.getBulletVelocity);
+                this.getPlayerCurrentWeapon.getProjectiles.add(projectile.getSprite);
+                projectile.shootProjectile(this);
+                this.getPlayerCurrentWeapon.playSoundEffect();
+
+                this.lastShotTimer = time;
+            }
         }
     }
+
+
 }

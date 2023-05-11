@@ -173,7 +173,7 @@ class Camera{
          * This for loop is used to analize the distance of each enemy and estimate the depth of drawing of the enemy
          */
         for(let i = 0; i < this.amountEnemies2D; i++){
-            if(this.enemies2D[i].getEnemy3D.getVisible == true){
+            if(this.enemies2D[i].getEnemy3D.getVisible){
                 for(let j = 0; j < this.amountEnemies2D; j++){
                     distances[j] = [this.enemies2D[j].getDistanceToPlayer, j];
                 }

@@ -23,6 +23,8 @@ class Living extends Sprite{
         this.sprite.body.setSize(this.size, this.size, true);
         this.sprite.body.setAllowRotation(true);
         this.sprite.body.setCollideWorldBounds(true);
+
+        this.lastShotTimer = 0;
     }
 
     /**
@@ -230,6 +232,7 @@ class Living extends Sprite{
      */
     set setMaxHealth(maxHealth){
         this.maxHealth = maxHealth;
+        this.setHealth = maxHealth;
     }
 
     /**
@@ -256,30 +259,55 @@ class Living extends Sprite{
     }
 
     /**
-     * Checks if the living sprite has recived damage or not.
-     * @param {Projectile} projectile 
+     * Checks if the living sprite have been impacted by a projectile or not.
+     * @param {Projectile} projectiles
+     * @param {Number} damage
+     * @param {Object} distanceLimits 
+     * @param {Number} currentDistance
      */
-    evalCollision(projectiles, damage){
+    evalCollision(projectiles, damage, distanceLimits, currentDistance){
         let thisObject = this;
         let destroyed = false;
         this.scene.physics.collide(this.getSprite, projectiles,
             function(sprite, projectile){
-               destroyed = thisObject.checkDamage(projectile, damage);
+               destroyed = thisObject.__checkDamage(projectile, damage, distanceLimits, currentDistance);
             }
         );
         return destroyed;
     }
 
-    checkDamage(projectile, damage){
+    /**
+     * This method is called when a projectile has collided with a living sprite,
+     * here he health and the state of the living sprite is determined by the
+     * damage and limit distances of the projected projectiles.
+     * @param {Projectile} projectile 
+     * @param {Number} damage 
+     * @param {Object} distanceLimits 
+     * @param {Number} currentDistance 
+     * @returns 
+     */
+    __checkDamage(projectile, damage, distanceLimits, currentDistance){
         projectile.destroy();
-            if(this.getHealth - damage <= 0){
+        if(currentDistance > distanceLimits.min && currentDistance < distanceLimits.max){
+            damage *= currentDistance/500; 
+        }else if(currentDistance >= distanceLimits.max){
+            damage *= this.size/distanceLimits.max;
+        }else if(currentDistance <= distanceLimits.min){
+            damage *= 1.8;
+        }
+
+        if(this.getHealth - damage <= 0){
+            if(this instanceof Enemy){
                 this.getEnemy3D.getSprite.destroy();
                 this.getSprite.destroy();
-                return true;
             }else{
-                this.setHealth = this.getHealth - damage;
-                return false;
+                this.getHUD.displayDeathText();
             }
+            return true;
+        }else{
+            this.setHealth = this.getHealth - damage;
+            return false;
+        }
     }
 
     /**

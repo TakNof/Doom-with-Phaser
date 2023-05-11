@@ -121,6 +121,18 @@ class WallsBuilder{
     }
 
     /**
+     * Checks if the walls have been impacted by a projectile or not.
+     * @param {Projectile} projectiles
+     */
+    evalCollision(projectiles){
+        this.scene.physics.collide(this.walls, projectiles,
+            function(sprite, projectile){
+                projectile.destroy();
+            }
+        );
+    }
+
+    /**
      * This method creates the base matrix fulled of booleans to create the wall.
      */
     setWallMatrix(){    

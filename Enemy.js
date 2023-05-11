@@ -23,13 +23,12 @@ class Enemy extends Living{
         this.setXcomponent();
         this.setYcomponent();
 
+        this.setProjectiles();
+
         this.chaseDistance = chaseDistance;
         this.allowChase = allowChase;
-        const style = {font: "bold 48px Impact", fill: colors.limeGreen.replace("0x", "#"), backgroundColor: colors.DarkGreen.replace("0x", "#")};
-        this.text = this.scene.add.text(0, 0, "", style).setDepth(80);
 
-        this.setMaxHealth = 300;
-        this.setHealth = this.getMaxHealth;        
+        this.inSight = false;
     }
 
     /**
@@ -80,6 +79,7 @@ class Enemy extends Living{
     setEnemy3D(positionX, positionY, enemyImgStr, visible = false){
         this.sprite3D = new Sprite(this.scene, [positionX, positionY, 0], enemyImgStr, this.getSize, 3)
         this.sprite3D.setVisible = visible;
+        this.setAttackSoundEffect();
     }
 
     /**
@@ -87,6 +87,34 @@ class Enemy extends Living{
      */
     get getEnemy3D(){
         return this.sprite3D;
+    }
+
+    /**
+     * Sets the group of projectiles of the enemy.
+     */
+    setProjectiles(){
+        this.enemyProjectiles = this.scene.physics.add.group();
+    }
+
+    /**
+     * Gets the enemy projectiles.
+     */
+    get getProjectiles(){
+        return this.enemyProjectiles;
+    }
+
+    /**
+     * Sets the sound effect of the enemy.
+     */
+    setAttackSoundEffect(){
+        this.attackSoundEffectName = this.scene.sound.add(this.getEnemy3D.getSpriteImgStr + "_attack_sound");
+    }
+
+    /**
+     * Plays the sound effect of the enemy.
+     */
+    playAttackSoundEffect(){
+        this.attackSoundEffectName.play();
     }
 
     /**
@@ -109,7 +137,7 @@ class Enemy extends Living{
 
         //We want the enemy to follow us if we are in range of sight and if the distance with the player is less than the distance
         //with the wall.
-        if (this.allowChase && this.getDistanceToPlayer <= this.chaseDistance &&  this.getDistanceToPlayer > 100 && (this.getDistanceToPlayer <this.getRayData.distance[0] || this.getRayData.distance[0] == undefined)) {
+        if (this.allowChase && this.getDistanceToPlayer <= this.chaseDistance &&  this.getDistanceToPlayer > 200 && (this.getDistanceToPlayer <this.getRayData.distance[0] || this.getRayData.distance[0] == undefined)) {           
             this.setXcomponent();
             this.setYcomponent();
 
@@ -125,12 +153,28 @@ class Enemy extends Living{
                 }
             }
         }
-        
-        this.text.setText(`${this.getHealth.toFixed(1)}%`);
-        this.text.x = this.getEnemy3D.getPositionX;
-        this.text.y = this.getEnemy3D.getPositionY;
 
+        if(this.getDistanceToPlayer <= this.chaseDistance && this.getDistanceToPlayer <this.getRayData.distance[0] || this.getRayData.distance[0] == undefined){
+            this.inSight = true;
+        }else{
+            this.inSight = false;
+        }
+        
         this.setAngle = this.getAngleToPlayer + this.angleOffset
         this.setRotation = this.getAngle;
+    }
+
+    shoot(properties){
+        if(this.inSight){
+            let time = this.scene.time.now;
+            if (time - this.lastShotTimer > properties.delay) {
+                let projectile = new Projectile(this.scene, this.getPosition, "bullet", 32, 80, properties.velocity);
+                this.getProjectiles.add(projectile.getSprite);
+                projectile.shootProjectile(this);
+                this.playAttackSoundEffect();
+
+                this.lastShotTimer = time;
+            }
+        }
     }
 }
