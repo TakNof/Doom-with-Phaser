@@ -301,8 +301,9 @@ class Living extends Sprite{
                 this.getEnemy3D.getSprite.destroy();
                 this.getSprite.destroy();
             }else{
-                this.getHUD.displayDeathText();
+                this.isAlive = false;
             }
+            this.setHealth = 0;
             return true;
         }else{
             this.setHealth = this.getHealth - damage;

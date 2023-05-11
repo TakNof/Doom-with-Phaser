@@ -33,6 +33,8 @@ class Player extends Living{
 
         this.setMaxHealth = 100;
         this.setHealth = this.getMaxHealth;
+
+        this.isAlive = true;
     }
     
     /**
@@ -144,6 +146,15 @@ class Player extends Living{
      */
     get getPlayerCurrentWeapon(){
         return this.playerCurrentWeapon;
+    }
+
+    
+    /**
+     * Sets the alive state of the player.
+     * @param {boolean} 
+     */
+    get getIsAlive(){
+        return this.isAlive;
     }
 
     /**

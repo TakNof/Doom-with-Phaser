@@ -37,7 +37,7 @@ let wallOrder;
 let wallBlockSize = 32;
 let amountWalls = 21;
 let generateWalls = true;
-let generateRandomWalls = false;
+let generateRandomWalls = true;
 
 //Stablishing the player and its initial position.
 let player;
@@ -51,7 +51,7 @@ let enemies = Array(amountEnemies);
 let cacodemons;
 let enemyangleOffset = Math.PI/2;
 let chaseDistance = 500;
-let allowChase = false;
+let allowChase = true;
 
 
 //Stablishing the velocity standards for the player and enemies.
@@ -159,56 +159,64 @@ function create(){
     music = this.sound.add('at_dooms_gate');
     music.setVolume(0.5);
     music.loop = true;
-    // music.play();
+    music.play();
 }
 
 function update(){
     //The basic movement of the player.
-    player.move();
+    if(player.getIsAlive){
+        player.move();
 
-    player.shoot();
+        player.shoot();
 
-    // player.getHUD.setEnemiesHealthValue = cacodemons.getEnemies;
-
-    for(let i = 0; i < cacodemons.amount; i++){
-        walls.evalCollision(cacodemons.getEnemies[i].getProjectiles);
-
-        if(cacodemons.getEnemies[i].evalCollision(
-            player.getPlayerCurrentWeapon.getProjectiles,
-            player.getPlayerCurrentWeapon.getDamagePerBullet,
-            player.getPlayerCurrentWeapon.getDistanceLimits,
-            cacodemons.getEnemies[i].getDistanceToPlayer)){
-
-            cacodemons.getEnemies.splice(i, 1);
-            cacodemons.amount -= 1;
-            
-            // player.getHUD.getEnemiesHealthValue[i].destroy();
-            // player.getHUD.getEnemiesHealthValue.splice(i, 1);
-
-            // player.getHUD.setEnemiesHealthArray = cacodemons.getEnemies;
-            break;
+        for(let i = 0; i < cacodemons.amount; i++){
+            walls.evalCollision(cacodemons.getEnemies[i].getProjectiles);
+    
+            if(cacodemons.getEnemies[i].evalCollision(
+                player.getPlayerCurrentWeapon.getProjectiles,
+                player.getPlayerCurrentWeapon.getDamagePerBullet,
+                player.getPlayerCurrentWeapon.getDistanceLimits,
+                cacodemons.getEnemies[i].getDistanceToPlayer)){
+    
+                cacodemons.getEnemies.splice(i, 1);
+                cacodemons.amount -= 1;
+                
+                // player.getHUD.getEnemiesHealthValue[i].destroy();
+                // player.getHUD.getEnemiesHealthValue.splice(i, 1);
+    
+                // player.getHUD.setEnemiesHealthArray = cacodemons.getEnemies;
+                break;
+            }
+    
+            player.evalCollision(
+                cacodemons.getEnemies[i].getProjectiles,
+                cacodemons.getBulletProperties.damage,
+                cacodemons.getDistanceLimits,
+                cacodemons.getEnemies[i].getDistanceToPlayer
+            );
+    
+            player.getHUD.setHealthValue = player.getHealth;
+           
         }
-
-        player.evalCollision(
-            cacodemons.getEnemies[i].getProjectiles,
-            cacodemons.getBulletProperties.damage,
-            cacodemons.getDistanceLimits,
-            cacodemons.getEnemies[i].getDistanceToPlayer
-        );
-
-        player.getHUD.setHealthValue = player.getHealth;
-       
+    
+        
+        walls.evalCollision(player.getPlayerCurrentWeapon.getProjectiles);
+        
+    
+        //The basic movement of the enemy according to the player's position.
+        cacodemons.move(player.getPosition);
+    
+        cacodemons.shoot();
+    }else{
+        player.setVelocity = 0;
+        player.getHUD.displayDeathText();
     }
 
+    if(cacodemons.getEnemies.length == 0){
+        player.getHUD.displayVictoryText();
+    }
     
-
-    walls.evalCollision(player.getPlayerCurrentWeapon.getProjectiles);
-    
-
-    //The basic movement of the enemy according to the player's position.
-    cacodemons.move(player.getPosition);
-
-    cacodemons.shoot();
+    // player.getHUD.setEnemiesHealthValue = cacodemons.getEnemies;
 
     player.getCamera.setEnemies2D(cacodemons.getEnemies);
 

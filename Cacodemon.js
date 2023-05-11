@@ -11,7 +11,7 @@ class Cacodemon{
 
         this.enemies = new Array(this.amount);
 
-        this.bulletProperties = {damage: 10, velocity: 200, delay: 4000};
+        this.bulletProperties = {damage: 15, velocity: 200, delay: 4000};
         this.distanceLimits = {min: 250, max: 1000};
         
     }
