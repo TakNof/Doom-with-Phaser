@@ -158,18 +158,18 @@ class Camera{
             if(this.enemyAngleToPlayerInv[i] > this.getArcAngles.x0 - 2*Math.PI*adjust.x0 && this.enemyAngleToPlayerInv[i] < this.getArcAngles.x1024 + 2*Math.PI*adjust.x1024){
                 this.enemies2D[i].getEnemy3D.setVisible = true;
 
-                this.enemies2D[i].getProjectiles.children.iterate((child)=>{
-                    child.getProjectiles3D.setVisible = true;
-                });
+                // this.enemies2D[i].getProjectiles.children.iterate((child)=>{
+                //     child.getProjectiles3D.setVisible = true;
+                // });
 
-                this.enemies2D[i].getProjectiles.children.iterate((child)=>{
-                    let projectileHeight = this.player.getGraphicator.setEnemyHeight(
-                        this.enemies2D[i].hypoCalc(
-                            this.player.getPositionX, child.getPositionX,
-                            this.player.getPositionY, child.getPositionY
-                        )
-                    );
-                });
+                // this.enemies2D[i].getProjectiles.children.iterate((child)=>{
+                //     let projectileHeight = this.player.getGraphicator.setEnemyHeight(
+                //         this.enemies2D[i].hypoCalc(
+                //             this.player.getPositionX, child.getPositionX,
+                //             this.player.getPositionY, child.getPositionY
+                //         )
+                //     );
+                // });
 
 
                 let enemyHeight = this.player.getGraphicator.setEnemyHeight(this.enemies2D[i].getDistanceToPlayer);
