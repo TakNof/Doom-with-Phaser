@@ -13,10 +13,10 @@ class Weapon extends Sprite{
     * @param {number[]} delayBetweenBullets The delay in seconds between the shots the weapon sprite.
     *  
     */
-    constructor(scene, originInfo, spriteImgStr, size, depth, {damage, velocity, delay}, {min, max}){
+    constructor(scene, originInfo, spriteImgStr, size, depth, {damage, velocity, delay, critical}, {min, max}){
         super(scene, originInfo, spriteImgStr, size, depth);
 
-        this.bulletProperties = {damage: damage, velocity: velocity, delay: delay*1000};
+        this.bulletProperties = {damage: damage, velocity: velocity, delay: delay*1000, critical, critical};
         this.distanceLimits = {min: min, max: max};
 
         this.setAnimationName();
@@ -88,11 +88,27 @@ class Weapon extends Sprite{
     }
 
     /**
+     * Gets the bullet properties of the weapon's projectile.
+     * @returns {Object}
+     */
+    get getBulletProperties(){
+        return this.bulletProperties;
+    }
+
+    /**
      * Gets the damage of the weapon's projectile.
      * @returns {Number}
      */
     get getDamagePerBullet(){
         return this.bulletProperties.damage;
+    }
+    
+    /**
+     * Gets the critical damge of the weapon's projectile
+     * @returns {Number}
+     */
+    get getCriticalDamage(){
+        return this.bulletProperties.critical;
     }
 
     /**

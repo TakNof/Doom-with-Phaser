@@ -265,12 +265,12 @@ class Living extends Sprite{
      * @param {Object} distanceLimits 
      * @param {Number} currentDistance
      */
-    evalCollision(projectiles, damage, distanceLimits, currentDistance){
+    evalCollision(projectiles, bulletProperties, distanceLimits, currentDistance){
         let thisObject = this;
         let destroyed = false;
         this.scene.physics.collide(this.getSprite, projectiles,
             function(sprite, projectile){
-               destroyed = thisObject.__checkDamage(projectile, damage, distanceLimits, currentDistance);
+               destroyed = thisObject.__checkDamage(projectile, bulletProperties, distanceLimits, currentDistance);
             }
         );
         return destroyed;
@@ -286,14 +286,18 @@ class Living extends Sprite{
      * @param {Number} currentDistance 
      * @returns 
      */
-    __checkDamage(projectile, damage, distanceLimits, currentDistance){
+    __checkDamage(projectile, bulletProperties, distanceLimits, currentDistance){
         projectile.destroy();
+        let damage = bulletProperties.damage;
         if(currentDistance > distanceLimits.min && currentDistance < distanceLimits.max){
-            damage *= currentDistance/500; 
+            damage *= 220/currentDistance;
+            console.log(`${typeof(this)} Normal damage ${damage}`);
         }else if(currentDistance >= distanceLimits.max){
-            damage *= this.size/distanceLimits.max;
+            damage *= 1/distanceLimits.max;
+            console.log(`${typeof(this)} Minimal damage ${damage}`);
         }else if(currentDistance <= distanceLimits.min){
-            damage *= 1.8;
+            damage *= bulletProperties.critical * 220/currentDistance;
+            console.log(`${typeof(this)} Critical damage ${damage}`);
         }
 
         if(this.getHealth - damage <= 0){

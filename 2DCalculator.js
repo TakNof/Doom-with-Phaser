@@ -2,6 +2,7 @@ let config = {
     type: Phaser.AUTO   ,
     parent: 'phaser-example',
     backgroundColor: '#000000',
+    antialiasGL: false,
     physics: {
         default: 'arcade',
         arcade: {
@@ -15,7 +16,7 @@ let config = {
         parent: "scene1"
     },
     scale: {
-        width: 2048,
+        width: 1024,
         height: 1523
     },
 
@@ -25,7 +26,7 @@ let config = {
 const game = new Phaser.Game(config);
 
 //Stablishing the canvas size and its components.
-let canvasSizeStr = "2048x768";
+let canvasSizeStr = "1024x768";
 let canvasSize = {width: parseInt(canvasSizeStr.split("x")[0]), height: parseInt(canvasSizeStr.split("x")[1])};
 
 //Visual grid to visualize better the space.
@@ -35,7 +36,7 @@ let grid;
 let walls;
 let wallOrder;
 let wallBlockSize = 32;
-let amountWalls = 21;
+let amountWalls = 10;
 let generateWalls = true;
 let generateRandomWalls = true;
 
@@ -61,7 +62,7 @@ let defaultVelocity = 300;
 let angleOperator = 0.05;
 
 //Stablishing the raycaster elements.
-let raysAmount = 200;
+let raysAmount = 100;
 
 //Stablishing the default color codes for drawing elements.
 const colors = {
@@ -78,10 +79,11 @@ const shotgun = {
     bulletProperties:{
         damage: 80,
         velocity: 1000,
-        delay: 1
+        delay: 1,
+        critical: 2.2
     },
     distanceLimits:{
-        min: 250,
+        min: 180,
         max: 1000
     },
     soundDir: "./assets/sounds/weapons/shotgun/shotgun-sound.mp3",
@@ -159,7 +161,7 @@ function create(){
     music = this.sound.add('at_dooms_gate');
     music.setVolume(0.5);
     music.loop = true;
-    music.play();
+    // music.play();
 }
 
 function update(){
@@ -174,7 +176,7 @@ function update(){
     
             if(cacodemons.getEnemies[i].evalCollision(
                 player.getPlayerCurrentWeapon.getProjectiles,
-                player.getPlayerCurrentWeapon.getDamagePerBullet,
+                player.getPlayerCurrentWeapon.getBulletProperties,
                 player.getPlayerCurrentWeapon.getDistanceLimits,
                 cacodemons.getEnemies[i].getDistanceToPlayer)){
     
@@ -190,26 +192,28 @@ function update(){
     
             player.evalCollision(
                 cacodemons.getEnemies[i].getProjectiles,
-                cacodemons.getBulletProperties.damage,
+                cacodemons.getBulletProperties,
                 cacodemons.getDistanceLimits,
                 cacodemons.getEnemies[i].getDistanceToPlayer
             );
-    
             player.getHUD.setHealthValue = player.getHealth;
            
         }
-    
         
+        // player.getHUD.setEnemiesHealthValue = cacodemons.getEnemies;
+
         walls.evalCollision(player.getPlayerCurrentWeapon.getProjectiles);
         
     
         //The basic movement of the enemy according to the player's position.
         cacodemons.move(player.getPosition);
     
-        cacodemons.shoot();
+        // cacodemons.shoot();
     }else{
-        player.setVelocity = 0;
         player.getHUD.displayDeathText();
+        setTimeout(() => {
+            this.scene.pause();
+        }, 1000);
     }
 
     if(cacodemons.getEnemies.length == 0){
