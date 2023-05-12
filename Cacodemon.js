@@ -83,11 +83,11 @@ class Cacodemon{
     }   
 
     /**
-     * Allos all the enemies to shoot at the player.
+     * Allows all the enemies to shoot at the player.
      */
-    shoot(){
+    shoot(playerAngle){
         for(let enemy of this.getEnemies){
-            enemy.shoot(this.bulletProperties);
+            enemy.shoot(this.bulletProperties, this.getRndInteger(0, 9), playerAngle);
         }
     }
 

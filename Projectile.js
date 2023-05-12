@@ -23,6 +23,26 @@ class Projectile extends Living{
     }
 
     /**
+     * Sets the sprite of the projectile which will be its representation in 3D camera.
+     * @param {number} positionX 
+     * @param {number} positionY 
+     * @param {String} projectileImgStr 
+     * @param {boolean} visible 
+     */
+    setProjectile3D(positionX, positionY, ProjectileImgStr, visible = false){
+        this.sprite3D = new Sprite(this.scene, {x: positionX, y: positionY}, ProjectileImgStr, this.getSize, 3)
+        this.sprite3D.setVisible = visible;
+    }
+
+    /**
+     * Gets the sprite of the Projectile which will be its representation in 3D camera.
+     */
+    get getProjectile3D(){
+        return this.sprite3D;
+    }
+
+
+    /**
      * This method allos to shoot the projectile.
      * @param {Living} livingSprite 
      */

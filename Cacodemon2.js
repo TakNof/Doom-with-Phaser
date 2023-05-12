@@ -1,4 +1,4 @@
-class Cacodemon{
+class Cacodemon2{
     constructor(scene, amount, wallMatrix, wallNumberRatio, wallBlockSize, defaultVelocity, chaseDistance, allowChase){
         this.scene = scene;
         this.amount = amount;
@@ -9,7 +9,7 @@ class Cacodemon{
         this.chaseDistance = chaseDistance;
         this.allowChase = allowChase;
 
-        this.enemies = new Array(this.amount);
+        this.enemies = this.scene.add.group();
 
         this.bulletProperties = {damage: 15, velocity: 200, delay: 4000, critical: 1.8};
         this.distanceLimits = {min: 250, max: 1000};
@@ -23,7 +23,7 @@ class Cacodemon{
     create(playerPosition, value){
         let enemiesPlaced = 0;
         let enemyPosition;
-
+    
         let i;
         let j;
         while(enemiesPlaced < this.amount){
@@ -36,26 +36,9 @@ class Cacodemon{
                 enemyPosition.y = (i*32 + 32);
 
                 //Here we create an enemy.
-                this.enemies[enemiesPlaced] =  new Enemy(this.scene, enemyPosition, "small_cacodemon", wallBlockSize*2, 1, defaultVelocity, chaseDistance, allowChase);
-                
-                //We pass load the player position due we need the enemy to chase the player.
-                this.enemies[enemiesPlaced].setAngleToPlayer = playerPosition;
-                
-                //Here we stablish the raycaster of the enemy, we pass it as well the matrix of walls.
-                this.enemies[enemiesPlaced].setRaycaster(walls.getWallMatrix, 1, enemyangleOffset);
-                this.enemies[enemiesPlaced].getRaycaster.setAngleStep();
-                
-                //Here we put the color of the rays of the enemy.
-                this.enemies[enemiesPlaced].setDebug = value;
-                this.enemies[enemiesPlaced].setSpriteRays(colors.black);
+                // enemy =  new Enemy(this.scene, enemyPosition, "small_cacodemon", blockSize*2, 1, defaultVelocity, chaseDistance, allowChase);
 
-                this.enemies[enemiesPlaced].setMaxHealth = 200;
-
-                //We create an sprite that will be the 3D representation of the enemy.
-                this.enemies[enemiesPlaced].setEnemy3D(canvasSize.width/2, canvasSize.height*1.5, "cacodemon");
-
-                //We set all the elements we need to collide with the walls.
-                this.enemies[enemiesPlaced].setColliderElements();
+                this.enemies.add(new Sprite(this.scene, enemyPosition, "small_cacodemon", this.blockSize*2, 1));
 
                 enemiesPlaced += 1;
             }

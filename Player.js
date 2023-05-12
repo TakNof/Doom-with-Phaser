@@ -9,14 +9,15 @@ class Player extends Living{
     * @constructor
     * @param {Scene} scene The current scene of the game to place the sprite.
     * @param {Object} playerOriginInfo  A list with the initial positioning information for the sprite.
-    * @param {string} playerImgStr An str of the image name given in the preload method of the main class.
-    * @param {number} size The size of the sprite in pixels.
-    * @param {number} depth The depth of rendering of the sprite.
-    * @param {number} defaultVelocity The default velocity for the living sprite.
-    * @param {number} playerAngleOperator The player angle operator in order to rotate the sprite arround.
+    * @param {String} playerImgStr An str of the image name given in the preload method of the main class.
+    * @param {Number} size The size of the sprite in pixels.
+    * @param {Number} depth The depth of rendering of the sprite.
+    * @param {Number} defaultVelocity The default velocity for the living sprite.
+    * @param {Number} playerAngleOperator The player angle operator in order to rotate the sprite arround.
+    * @param {Number} maxHealth The maximum health of the player.
     * 
     */
-    constructor(scene, playerOriginInfo, playerImgStr, size, depth, defaultVelocity, playerAngleOperator){
+    constructor(scene, playerOriginInfo, playerImgStr, size, depth, defaultVelocity, playerAngleOperator, maxHealth){
         super(scene, playerOriginInfo, playerImgStr, size, depth, defaultVelocity);
 
         this.playerAngleOperator = playerAngleOperator;
@@ -31,7 +32,7 @@ class Player extends Living{
         this.keySpace = this.scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
         this.keySpace.emitOnRepeat = true;
 
-        this.setMaxHealth = 100;
+        this.setMaxHealth = maxHealth;
         this.setHealth = this.getMaxHealth;
 
         this.isAlive = true;

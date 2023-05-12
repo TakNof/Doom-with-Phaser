@@ -77,7 +77,7 @@ class Enemy extends Living{
      * @param {boolean} visible 
      */
     setEnemy3D(positionX, positionY, enemyImgStr, visible = false){
-        this.sprite3D = new Sprite(this.scene, [positionX, positionY, 0], enemyImgStr, this.getSize, 3)
+        this.sprite3D = new Sprite(this.scene, {x: positionX, y: positionY}, enemyImgStr, this.getSize, 3)
         this.sprite3D.setVisible = visible;
         this.setAttackSoundEffect();
     }
@@ -115,6 +115,27 @@ class Enemy extends Living{
      */
     playAttackSoundEffect(){
         this.attackSoundEffectName.play();
+    }
+
+    /**
+     * Sets the panning effect to the attack sound effect of the enemy.
+     * @param {Number} canvasWidth
+     * @param {Number} playerAngle
+     */
+    setAttackSoundEffectPanning(canvasWidth, playerAngle){
+        let anglePlayerToEnemy = this.adjustAngleValue(this.AngleToPlayer + Math.PI);
+
+        let angleAdjustedFromPlayer = this.adjustAngleValue(anglePlayerToEnemy - playerAngle);
+        
+        let x = Math.cos(angleAdjustedFromPlayer) * this.distanceToPlayer;
+
+        if(x == 0){
+            x = canvasWidth/2;
+        }else{
+            x += canvasWidth/2;
+        }
+
+        this.attackSoundEffectName.setPan(Phaser.Math.Linear(-1, 1, x / canvasWidth));
     }
 
     /**
@@ -164,12 +185,20 @@ class Enemy extends Living{
         this.setRotation = this.getAngle;
     }
 
-    shoot(properties){
+    shoot(properties, randNumber, playerAngle){
+        this.setAttackSoundEffectPanning(1024, playerAngle);
         if(this.inSight){
             let time = this.scene.time.now;
-            if (time - this.lastShotTimer > properties.delay) {
-                let projectile = new Projectile(this.scene, this.getPosition, "bullet", 32, 80, properties.velocity);
+            if (time - this.lastShotTimer > properties.delay + randNumber*100) {
+                let projectile = new Projectile(this.scene, this.getPosition, "small_energy_bomb", 32, 80, properties.velocity);
                 this.getProjectiles.add(projectile.getSprite);
+
+                // this.getProjectiles.children.iterate((child)=>{
+                //     console.log(child);
+                //     child.setProjectile3D(canvasSize.width/2, canvasSize.height*1.5, "energy_bomb");
+                //     child.getProjectiles3D.setVisible = true;
+                // });
+
                 projectile.shootProjectile(this);
                 this.playAttackSoundEffect();
 

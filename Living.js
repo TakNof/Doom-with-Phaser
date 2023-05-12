@@ -259,18 +259,32 @@ class Living extends Sprite{
     }
 
     /**
+     * 
+     * @param {Number} healValue 
+     */
+    heal(healValue){
+        if(this.getHealth != this.maxHealth){
+            if(this.getHealth+ healValue > this.maxHealth){
+                this.setHealth = this.maxHealth;
+            }else{
+                this.setHealth = this.getHealth + healValue;
+            }
+        }
+    }
+    
+    /**
      * Checks if the living sprite have been impacted by a projectile or not.
      * @param {Projectile} projectiles
      * @param {Number} damage
      * @param {Object} distanceLimits 
      * @param {Number} currentDistance
      */
-    evalCollision(projectiles, bulletProperties, distanceLimits, currentDistance){
+    evalCollision(projectiles, bulletProperties, distanceLimits, currentDistance, player = undefined){
         let thisObject = this;
         let destroyed = false;
         this.scene.physics.collide(this.getSprite, projectiles,
             function(sprite, projectile){
-               destroyed = thisObject.__checkDamage(projectile, bulletProperties, distanceLimits, currentDistance);
+               destroyed = thisObject.__checkDamage(projectile, bulletProperties, distanceLimits, currentDistance, player);
             }
         );
         return destroyed;
@@ -286,28 +300,36 @@ class Living extends Sprite{
      * @param {Number} currentDistance 
      * @returns 
      */
-    __checkDamage(projectile, bulletProperties, distanceLimits, currentDistance){
+    __checkDamage(projectile, bulletProperties, distanceLimits, currentDistance, player = undefined){
         projectile.destroy();
         let damage = bulletProperties.damage;
+        let critical = false;
         if(currentDistance > distanceLimits.min && currentDistance < distanceLimits.max){
             damage *= 220/currentDistance;
-            console.log(`${typeof(this)} Normal damage ${damage}`);
+            console.log(`${this} Normal damage ${damage}`);
         }else if(currentDistance >= distanceLimits.max){
             damage *= 1/distanceLimits.max;
-            console.log(`${typeof(this)} Minimal damage ${damage}`);
+            console.log(`${this} Minimal damage ${damage}`);
         }else if(currentDistance <= distanceLimits.min){
             damage *= bulletProperties.critical * 220/currentDistance;
-            console.log(`${typeof(this)} Critical damage ${damage}`);
+            console.log(`${this} Critical damage ${damage}`);
+            critical = true;
         }
 
         if(this.getHealth - damage <= 0){
+            this.setHealth = 0;
             if(this instanceof Enemy){
                 this.getEnemy3D.getSprite.destroy();
                 this.getSprite.destroy();
+
+                if(critical){
+                    player.heal(bulletProperties.damage*0.04);
+                }else{
+                    player.heal(damage*0.08);
+                }
             }else{
                 this.isAlive = false;
             }
-            this.setHealth = 0;
             return true;
         }else{
             this.setHealth = this.getHealth - damage;

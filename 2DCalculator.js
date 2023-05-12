@@ -48,10 +48,12 @@ let playerFOVangleOffset = playerAngleOffset - playerFOV/2
 
 //Stablishing the enemy and its initial position.
 let amountEnemies = 10;
-let enemies = Array(amountEnemies);
+
 let cacodemons;
+let cacodemons2;
+
 let enemyangleOffset = Math.PI/2;
-let chaseDistance = 500;
+let chaseDistance = 400;
 let allowChase = true;
 
 
@@ -99,15 +101,18 @@ let music;
 function preload(){
     this.load.image("wall", "./assets/wall.png", {frameWidth: 32, frameHeight: 32});
     this.load.image("player", "./assets/doomguy64x64.png", {frameWidth: 64, frameHeight: 64});
-    this.load.image("small_cacodemon", "./assets/enemy.jpg", {frameWidth: 124, frameHeight: 124});
+
+    this.load.image("small_cacodemon", "./assets/enemy.jpg", {frameWidth: 64, frameHeight: 64});
     this.load.image("cacodemon", "./assets/cacodemon.png");
     this.load.audio("cacodemon_attack_sound", "./assets/sounds/enemies/cacodemon/cacodemon_attack_sound.wav");
+    this.load.image("energy_bomb", "./assets/energy_bomb.png");
+    this.load.image("small_energy_bomb", "./assets/small_energy_bomb.png", {frameWidth: 12, frameHeight: 12});
 
     this.load.atlas(weapons.shotgun.name, weapons.shotgun.spriteDir, "assets/weapons/shotgun/shotgun.json");
     this.load.audio(weapons.shotgun.name + '_sound', weapons.shotgun.soundDir);
-    this.load.image("bullet", "./assets/bullet.png", {frameWidth: 12, frameHeight: 12})
+    this.load.image("bullet", "./assets/bullet.png", {frameWidth: 12, frameHeight: 12});
 
-    this.load.audio("at_dooms_gate", "assets/music/at_dooms_gate.mp3");
+    this.load.audio("at_dooms_gate", "assets/music/at_dooms_gate.wav");
 }
 
 function create(){ 
@@ -121,7 +126,7 @@ function create(){
     walls.createWalls();
     
     //Here we create the player.
-    player = new Player(this, {x: canvasSize.width/2, y:canvasSize.height/2}, "player", wallBlockSize*2, 0, defaultVelocity, angleOperator);
+    player = new Player(this, {x: canvasSize.width/2, y:canvasSize.height/2}, "player", wallBlockSize*2, 0, defaultVelocity, angleOperator, 100);
 
     //Here we create the raycaster of the player and we pass it the position of the walls to make the calculations.
     player.setRaycaster(walls.getWallMatrix, raysAmount,  playerFOVangleOffset);
@@ -147,6 +152,9 @@ function create(){
     cacodemons = new Cacodemon(this, amountEnemies, walls.getWallMatrix, walls.getWallNumberRatio, wallBlockSize, defaultVelocity, chaseDistance, allowChase);
     cacodemons.create(player.getPosition);
 
+    // cacodemons2 = new Cacodemon2(this, amountEnemies, walls.getWallMatrix, walls.getWallNumberRatio, wallBlockSize, defaultVelocity, chaseDistance, allowChase);
+    // cacodemons2.create(player.getPosition);
+
     for(let enemy of cacodemons.getEnemies){
         walls.setColliders(enemy.getColliderElements);
     }
@@ -161,7 +169,7 @@ function create(){
     music = this.sound.add('at_dooms_gate');
     music.setVolume(0.5);
     music.loop = true;
-    // music.play();
+    music.play();
 }
 
 function update(){
@@ -178,7 +186,8 @@ function update(){
                 player.getPlayerCurrentWeapon.getProjectiles,
                 player.getPlayerCurrentWeapon.getBulletProperties,
                 player.getPlayerCurrentWeapon.getDistanceLimits,
-                cacodemons.getEnemies[i].getDistanceToPlayer)){
+                cacodemons.getEnemies[i].getDistanceToPlayer,
+                player      )){
     
                 cacodemons.getEnemies.splice(i, 1);
                 cacodemons.amount -= 1;
@@ -208,7 +217,7 @@ function update(){
         //The basic movement of the enemy according to the player's position.
         cacodemons.move(player.getPosition);
     
-        // cacodemons.shoot();
+        cacodemons.shoot(player.getAngle);
     }else{
         player.getHUD.displayDeathText();
         setTimeout(() => {

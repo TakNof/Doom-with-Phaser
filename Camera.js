@@ -6,7 +6,7 @@ class Camera{
      * The constructor of Camera Class.
      * @param {Scene} scene The scene to render.
      * @param {{x: number, y: number}} canvasSize The size of the canvas to place the camera.
-     * @param {number} fov The degrees of view of the camera. 
+     * @param {number} fov The view of the camera in radians. 
      * @param {Player} player A player object from the Player Class.
      * @param {[Enemy]} enemies2D An array of enemy objects from the Enemy Class.
      */
@@ -26,7 +26,10 @@ class Camera{
         
     }
 
-
+    /**
+     * Sets the enemies to the located acording to the camera.
+     * @param {Array<Enemy>} enemies 
+     */
     setEnemies2D(enemies){
         this.enemies2D = enemies;
         this.amountEnemies2D = this.enemies2D.length;
@@ -46,6 +49,10 @@ class Camera{
         };
     }
 
+    get getFOVArcRadius(){
+        return this.fovArcRadius;
+    }
+    
     /**
      * Gets the angle limits of each end of the players FOV.
      * @returns {Object}
@@ -151,6 +158,20 @@ class Camera{
             if(this.enemyAngleToPlayerInv[i] > this.getArcAngles.x0 - 2*Math.PI*adjust.x0 && this.enemyAngleToPlayerInv[i] < this.getArcAngles.x1024 + 2*Math.PI*adjust.x1024){
                 this.enemies2D[i].getEnemy3D.setVisible = true;
 
+                this.enemies2D[i].getProjectiles.children.iterate((child)=>{
+                    child.getProjectiles3D.setVisible = true;
+                });
+
+                this.enemies2D[i].getProjectiles.children.iterate((child)=>{
+                    let projectileHeight = this.player.getGraphicator.setEnemyHeight(
+                        this.enemies2D[i].hypoCalc(
+                            this.player.getPositionX, child.getPositionX,
+                            this.player.getPositionY, child.getPositionY
+                        )
+                    );
+                });
+
+
                 let enemyHeight = this.player.getGraphicator.setEnemyHeight(this.enemies2D[i].getDistanceToPlayer);
                 
                 if(enemyHeight/200 > 2.5){
@@ -162,7 +183,7 @@ class Camera{
                 }
                 
                 this.enemies2D[i].getEnemy3D.setPositionX = this.drawElementByPlayerPov(i);
-                this.enemies2D[i].getEnemy3D.setPositionY = (this.canvasSize.height + 0.5*this.canvasSize.height);                
+                this.enemies2D[i].getEnemy3D.setPositionY = (1.5*this.canvasSize. height - this.canvasSize.height/enemyHeight);                
                 
             }else{
                 this.enemies2D[i].getEnemy3D.setVisible = false;

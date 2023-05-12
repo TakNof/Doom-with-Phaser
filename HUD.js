@@ -4,11 +4,17 @@ class HUD{
         this.canvasSize = canvasSize;
 
         this.style = {font: "bold 48px Impact", fill: colors.limeGreen.replace("0x", "#"), backgroundColor: colors.DarkGreen.replace("0x", "#")};
-        this.style2 = {font: "bold 200px Impact", fill: colors.black.replace("0x", "#"), backgroundColor: colors.crimsonRed.replace("0x", "#")};
+        this.style2 = {font: "bold 200px Impact", fill: colors.crimsonRed.replace("0x", "#"), backgroundColor: colors.black.replace("0x", "#")};
 
         this.style3 = {font: "bold 200px Impact", fill: colors.DarkGreen.replace("0x", "#"), backgroundColor: colors.limeGreen.replace("0x", "#")};
         this.healthValue = this.scene.add.text(this.canvasSize.width - 140, 1.01*this.canvasSize.height, "", this.style).setDepth(80);
-        
+
+        this.deathText = this.scene.add.text(-this.canvasSize.width/2, -this.canvasSize.height, "YOU DIED", this.style2).setDepth(80);
+        this.victoryText = this.scene.add.text(-this.canvasSize.width/2, -this.canvasSize.height, "YOU WON", this.style3).setDepth(80);
+
+        this.deathText.setOrigin(0.5);
+        this.victoryText.setOrigin(0.5);
+
         this.setEnemiesHealthArray = enemies;
     }
 
@@ -66,13 +72,17 @@ class HUD{
     }
 
     displayDeathText(){
-        this.deathText = this.scene.add.text(this.canvasSize.width/2, this.canvasSize.height, "YOU DIED", this.style2).setDepth(80);
-        this.deathText.setOrigin(0.5);
+       this.deathText.x = this.canvasSize.width/2;
+       this.deathText.y = this.canvasSize.height*1.5;
+       this.deathText.setOrigin(0.5);
+        
     }
 
     displayVictoryText(){
-        this.deathText = this.scene.add.text(this.canvasSize.width/2, this.canvasSize.height, "YOU WON", this.style3).setDepth(80);
-        this.deathText.setOrigin(0.5);
+        this.victoryText.x = this.canvasSize.width/2;
+        this.victoryText.y = this.canvasSize.height*1.5;
+        this.victoryText.setOrigin(0.5);
+        
     }
 
 }
