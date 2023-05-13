@@ -222,7 +222,7 @@ class Player extends Living{
             let time = this.scene.time.now;
             if (time - this.lastShotTimer > this.playerCurrentWeapon.getDelayBetweenShots) {
                 this.getPlayerCurrentWeapon.getSprite.play(this.getPlayerCurrentWeapon.getAnimationName);
-                let projectile = new Projectile(this.scene, this.getPosition, "bullet", 32, 80, this.playerCurrentWeapon.getBulletVelocity);
+                let projectile = new Projectile(this.scene, this.getPosition, "bullet", 12, 80, this.playerCurrentWeapon.getBulletVelocity);
                 this.getPlayerCurrentWeapon.getProjectiles.add(projectile.getSprite);
                 projectile.shootProjectile(this);
                 this.getPlayerCurrentWeapon.playSoundEffect();

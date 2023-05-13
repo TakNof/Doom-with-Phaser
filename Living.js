@@ -225,6 +225,28 @@ class Living extends Sprite{
     get getColliderElements(){
         return this.colliderElements;
     }
+    
+    /**
+     * This method stablishes the angle of the living sprite respect to an element.
+     * @param {number} elementPosition The position of an element.
+     */
+    set setAngleToElement(elementPosition){
+        if(this.getPositionX > elementPosition.x){
+            this.angleToElement = Math.atan((this.getPositionY - elementPosition.y)/(this.getPositionX - elementPosition.x)) + Math.PI;
+        }else{
+            this.angleToElement = Math.atan((this.getPositionY - elementPosition.y)/(this.getPositionX - elementPosition.x))
+        }
+
+        this.angleToElement = this.adjustAngleValue(this.angleToElement);
+    }
+
+    /**
+     * Gets the angle of the living sprite relative to an Element.
+     * @return {number}
+     */
+    get getAngleToElement(){
+        return this.angleToElement;
+    }
 
     /**
      * Sets the max health of the living sprite.

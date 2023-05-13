@@ -6,7 +6,7 @@ let config = {
     physics: {
         default: 'arcade',
         arcade: {
-            debug: false
+            debug: true
         }
     },
     scene: {
@@ -38,7 +38,7 @@ let wallOrder;
 let wallBlockSize = 32;
 let amountWalls = 10;
 let generateWalls = true;
-let generateRandomWalls = true;
+let generateRandomWalls = false;
 
 //Stablishing the player and its initial position.
 let player;
@@ -47,14 +47,14 @@ let playerAngleOffset = 3*Math.PI/2
 let playerFOVangleOffset = playerAngleOffset - playerFOV/2
 
 //Stablishing the enemy and its initial position.
-let amountEnemies = 10;
+let amountEnemies = 1;
 
 let cacodemons;
 let cacodemons2;
 
 let enemyangleOffset = Math.PI/2;
 let chaseDistance = 400;
-let allowChase = true;
+let allowChase = false;
 
 
 //Stablishing the velocity standards for the player and enemies.
@@ -169,7 +169,7 @@ function create(){
     music = this.sound.add('at_dooms_gate');
     music.setVolume(0.5);
     music.loop = true;
-    music.play();
+    // music.play();
 }
 
 function update(){
@@ -200,7 +200,7 @@ function update(){
             }
     
             player.evalCollision(
-                cacodemons.getEnemies[i].getProjectiles,
+                cacodemons.getEnemies[i].getProjectiles2D,
                 cacodemons.getBulletProperties,
                 cacodemons.getDistanceLimits,
                 cacodemons.getEnemies[i].getDistanceToPlayer
@@ -231,7 +231,7 @@ function update(){
     
     // player.getHUD.setEnemiesHealthValue = cacodemons.getEnemies;
 
-    player.getCamera.setEnemies2D(cacodemons.getEnemies);
+    player.getCamera.setEnemies(cacodemons.getEnemies);
 
     //Here we draw the 3D representation of the map.
     player.getCamera.draw3DWorld();

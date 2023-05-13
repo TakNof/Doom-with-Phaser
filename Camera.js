@@ -22,7 +22,7 @@ class Camera{
         this.fovArcLenght = this.canvasSize.width;
 
         this.fovArcRadius = this.fovArcLenght/this.fov;
-        this.setEnemies2D(enemies2D);
+        this.setEnemies(enemies2D);
         
     }
 
@@ -30,12 +30,23 @@ class Camera{
      * Sets the enemies to the located acording to the camera.
      * @param {Array<Enemy>} enemies 
      */
-    setEnemies2D(enemies){
+    setEnemies(enemies){
         this.enemies2D = enemies;
         this.amountEnemies2D = this.enemies2D.length;
         this.enemyAngleToPlayerInv = Array(this.amountEnemies2D);
+        this.enemy3DSprites = Array(this.amountEnemies2D);
+        this.enemyDistances = Array(this.amountEnemies2D);
+
+        this.projectiles2DSprites = Array(this.amountEnemies2D);
+        this.projectiles3DSprites = Array(this.amountEnemies2D);
+        this.projectilesDistances = Array(this.amountEnemies2D);
+        this.projectilesAngleToPlayerInv = Array(this.amountEnemies2D);
+
+
         if(this.enemies2D[0] instanceof Enemy){
             this.setEnemyAngleToPlayerInv();
+            this.setEnemy3DSprites();
+            this.setEnemyDistances();
         }
     }
 
@@ -81,7 +92,7 @@ class Camera{
      */
     setEnemyAngleToPlayerInv(){
         for(let i = 0; i < this.amountEnemies2D; i++){
-            this.enemyAngleToPlayerInv[i] = this.enemies2D[0].adjustAngleValue(this.enemies2D[i].getAngleToPlayer + Math.PI);
+            this.enemyAngleToPlayerInv[i] = this.enemies2D[0].adjustAngleValue(this.enemies2D[i].getAngleToElement + Math.PI);
         }
     }
 
@@ -92,6 +103,123 @@ class Camera{
     get getEnemyAngleToPlayerInv(){
         return this.enemyAngleToPlayerInv;
     }
+
+    /**
+     * Sets the list of enemy 3D sprites.
+     */
+    setEnemy3DSprites(){
+        for(let i = 0; i < this.amountEnemies2D; i++){
+            this.enemy3DSprites[i] = this.enemies2D[i].getEnemy3D;
+        }
+    }
+
+    /**
+     * Gets the list of enemy 3D sprites.
+     * @returns {Array}
+     */
+    get getEnemy3DSprites(){
+        return this.enemy3DSprites;
+    }
+
+    /**
+     * Sets the list of distances of the enemies.
+     */
+    setEnemyDistances(){
+        for(let i = 0; i < this.amountEnemies2D; i++){
+            this.enemyDistances[i] = this.enemies2D[i].getDistanceToPlayer;
+        }
+    }
+
+    /**
+     * Gets the list of distances of the enemies.
+     * @returns {Array}
+     */
+    get getEnemyDistances(){
+        return this.enemyDistances;
+    }
+
+    
+    /**
+     * Sets all the enemies inverted angles to the player (which is actually the player angle to the enemy).
+     */
+    setProjectilesAngleToPlayerInv(playerPosition){
+        for(let i = 0; i < this.amountEnemies2D; i++){
+            this.projectilesAngleToPlayerInv[i] =
+            this.enemies2D[0].adjustAngleValue(
+                this.angleToElement({
+                    x: this.enemies2D[i].getProjectiles2D.x,
+                    y: this.enemies2D[i].getProjectiles2D.y
+                },
+                playerPosition
+                ));
+        }
+    }
+
+    /**
+     * Gets all the enemies inverted angles to the player.
+     * @returns {Array}
+     */
+    get getProjectilesAngleToPlayerInv(){
+        return this.ProjectilesAngleToPlayerInv;
+    }
+
+    /**
+     * Sets the list of Projectiles 3D sprites.
+     */
+    setProjectiles3DSprites(){
+        for(let i = 0; i < this.amountEnemies2D; i++){
+            this.projectiles3DSprites[i] = this.enemies2D[i].getProjectiles3D.getChildren();
+        }
+    }
+
+    /**
+     * Gets the list of Projectiles 3D sprites.
+     * @returns {Array}
+     */
+    get getProjectiles3DSprites(){
+        return this.projectiles3DSprites;
+    }
+
+    /**
+     * Sets the list of Projectiles 2D sprites.
+     */
+    setProjectiles2DSprites(){
+        for(let i = 0; i < this.amountEnemies2D; i++){
+            this.projectiles2DSprites[i] = this.enemies2D[i].getProjectiles2D.getChildren();
+        }
+    }
+
+    /**
+     * Gets the list of Projectiles 2D sprites.
+     * @returns {Array}
+     */
+    get getProjectiles2DSprites(){
+        return this.projectiles2DSprites;
+    }
+
+    /**
+     * Sets the list of distances of the enemies.
+     */
+    setProjectilesDistances(){
+        for(let i = 0; i < this.amountEnemies2D; i++){
+            this.projectilesDistances[i] =
+            this.hypoCalc(
+                this.enemies2D[i].getProjectiles2D.x, this.player.getPositionX,
+                this.enemies2D[i].getProjectiles2D.y, this.player.getPositionY
+            );
+        }
+    }
+
+    /**
+     * Gets the list of distances of the enemies.
+     * @returns {Array}
+     */
+    get getProjectilesDistances(){
+        return this.projectilesDistances;
+    }
+    
+
+
     
     /**
      * This method draws the whole 3D world graphication.
@@ -108,7 +236,7 @@ class Camera{
      * @param {number} index The index of the for loop to access the list of the enemies inverted angles.
      * @returns {number}
      */
-    drawElementByPlayerPov(index){
+    drawElementByPlayerPov(currentAngle){
         /**
          * This if statement allows to change the pivot angle of the fov of the player,
          * to avoid miscalculations in the graphication of the enemy due to the angular reset
@@ -118,10 +246,10 @@ class Camera{
          * then the calculations will be done with the x0 angle, else the calculations will be done with
          * the x1024 angle.
          */
-        if(this.enemyAngleToPlayerInv[index] > 3*Math.PI/2){
-            return this.fovArcRadius*(this.enemyAngleToPlayerInv[index] - this.getArcAngles.x0);
+        if(currentAngle > 3*Math.PI/2){
+            return this.fovArcRadius*(currentAngle - this.getArcAngles.x0);
         }else{
-            return this.fovArcLenght -this.fovArcRadius*(this.arcAngles.x1024 - this.enemyAngleToPlayerInv[index]);
+            return this.fovArcLenght -this.fovArcRadius*(this.arcAngles.x1024 - currentAngle);
         }
     }
 
@@ -132,63 +260,21 @@ class Camera{
         //Here we update the player's global angle and the enemies inverted angle.
         this.setPlayerGlobalAngle();
         this.setEnemyAngleToPlayerInv();
+        this.setEnemy3DSprites();
+        this.setEnemyDistances();
 
+        if(this.enemies2D[0].getProjectiles2D !== undefined){
+            this.setProjectiles2DSprites();
+            this.setProjectiles3DSprites();
+            this.setProjectilesAngleToPlayerInv(this.player.getPosition);
+            this.setProjectilesDistances();
+        }
+        
         let distances = Array(this.amountEnemies2D);
 
-        let adjust;
-        for(let i = 0; i < this.amountEnemies2D; i++){
-            adjust = {x0: 0, x1024: 0};
+        this.setEnemy3DSprites(this.drawEnemyElements(this.getEnemy3DSprites, this.getEnemyAngleToPlayerInv, this.getEnemyDistances, 1.5));
+        // this.drawEnemyElements(this.getProjectiles3DSprites, this.enemyAngleToPlayerInv, this.enemyProjectilesDistance, 1.5);
 
-            /** 
-             * According to the current inverted angle of the enemy respect to the player, we check if that angle is located in the fourth angle.
-             * If so we change the adjust value of the respectrive fov angle, to allow the conditional of the line 136 to check if the enemy is located
-             * between the two angles of the fov. 
-             */     
-            if(this.enemyAngleToPlayerInv[i] + Math.PI/2 >= 2*Math.PI){
-                adjust.x1024 = 1;
-            }else if(this.enemyAngleToPlayerInv[i] - Math.PI/2 <= 0){
-                adjust.x0 = 1;
-            }
-            
-            /**
-             * According to the adjust values calculeted previously, the evaluation values of the player's fov angles will change between 0 and 1,
-             * the 1 in the adjust value will allow the angle of that fov end to substract or add a whole lap. With that, the conditional will work
-             * properly, avoiding the issue of the angle reset when reaching 360 degrees or 2PI radians.
-             */
-            if(this.enemyAngleToPlayerInv[i] > this.getArcAngles.x0 - 2*Math.PI*adjust.x0 && this.enemyAngleToPlayerInv[i] < this.getArcAngles.x1024 + 2*Math.PI*adjust.x1024){
-                this.enemies2D[i].getEnemy3D.setVisible = true;
-
-                // this.enemies2D[i].getProjectiles.children.iterate((child)=>{
-                //     child.getProjectiles3D.setVisible = true;
-                // });
-
-                // this.enemies2D[i].getProjectiles.children.iterate((child)=>{
-                //     let projectileHeight = this.player.getGraphicator.setEnemyHeight(
-                //         this.enemies2D[i].hypoCalc(
-                //             this.player.getPositionX, child.getPositionX,
-                //             this.player.getPositionY, child.getPositionY
-                //         )
-                //     );
-                // });
-
-
-                let enemyHeight = this.player.getGraphicator.setEnemyHeight(this.enemies2D[i].getDistanceToPlayer);
-                
-                if(enemyHeight/200 > 2.5){
-                    this.enemies2D[i].getEnemy3D.setScaleY = 2.5;
-                    this.enemies2D[i].getEnemy3D.setScaleX = 2.5;
-                }else{
-                    this.enemies2D[i].getEnemy3D.setScaleY = enemyHeight/200;
-                    this.enemies2D[i].getEnemy3D.setScaleX = enemyHeight/200;
-                }
-                
-                this.enemies2D[i].getEnemy3D.setPositionX = this.drawElementByPlayerPov(i);
-                this.enemies2D[i].getEnemy3D.setPositionY = (1.5*this.canvasSize. height - this.canvasSize.height/enemyHeight);                
-                
-            }else{
-                this.enemies2D[i].getEnemy3D.setVisible = false;
-            }
-        }
 
         /**
          * This for loop is used to analize the distance of each enemy and estimate the depth of drawing of the enemy
@@ -222,5 +308,84 @@ class Camera{
             }
             
         }
+    }
+
+    /**
+     * Due we need to calculate multiple elements comming from the enemy, create this general method with
+     * the stablished procedure.
+     * @param {Array} elements
+     * @param {Array<Number>} angleElementToPlayer
+     */
+    drawEnemyElements(elements, angleElementToPlayer, distanceToPlayer, heightMultiplier){
+        let adjust;
+        for(let i = 0; i < elements.length; i++){
+            adjust = {x0: 0, x1024: 0};
+
+            /** 
+             * According to the current angle of the element respect to the player, we check if that angle is located in the fourth quadrant.
+             * If so we change the adjust value of the respectrive fov angle, to allow second conditional to check if the element is located
+             * between the two angles of the fov. 
+             */     
+            if(angleElementToPlayer[i] + Math.PI/2 >= 2*Math.PI){
+                adjust.x1024 = 1;
+            }else if(angleElementToPlayer[i] - Math.PI/2 <= 0){
+                adjust.x0 = 1;
+            }
+            
+            /**
+             * According to the adjust values calculeted previously, the evaluation values of the player's fov angles will change between 0 and 1,
+             * the 1 in the adjust value will allow the angle of that fov end to substract or add a whole lap. With that, the conditional will work
+             * properly, avoiding the issue of the angle reset when reaching 360 degrees or 2PI radians.
+             */
+            if(angleElementToPlayer[i] > this.getArcAngles.x0 - 2*Math.PI*adjust.x0 && angleElementToPlayer[i] < this.getArcAngles.x1024 + 2*Math.PI*adjust.x1024){
+                elements[i].visible = true;
+                
+                let enemyHeight = this.player.getGraphicator.setEnemyHeight(distanceToPlayer[i]);
+                
+                if(enemyHeight/200 > 2.5){
+                    elements[i].scaleY = 2.5;
+                    elements[i].scaleX = 2.5;
+                }else{
+                    elements[i].scaleY = enemyHeight/200;
+                    elements[i].scaleX = enemyHeight/200;
+                }
+                
+                elements[i].x = this.drawElementByPlayerPov(angleElementToPlayer[i]);
+                elements[i].y = (heightMultiplier*this.canvasSize.height - this.canvasSize.height/enemyHeight);  
+                
+                     
+                
+            }else{
+                elements[i].visible = false;
+            }
+
+            return elements;
+        }
+    }
+
+    /**
+     * This method stablishes the angle of the enemy respect to the element.
+     * @param {number} elementPosition1 The position of the element1.
+     * @param {number} elementPosition2 The position of the element2.
+     * @returns {number} 
+     */
+    angleToElement(elementPosition1, elementPosition2){
+        if(elementPosition1.x > elementPosition2.x){
+            return Math.atan((elementPosition1.y - elementPosition2.y)/(elementPosition1.x - elementPosition2.x)) + Math.PI;
+        }else{
+            return Math.atan((elementPosition1.y - elementPosition2.y)/(elementPosition1.x - elementPosition2.x))
+        }
+    }
+
+    /**
+     * This method calculates the distance between 2 coordinates.
+     * @param {number} x1 The x coordinate of the first sprite.  
+     * @param {number} x2 The x coordinate of the second sprite. 
+     * @param {number} y1 The y coordinate of the first sprite. 
+     * @param {number} y2 The y coordinate of the second sprite. 
+     * @returns {number} The hyphypotenuse according to the specified coordinates.
+     */
+    hypoCalc(x1, x2, y1, y2){
+        return Math.sqrt(Math.pow(x1 - x2, 2) + Math.pow(y1 - y2, 2))
     }
 }

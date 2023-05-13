@@ -23,34 +23,13 @@ class Enemy extends Living{
         this.setXcomponent();
         this.setYcomponent();
 
-        this.setProjectiles();
+        this.setProjectiles2D();
+        this.setProjectiles3D();
 
         this.chaseDistance = chaseDistance;
         this.allowChase = allowChase;
 
         this.inSight = false;
-    }
-
-    /**
-     * This method stablishes the angle of the enemy respect to the player.
-     * @param {number} playerPosition The position of the player.
-     */
-    set setAngleToPlayer(playerPosition){
-        if(this.getPositionX > playerPosition.x){
-            this.AngleToPlayer = Math.atan((this.getPositionY - playerPosition.y)/(this.getPositionX - playerPosition.x)) + Math.PI;
-        }else{
-            this.AngleToPlayer = Math.atan((this.getPositionY - playerPosition.y)/(this.getPositionX - playerPosition.x))
-        }
-
-        this.adjustAngleValue(this.AngleToPlayer);
-    }
-
-    /**
-     * Gets the angle of the enemy relative to the player.
-     * @return {number}
-     */
-    get getAngleToPlayer(){
-        return this.AngleToPlayer;
     }
 
     /**
@@ -92,15 +71,30 @@ class Enemy extends Living{
     /**
      * Sets the group of projectiles of the enemy.
      */
-    setProjectiles(){
+    setProjectiles2D(){
         this.enemyProjectiles = this.scene.physics.add.group();
     }
 
     /**
      * Gets the enemy projectiles.
      */
-    get getProjectiles(){
+    get getProjectiles2D(){
         return this.enemyProjectiles;
+    }
+
+    /**
+     * Sets the projectile 3D of the enemy.
+     */
+    setProjectiles3D(){
+        this.enemyProjectiles3D = this.scene.physics.add.group();
+    }
+
+    /**
+     * Gets the projectile 3D of the enemy.
+     * @returns {Projectile}
+     */
+    get getProjectiles3D(){
+        return this.enemyProjectiles3D;
     }
 
     /**
@@ -123,7 +117,7 @@ class Enemy extends Living{
      * @param {Number} playerAngle
      */
     setAttackSoundEffectPanning(canvasWidth, playerAngle){
-        let anglePlayerToEnemy = this.adjustAngleValue(this.AngleToPlayer + Math.PI);
+        let anglePlayerToEnemy = this.adjustAngleValue(this.getAngleToElement + Math.PI);
 
         let angleAdjustedFromPlayer = this.adjustAngleValue(anglePlayerToEnemy - playerAngle);
         
@@ -152,8 +146,8 @@ class Enemy extends Living{
 
         this.raycaster.setSpritePosition = this.getPosition;
 
-        this.setAngleToPlayer = playerPosition;
-        this.getRaycaster.setRayAngle = this.getAngleToPlayer;
+        this.setAngleToElement = playerPosition;
+        this.getRaycaster.setRayAngle = this.getAngleToElement;
         this.setDistanceToPlayer = playerPosition;
 
         //We want the enemy to follow us if we are in range of sight and if the distance with the player is less than the distance
@@ -181,7 +175,7 @@ class Enemy extends Living{
             this.inSight = false;
         }
         
-        this.setAngle = this.getAngleToPlayer + this.angleOffset
+        this.setAngle = this.getAngleToElement + this.angleOffset
         this.setRotation = this.getAngle;
     }
 
@@ -190,14 +184,11 @@ class Enemy extends Living{
         if(this.inSight){
             let time = this.scene.time.now;
             if (time - this.lastShotTimer > properties.delay + randNumber*100) {
-                let projectile = new Projectile(this.scene, this.getPosition, "small_energy_bomb", 32, 80, properties.velocity);
-                this.getProjectiles.add(projectile.getSprite);
+                let projectile = new Projectile(this.scene, this.getPosition, "small_energy_bomb", 32, 80, 10);
+                this.getProjectiles2D.add(projectile.getSprite);
 
-                // this.getProjectiles.children.iterate((child)=>{
-                //     console.log(child);
-                //     child.setProjectile3D(canvasSize.width/2, canvasSize.height*1.5, "energy_bomb");
-                //     child.getProjectiles3D.setVisible = true;
-                // });
+                projectile.setProjectile3D(0, 0, "energy_bomb");            
+                this.getProjectiles3D.add(projectile.getProjectile3D.getSprite);
 
                 projectile.shootProjectile(this);
                 this.playAttackSoundEffect();
