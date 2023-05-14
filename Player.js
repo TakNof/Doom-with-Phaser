@@ -34,8 +34,6 @@ class Player extends Living{
 
         this.setMaxHealth = maxHealth;
         this.setHealth = this.getMaxHealth;
-
-        this.isAlive = true;
     }
     
     /**
@@ -149,13 +147,54 @@ class Player extends Living{
         return this.playerCurrentWeapon;
     }
 
-    
     /**
-     * Sets the alive state of the player.
-     * @param {boolean} 
+     * Checks if the living sprite have been impacted by a projectile or not.
+     * @param {Living} shooter The living object which has shot THIS living object.
      */
-    get getIsAlive(){
-        return this.isAlive;
+    evalProjectileCollision(shooter){
+        let thisObject = this;
+        this.scene.physics.collide(this.getSprite, shooter.getProjectiles2D,
+            function(sprite, projectile){
+                let index = shooter.getProjectiles2D.getChildren().indexOf(projectile);
+                let projectile3D = shooter.getProjectiles3D.getChildren()[index];
+               thisObject.__checkDamage(projectile, projectile3D, shooter.getBulletProperties, shooter.getDistanceLimits, shooter.getDistanceToPlayer);
+            }
+        );
+    }
+
+    /**
+     * This method is called when a projectile has collided with a living sprite,
+     * here he health and the state of the living sprite is determined by the
+     * damage and limit distances of the projected projectiles.
+     * @param {Projectile} projectile 
+     * @param {Number} damage 
+     * @param {Object} distanceLimits 
+     * @param {Number} currentDistance 
+     * @returns 
+     */
+    __checkDamage(projectile, projectile3D, bulletProperties, distanceLimits, currentDistance){
+        projectile.destroy();
+        projectile3D.destroy();
+        let damage = bulletProperties.damage;
+
+        if(currentDistance > distanceLimits.min && currentDistance < distanceLimits.max){
+            damage *= 220/currentDistance;
+            console.log(`${this} Normal damage ${damage}`);
+        }else if(currentDistance >= distanceLimits.max){
+            damage *= 1/distanceLimits.max;
+            console.log(`${this} Minimal damage ${damage}`);
+        }else if(currentDistance <= distanceLimits.min){
+            damage *= bulletProperties.critical * 220/currentDistance;
+            console.log(`${this} Critical damage ${damage}`);
+        }
+
+        if(this.getHealth - damage <= 0){
+            this.setHealth = 0;
+            
+            this.isAlive = false;
+        }else{
+            this.setHealth = this.getHealth - damage;
+        }
     }
 
     /**

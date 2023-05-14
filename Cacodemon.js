@@ -38,6 +38,10 @@ class Cacodemon{
                 //Here we create an enemy.
                 this.enemies[enemiesPlaced] =  new Enemy(this.scene, enemyPosition, "small_cacodemon", wallBlockSize*2, 1, defaultVelocity, chaseDistance, allowChase);
                 
+                //Here we set the particular enemy projetcile properties based on the properties of this class.
+                this.enemies[enemiesPlaced].setBulletProperties = this.bulletProperties;
+                this.enemies[enemiesPlaced].setDistanceLimits = this.distanceLimits;
+
                 //We pass load the player position due we need the enemy to chase the player.
                 this.enemies[enemiesPlaced].setAngleToPlayer = playerPosition;
                 

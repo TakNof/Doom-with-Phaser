@@ -38,7 +38,7 @@ let wallOrder;
 let wallBlockSize = 32;
 let amountWalls = 10;
 let generateWalls = true;
-let generateRandomWalls = false;
+let generateRandomWalls = true;
 
 //Stablishing the player and its initial position.
 let player;
@@ -47,7 +47,7 @@ let playerAngleOffset = 3*Math.PI/2
 let playerFOVangleOffset = playerAngleOffset - playerFOV/2
 
 //Stablishing the enemy and its initial position.
-let amountEnemies = 2;
+let amountEnemies = 10;
 
 let cacodemons;
 let cacodemons2;
@@ -126,7 +126,7 @@ function create(){
     walls.createWalls();
     
     //Here we create the player.
-    player = new Player(this, {x: canvasSize.width/2, y:canvasSize.height/2}, "player", wallBlockSize*2, 0, defaultVelocity, angleOperator, 100);
+    player = new Player(this, {x: canvasSize.width/2, y:canvasSize.height/2}, "player", wallBlockSize*2, 0, defaultVelocity, angleOperator, Infinity);
 
     //Here we create the raycaster of the player and we pass it the position of the walls to make the calculations.
     player.setRaycaster(walls.getWallMatrix, raysAmount,  playerFOVangleOffset);
@@ -179,18 +179,18 @@ function update(){
 
         player.shoot();
 
-        for(let i = 0; i < cacodemons.amount; i++){
-            walls.evalCollision(cacodemons.getEnemies[i].getProjectiles);
+        for(let enemy of cacodemons.getEnemies){
+            walls.evalCollision(enemy.getProjectiles2D, enemy.getProjectiles3D);
+
+            enemy.evalProjectileCollision(player);
+
+            if(enemy.getHealth == 0){
+                enemy.waitToDestroy();
+            }
+            
+            if(!enemy.getIsAlive){
     
-            if(cacodemons.getEnemies[i].evalCollision(
-                player.getPlayerCurrentWeapon.getProjectiles,
-                player.getPlayerCurrentWeapon.getBulletProperties,
-                player.getPlayerCurrentWeapon.getDistanceLimits,
-                cacodemons.getEnemies[i].getDistanceToPlayer,
-                player)
-                ){
-    
-                cacodemons.getEnemies.splice(i, 1);
+                cacodemons.getEnemies.splice(cacodemons.getEnemies.indexOf(enemy), 1);
                 cacodemons.amount -= 1;
                 
                 // player.getHUD.getEnemiesHealthValue[i].destroy();
@@ -200,12 +200,8 @@ function update(){
                 break;
             }
     
-            player.evalCollision(
-                cacodemons.getEnemies[i].getProjectiles2D,
-                cacodemons.getBulletProperties,
-                cacodemons.getDistanceLimits,
-                cacodemons.getEnemies[i].getDistanceToPlayer
-            );
+            player.evalProjectileCollision(enemy);
+
             player.getHUD.setHealthValue = player.getHealth;
            
         }

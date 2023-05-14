@@ -25,6 +25,10 @@ class Living extends Sprite{
         this.sprite.body.setCollideWorldBounds(true);
 
         this.lastShotTimer = 0;
+
+        this.isAlive = true;
+
+        this.ableToShoot = true;
     }
 
     /**
@@ -293,72 +297,39 @@ class Living extends Sprite{
             }
         }
     }
+
+    /**
+     * Sets the alive state of the Living Sprite.
+     * @param {boolean} state
+     */
+    set setIsAlive(state){
+        this.isAlive = state;
+    }
+
+    /**
+     * Gets the alive state of the Living Sprite.
+     * @param {boolean} 
+     */
+    get getIsAlive(){
+        return this.isAlive;
+    }
+
+     /**
+     * Sets the alive state of the Living Sprite.
+     * @param {boolean} state
+     */
+     set setAbleToShoot(state){
+        this.ableToShoot = state;
+    }
+
+    /**
+     * Gets the alive state of the Living Sprite.
+     * @param {boolean} 
+     */
+    get getAbleToShoot(){
+        return this.ableToShoot;
+    }
     
-    /**
-     * Checks if the living sprite have been impacted by a projectile or not.
-     * @param {Projectile} projectiles
-     * @param {Number} damage
-     * @param {Object} distanceLimits 
-     * @param {Number} currentDistance
-     */
-    evalCollision(projectiles, bulletProperties, distanceLimits, currentDistance, player = undefined){
-        let thisObject = this;
-        let destroyed = false;
-        this.scene.physics.collide(this.getSprite, projectiles,
-            function(sprite, projectile){
-               destroyed = thisObject.__checkDamage(projectile, bulletProperties, distanceLimits, currentDistance, player);
-            }
-        );
-        return destroyed;
-    }
-
-    /**
-     * This method is called when a projectile has collided with a living sprite,
-     * here he health and the state of the living sprite is determined by the
-     * damage and limit distances of the projected projectiles.
-     * @param {Projectile} projectile 
-     * @param {Number} damage 
-     * @param {Object} distanceLimits 
-     * @param {Number} currentDistance 
-     * @returns 
-     */
-    __checkDamage(projectile, bulletProperties, distanceLimits, currentDistance, player = undefined){
-        projectile.destroy();
-        let damage = bulletProperties.damage;
-        let critical = false;
-        if(currentDistance > distanceLimits.min && currentDistance < distanceLimits.max){
-            damage *= 220/currentDistance;
-            console.log(`${this} Normal damage ${damage}`);
-        }else if(currentDistance >= distanceLimits.max){
-            damage *= 1/distanceLimits.max;
-            console.log(`${this} Minimal damage ${damage}`);
-        }else if(currentDistance <= distanceLimits.min){
-            damage *= bulletProperties.critical * 220/currentDistance;
-            console.log(`${this} Critical damage ${damage}`);
-            critical = true;
-        }
-
-        if(this.getHealth - damage <= 0){
-            this.setHealth = 0;
-            if(this instanceof Enemy){
-                this.getEnemy3D.getSprite.destroy();
-                this.getSprite.destroy();
-
-                if(critical){
-                    player.heal(bulletProperties.damage*0.04);
-                }else{
-                    player.heal(damage*0.08);
-                }
-            }else{
-                this.isAlive = false;
-            }
-            return true;
-        }else{
-            this.setHealth = this.getHealth - damage;
-            return false;
-        }
-    }
-
     /**
      * Allows to adjust the angle value of the rotation to be within the range of 0 and 2PI.
      * @param {Number} angle The angle to be within the range of 0 and 2PI.

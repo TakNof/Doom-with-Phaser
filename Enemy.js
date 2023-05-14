@@ -100,6 +100,113 @@ class Enemy extends Living{
      */
     get getProjectiles3D(){
         return this.enemyProjectiles3D;
+    }  
+
+    /**
+     * Sets the projectile properties of the enemy.
+     * @param {{damage: Number, velocity: Number, delay: Number, critical: Number}} bulletProperties
+     */
+    set setBulletProperties(bulletProperties){
+        this.bulletProperties = bulletProperties;
+    }
+
+    /**
+     * Gets the projectile properties of the enemy.
+     * @return {{damage: Number, velocity: Number, delay: Number, critical: Number}}
+     */
+    get getBulletProperties(){
+        return this.bulletProperties;
+    }
+
+    /**
+     * Sets the projectile effective distances of the enemy.
+     * @param {{min: Number, max: Number}} distanceLimits
+     */
+    set setDistanceLimits(distanceLimits){
+        this.distanceLimits = distanceLimits;
+    }
+
+    /**
+     * Gets the projectile effective distances of the enemy.
+     * @return {{min: Number, max: Number}}
+     */
+    get getDistanceLimits(){
+        return this.distanceLimits;
+    }
+
+    /**
+     * Checks if the living sprite have been impacted by a projectile or not.
+     * @param {Living} shooter The living object which has shot THIS living object.
+     */
+    evalProjectileCollision(shooter){
+        let thisObject = this;
+
+        this.scene.physics.collide(this.getSprite, shooter.getPlayerCurrentWeapon.getProjectiles,
+            function(sprite, projectile){
+                thisObject.__checkDamage(
+                    projectile,
+                    shooter.getPlayerCurrentWeapon.getBulletProperties,
+                    shooter.getPlayerCurrentWeapon.getDistanceLimits,
+                    thisObject.getDistanceToPlayer
+                );
+            }
+        );
+    }
+
+    /**
+     * This method is called when a projectile has collided with a living sprite,
+     * here he health and the state of the living sprite is determined by the
+     * damage and limit distances of the projected projectiles.
+     * @param {Projectile} projectile 
+     * @param {Number} damage 
+     * @param {Object} distanceLimits 
+     * @param {Number} currentDistance 
+     * @returns 
+     */
+    __checkDamage(projectile, bulletProperties, distanceLimits, currentDistance){
+        projectile.destroy();
+        let damage = bulletProperties.damage;
+        let critical = false;
+
+        if(currentDistance > distanceLimits.min && currentDistance < distanceLimits.max){
+            damage *= 220/currentDistance;
+            console.log(`${this} Normal damage ${damage}`);
+        }else if(currentDistance >= distanceLimits.max){
+            damage *= 1/distanceLimits.max;
+            console.log(`${this} Minimal damage ${damage}`);
+        }else if(currentDistance <= distanceLimits.min){
+            damage *= bulletProperties.critical * 220/currentDistance;
+            console.log(`${this} Critical damage ${damage}`);
+            critical = true;
+        }
+
+        if(this.getHealth - damage <= 0){
+            this.setHealth = 0;
+            this.setAbleToShoot = false;
+
+            if(critical){
+                player.heal(bulletProperties.damage*0.04);
+            }else{
+                player.heal(damage*0.08);
+            }
+        }else{
+            this.setHealth = this.getHealth - damage;
+        }
+    }
+
+    waitToDestroy(){
+        if(this.getProjectiles2D.getChildren().length != 0){
+            console.log("Projectiles still existing");
+            this.setVisible = false;
+            this.getEnemy3D.setVisible = false;
+            this.getSprite.body.enable = false;
+            
+        }else{
+            console.log("Projectiles destroyed");
+            this.getEnemy3D.getSprite.destroy();
+            this.getSprite.destroy();
+            this.setIsAlive = false;
+        }
     }
 
     /**
@@ -126,7 +233,7 @@ class Enemy extends Living{
 
         let angleAdjustedFromPlayer = this.adjustAngleValue(anglePlayerToEnemy - playerAngle);
         
-        let x = Math.cos(angleAdjustedFromPlayer) * this.distanceToPlayer;
+        let x = Math.cos(angleAdjustedFromPlayer) * this.getDistanceToPlayer;
 
         if(x == 0){
             x = canvasWidth/2;
@@ -186,7 +293,7 @@ class Enemy extends Living{
 
     shoot(properties, randNumber, playerAngle){
         this.setAttackSoundEffectPanning(1024, playerAngle);
-        if(this.inSight){
+        if(this.inSight && this.getAbleToShoot){
             let time = this.scene.time.now;
             if (time - this.lastShotTimer > properties.delay + randNumber*100) {
                 let projectile = new Projectile(this.scene, this.getPosition, "small_energy_bomb", 32, 80, 100);

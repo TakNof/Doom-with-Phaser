@@ -270,10 +270,11 @@ class Camera{
             this.setProjectilesAngleToPlayerInv(this.player.getPosition);
             this.setProjectilesDistances();
         }
-        
-        let distances = Array(this.amountEnemies2D);
+                
         for(let i = 0; i < this.amountEnemies2D; i++){
-            this.enemies2D[i].setNewEnemy3D = this.drawEnemyElements(this.enemies2D[i].getEnemy3D.getSprite, this.enemyAngleToPlayerInv[i], this.enemies2D[i].getDistanceToPlayer, 200, 1.5);
+            if(this.enemies2D[i].getHealth != 0){
+                this.enemies2D[i].setNewEnemy3D = this.drawEnemyElements(this.enemies2D[i].getEnemy3D.getSprite, this.enemyAngleToPlayerInv[i], this.enemies2D[i].getDistanceToPlayer, 200, 1.5);
+            }
         }
 
         for(let enemy of this.enemies2D){
@@ -299,6 +300,8 @@ class Camera{
         /**
          * This for loop is used to analize the distance of each enemy and estimate the depth of drawing of the enemy
          */
+        let distances = Array(this.amountEnemies2D);
+
         for(let i = 0; i < this.amountEnemies2D; i++){
             if(this.enemies2D[i].getEnemy3D.getVisible){
                 for(let j = 0; j < this.amountEnemies2D; j++){
