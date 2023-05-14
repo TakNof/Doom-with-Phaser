@@ -1,6 +1,19 @@
 class Cacodemon{
-    constructor(scene, amount, wallMatrix, wallNumberRatio, wallBlockSize, defaultVelocity, chaseDistance, allowChase){
+    /**
+     * The constructor for the Cacodemon class.
+     * @param {Scene} scene The current scene of the game to place the sprite.
+     * @param {{width: Number, height: Number}} canvasSize The size of the canvas.
+     * @param {Number} amount The amount of enemies to place.
+     * @param {[[Sprite]]} wallMatrix The matrix used to placer the walls.
+     * @param {{x: Number, y: Number}} wallNumberRatio The ratio of walls that can be placed on the canvas.
+     * @param {Number} wallBlockSize The size of the wall blocks
+     * @param {Number} defaultVelocity The default velocity to set on the enemies.
+     * @param {Number} chaseDistance The distance (in pixels) the enemies will be allowed to chase the player.
+     * @param {Boolean} allowChase If the enemies will be allowed to chase the player. 
+     */
+    constructor(scene, canvasSize, amount, wallMatrix, wallNumberRatio, wallBlockSize, defaultVelocity, chaseDistance, allowChase){
         this.scene = scene;
+        this.canvasSize = canvasSize;
         this.amount = amount;
         this.wallMatrix = wallMatrix;
         this.wallNumberRatio = wallNumberRatio;
@@ -31,7 +44,7 @@ class Cacodemon{
             i = this.getRndInteger(0, this.wallNumberRatio.y);
             j = this.getRndInteger(0, this.wallNumberRatio.x);
 
-            if(this.wallMatrix[i][j] === false){
+            if(!this.wallMatrix[i][j]){
                 enemyPosition.x = (j*32 + 32);
                 enemyPosition.y = (i*32 + 32);
 
@@ -56,7 +69,7 @@ class Cacodemon{
                 this.enemies[enemiesPlaced].setMaxHealth = 200;
 
                 //We create an sprite that will be the 3D representation of the enemy.
-                this.enemies[enemiesPlaced].setEnemy3D(canvasSize.width/2, canvasSize.height*1.5, "cacodemon");
+                this.enemies[enemiesPlaced].setEnemy3D(this.canvasSize, this.canvasSize.width/2, this.canvasSize.height*1.5, "cacodemon");
 
                 //We set all the elements we need to collide with the walls.
                 this.enemies[enemiesPlaced].setColliderElements();
@@ -89,9 +102,9 @@ class Cacodemon{
     /**
      * Allows all the enemies to shoot at the player.
      */
-    shoot(playerAngle){
+    shoot(player){
         for(let enemy of this.getEnemies){
-            enemy.shoot(this.bulletProperties, this.getRndInteger(0, 9), playerAngle);
+            enemy.shoot(this.bulletProperties, this.getRndInteger(0, 9), player, this.canvasSize);
         }
     }
 

@@ -50,15 +50,16 @@ class Enemy extends Living{
 
     /**
      * Sets the sprite of the enemy which will be its representation in 3D camera.
+     * @param {{width: Number, height: Number}} canvasSize 
      * @param {number} positionX 
      * @param {number} positionY 
      * @param {String} enemyImgStr 
      * @param {boolean} visible 
      */
-    setEnemy3D(positionX, positionY, enemyImgStr, visible = false){
+    setEnemy3D(canvasSize, positionX, positionY, enemyImgStr, visible = false){
         this.sprite3D = new Sprite(this.scene, {x: positionX, y: positionY}, enemyImgStr, this.getSize, 3)
         this.sprite3D.setVisible = visible;
-        this.setAttackSoundEffect();
+        this.setAttackSound(canvasSize);
     }
 
 
@@ -210,17 +211,26 @@ class Enemy extends Living{
     }
 
     /**
-     * Sets the sound effect of the enemy.
+     * Sets the attack sound of the enemy.
+     * @param {{width: Number, height: Number}} canvasSize 
      */
-    setAttackSoundEffect(){
-        this.attackSoundEffectName = this.scene.sound.add(this.getEnemy3D.getSpriteImgStr + "_attack_sound");
+    setAttackSound(canvasSize){
+        this.attackSound = new Sound(this.scene, canvasSize, this.getEnemy3D.getSpriteImgStr + "_attack_sound");
+    }
+    
+    /**
+     * Gets the attack sound of the enemy.
+     * @returns {Sound}
+     */
+    getAttackSound(){
+        return this.attackSound;
     }
 
     /**
      * Plays the sound effect of the enemy.
      */
-    playAttackSoundEffect(){
-        this.attackSoundEffectName.play();
+    playAttackSound(){
+        this.getAttackSound().playSound();
     }
 
     /**
@@ -228,7 +238,7 @@ class Enemy extends Living{
      * @param {Number} canvasWidth
      * @param {Number} playerAngle
      */
-    setAttackSoundEffectPanning(canvasWidth, playerAngle){
+    setgetAttackPanning(canvasWidth, playerAngle){
         let anglePlayerToEnemy = this.adjustAngleValue(this.getAngleToElement + Math.PI);
 
         let angleAdjustedFromPlayer = this.adjustAngleValue(anglePlayerToEnemy - playerAngle);
@@ -241,7 +251,21 @@ class Enemy extends Living{
             x += canvasWidth/2;
         }
 
-        this.attackSoundEffectName.setPan(Phaser.Math.Linear(-1, 1, x / canvasWidth));
+        this.attackSound.setPan(Phaser.Math.Linear(-1, 1, x / canvasWidth));
+    }
+
+    /**
+     * This method stablishes the angle of the enemy respect to the element.
+     * @param {number} elementPosition1 The position of the element1.
+     * @param {number} elementPosition2 The position of the element2.
+     * @returns {number} 
+     */
+    angleToElement2(elementPosition1, elementPosition2){
+        if(elementPosition1.x > elementPosition2.x){
+            return Math.atan((elementPosition1.y - elementPosition2.y)/(elementPosition1.x - elementPosition2.x)) + Math.PI;
+        }else{
+            return Math.atan((elementPosition1.y - elementPosition2.y)/(elementPosition1.x - elementPosition2.x))
+        }
     }
 
     /**
@@ -291,8 +315,8 @@ class Enemy extends Living{
         this.setRotation = this.getAngle;
     }
 
-    shoot(properties, randNumber, playerAngle){
-        this.setAttackSoundEffectPanning(1024, playerAngle);
+    shoot(properties, randNumber, player, canvasSize){
+        this.getAttackSound().setSoundPanning(this.getDistanceToPlayer, this.angleToElement + Math.PI, player.getAngle);
         if(this.inSight && this.getAbleToShoot){
             let time = this.scene.time.now;
             if (time - this.lastShotTimer > properties.delay + randNumber*100) {
@@ -303,7 +327,27 @@ class Enemy extends Living{
                 this.getProjectiles3D.add(projectile.getProjectile3D.getSprite);
 
                 projectile.shootProjectile(this);
-                this.playAttackSoundEffect();
+                this.playAttackSound();
+
+                for(let i = 0; i < this.getProjectiles2D.getChildren().length; i++){
+                    let projecitleSound = new Sound(this.scene, canvasSize, "cacodemon_energy_bomb_sound");
+                    projecitleSound.setSoundPanning(
+                        this.hypoCalc(
+                            this.getProjectiles2D.getChildren()[i].x, player.getPositionX,
+                            this.getProjectiles2D.getChildren()[i].y, player.getPositionY
+                        ),
+                        this.angleToElement2({
+                            x: this.getProjectiles2D.getChildren()[i].x,
+                            y: this.getProjectiles2D.getChildren()[i].y
+                            },
+                            player.getPosition
+                        ) + Math.PI,
+                        player.getAngle
+                    );
+                    projecitleSound.playSound();
+                }
+
+                
 
                 this.lastShotTimer = time;
             }

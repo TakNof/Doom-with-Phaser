@@ -298,6 +298,10 @@ class Living extends Sprite{
         }
     }
 
+    set setHurtSound(key){
+        this.soundEffectName = this.scene.sound.add(key);
+    }
+
     /**
      * Sets the alive state of the Living Sprite.
      * @param {boolean} state

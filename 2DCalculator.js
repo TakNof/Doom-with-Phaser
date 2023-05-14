@@ -100,13 +100,17 @@ let music;
 //With the preload method we preload the sprites and we generate the object from the raycaster class.
 function preload(){
     this.load.image("wall", "./assets/wall.png", {frameWidth: 32, frameHeight: 32});
+
     this.load.image("player", "./assets/doomguy64x64.png", {frameWidth: 64, frameHeight: 64});
+    this.load.audio("player_hurt", "./assets/sounds/Player/player_hurt_sound.wav")
 
     this.load.image("small_cacodemon", "./assets/enemy.jpg", {frameWidth: 64, frameHeight: 64});
     this.load.image("cacodemon", "./assets/cacodemon.png");
     this.load.audio("cacodemon_attack_sound", "./assets/sounds/enemies/cacodemon/cacodemon_attack_sound.wav");
+
     this.load.image("energy_bomb", "./assets/energy_bomb.png");
     this.load.image("small_energy_bomb", "./assets/small_energy_bomb.png", {frameWidth: 12, frameHeight: 12});
+    this.load.audio("cacodemon_energy_bomb_sound", "./assets/sounds/enemies/cacodemon/cacodemon_energy_bomb_sound.wav");
 
     this.load.atlas(weapons.shotgun.name, weapons.shotgun.spriteDir, "assets/weapons/shotgun/shotgun.json");
     this.load.audio(weapons.shotgun.name + '_sound', weapons.shotgun.soundDir);
@@ -149,7 +153,7 @@ function create(){
     walls.setColliders(player.getColliderElements);
 
     //We create a certain amount of cacodemons.
-    cacodemons = new Cacodemon(this, amountEnemies, walls.getWallMatrix, walls.getWallNumberRatio, wallBlockSize, defaultVelocity, chaseDistance, allowChase);
+    cacodemons = new Cacodemon(this, canvasSize, amountEnemies, walls.getWallMatrix, walls.getWallNumberRatio, wallBlockSize, defaultVelocity, chaseDistance, allowChase);
     cacodemons.create(player.getPosition);
 
     // cacodemons2 = new Cacodemon2(this, amountEnemies, walls.getWallMatrix, walls.getWallNumberRatio, wallBlockSize, defaultVelocity, chaseDistance, allowChase);
@@ -169,7 +173,7 @@ function create(){
     music = this.sound.add('at_dooms_gate');
     music.setVolume(0.5);
     music.loop = true;
-    music.play();
+    // music.play();
 }
 
 function update(){
@@ -214,7 +218,7 @@ function update(){
         //The basic movement of the enemy according to the player's position.
         cacodemons.move(player.getPosition);
     
-        cacodemons.shoot(player.getAngle);
+        cacodemons.shoot(player);
     }else{
         player.getHUD.displayDeathText();
         setTimeout(() => {
