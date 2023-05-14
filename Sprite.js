@@ -99,8 +99,7 @@ class Sprite{
      * @param {boolean} visible Whether the sprite is visible or not.
      */
     set setVisible(visible = true){
-        this.visible = visible;
-        this.sprite.visible = this.visible;
+        this.sprite.visible = visible;
     }
 
     /**

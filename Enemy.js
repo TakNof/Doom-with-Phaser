@@ -61,6 +61,11 @@ class Enemy extends Living{
         this.setAttackSoundEffect();
     }
 
+
+    set setNewEnemy3D(newEnemy3D){
+        this.sprite3D.sprite = newEnemy3D;
+    }
+
     /**
      * Gets the sprite of the enemy which will be its representation in 3D camera.
      */
@@ -184,10 +189,10 @@ class Enemy extends Living{
         if(this.inSight){
             let time = this.scene.time.now;
             if (time - this.lastShotTimer > properties.delay + randNumber*100) {
-                let projectile = new Projectile(this.scene, this.getPosition, "small_energy_bomb", 32, 80, 10);
+                let projectile = new Projectile(this.scene, this.getPosition, "small_energy_bomb", 32, 80, 100);
                 this.getProjectiles2D.add(projectile.getSprite);
 
-                projectile.setProjectile3D(0, 0, "energy_bomb");            
+                projectile.setProjectile3D(canvasSize.width/2, canvasSize.width/2, "energy_bomb");            
                 this.getProjectiles3D.add(projectile.getProjectile3D.getSprite);
 
                 projectile.shootProjectile(this);

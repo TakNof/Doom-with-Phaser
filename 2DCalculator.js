@@ -6,7 +6,7 @@ let config = {
     physics: {
         default: 'arcade',
         arcade: {
-            debug: true
+            debug: false
         }
     },
     scene: {
@@ -47,7 +47,7 @@ let playerAngleOffset = 3*Math.PI/2
 let playerFOVangleOffset = playerAngleOffset - playerFOV/2
 
 //Stablishing the enemy and its initial position.
-let amountEnemies = 1;
+let amountEnemies = 2;
 
 let cacodemons;
 let cacodemons2;
@@ -169,7 +169,7 @@ function create(){
     music = this.sound.add('at_dooms_gate');
     music.setVolume(0.5);
     music.loop = true;
-    // music.play();
+    music.play();
 }
 
 function update(){
@@ -187,7 +187,8 @@ function update(){
                 player.getPlayerCurrentWeapon.getBulletProperties,
                 player.getPlayerCurrentWeapon.getDistanceLimits,
                 cacodemons.getEnemies[i].getDistanceToPlayer,
-                player      )){
+                player)
+                ){
     
                 cacodemons.getEnemies.splice(i, 1);
                 cacodemons.amount -= 1;

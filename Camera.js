@@ -111,6 +111,7 @@ class Camera{
         for(let i = 0; i < this.amountEnemies2D; i++){
             this.enemy3DSprites[i] = this.enemies2D[i].getEnemy3D;
         }
+        
     }
 
     /**
@@ -271,11 +272,30 @@ class Camera{
         }
         
         let distances = Array(this.amountEnemies2D);
+        for(let i = 0; i < this.amountEnemies2D; i++){
+            this.enemies2D[i].setNewEnemy3D = this.drawEnemyElements(this.enemies2D[i].getEnemy3D.getSprite, this.enemyAngleToPlayerInv[i], this.enemies2D[i].getDistanceToPlayer, 200, 1.5);
+        }
 
-        this.setEnemy3DSprites(this.drawEnemyElements(this.getEnemy3DSprites, this.getEnemyAngleToPlayerInv, this.getEnemyDistances, 1.5));
-        // this.drawEnemyElements(this.getProjectiles3DSprites, this.enemyAngleToPlayerInv, this.enemyProjectilesDistance, 1.5);
-
-
+        for(let enemy of this.enemies2D){
+            for(let i = 0; i < enemy.getProjectiles2D.getChildren().length; i++){
+                enemy.getProjectiles3D.getChildren()[i] = this.drawEnemyElements(
+                    enemy.getProjectiles3D.getChildren()[i],
+                    this.angleToElement({
+                        x: enemy.getProjectiles2D.getChildren()[i].x,
+                        y: enemy.getProjectiles2D.getChildren()[i].y
+                        },
+                        this.player.getPosition
+                    ) + Math.PI,
+                    this.hypoCalc(
+                        enemy.getProjectiles2D.getChildren()[i].x, this.player.getPositionX,
+                        enemy.getProjectiles2D.getChildren()[i].y, this.player.getPositionY
+                    ),
+                    1000,
+                    1.5
+                );
+            }
+        }
+        
         /**
          * This for loop is used to analize the distance of each enemy and estimate the depth of drawing of the enemy
          */
@@ -316,51 +336,50 @@ class Camera{
      * @param {Array} elements
      * @param {Array<Number>} angleElementToPlayer
      */
-    drawEnemyElements(elements, angleElementToPlayer, distanceToPlayer, heightMultiplier){
+    drawEnemyElements(element, angleElementToPlayer, distanceToPlayer, scaleDivisor, heightMultiplier){
         let adjust;
-        for(let i = 0; i < elements.length; i++){
-            adjust = {x0: 0, x1024: 0};
+       
+        adjust = {x0: 0, x1024: 0};
 
-            /** 
-             * According to the current angle of the element respect to the player, we check if that angle is located in the fourth quadrant.
-             * If so we change the adjust value of the respectrive fov angle, to allow second conditional to check if the element is located
-             * between the two angles of the fov. 
-             */     
-            if(angleElementToPlayer[i] + Math.PI/2 >= 2*Math.PI){
-                adjust.x1024 = 1;
-            }else if(angleElementToPlayer[i] - Math.PI/2 <= 0){
-                adjust.x0 = 1;
+        /** 
+         * According to the current angle of the element respect to the player, we check if that angle is located in the fourth quadrant.
+         * If so we change the adjust value of the respectrive fov angle, to allow second conditional to check if the element is located
+         * between the two angles of the fov. 
+         */     
+        if(angleElementToPlayer + Math.PI/2 >= 2*Math.PI){
+            adjust.x1024 = 1;
+        }else if(angleElementToPlayer - Math.PI/2 <= 0){
+            adjust.x0 = 1;
+        }
+        
+        /**
+         * According to the adjust values calculeted previously, the evaluation values of the player's fov angles will change between 0 and 1,
+         * the 1 in the adjust value will allow the angle of that fov end to substract or add a whole lap. With that, the conditional will work
+         * properly, avoiding the issue of the angle reset when reaching 360 degrees or 2PI radians.
+         */
+        if(angleElementToPlayer > this.getArcAngles.x0 - 2*Math.PI*adjust.x0 && angleElementToPlayer < this.getArcAngles.x1024 + 2*Math.PI*adjust.x1024){
+            element.visible = true;
+            
+            let enemyHeight = this.player.getGraphicator.setEnemyHeight(distanceToPlayer);
+            
+            if(enemyHeight/scaleDivisor > 2.5){
+                element.scaleY = 2.5;
+                element.scaleX = 2.5;
+            }else{
+                element.scaleY = enemyHeight/scaleDivisor;
+                element.scaleX = enemyHeight/scaleDivisor;
             }
             
-            /**
-             * According to the adjust values calculeted previously, the evaluation values of the player's fov angles will change between 0 and 1,
-             * the 1 in the adjust value will allow the angle of that fov end to substract or add a whole lap. With that, the conditional will work
-             * properly, avoiding the issue of the angle reset when reaching 360 degrees or 2PI radians.
-             */
-            if(angleElementToPlayer[i] > this.getArcAngles.x0 - 2*Math.PI*adjust.x0 && angleElementToPlayer[i] < this.getArcAngles.x1024 + 2*Math.PI*adjust.x1024){
-                elements[i].visible = true;
+            element.x = this.drawElementByPlayerPov(angleElementToPlayer);
+            element.y = (heightMultiplier*this.canvasSize.height - this.canvasSize.height/enemyHeight);  
+            
                 
-                let enemyHeight = this.player.getGraphicator.setEnemyHeight(distanceToPlayer[i]);
-                
-                if(enemyHeight/200 > 2.5){
-                    elements[i].scaleY = 2.5;
-                    elements[i].scaleX = 2.5;
-                }else{
-                    elements[i].scaleY = enemyHeight/200;
-                    elements[i].scaleX = enemyHeight/200;
-                }
-                
-                elements[i].x = this.drawElementByPlayerPov(angleElementToPlayer[i]);
-                elements[i].y = (heightMultiplier*this.canvasSize.height - this.canvasSize.height/enemyHeight);  
-                
-                     
-                
-            }else{
-                elements[i].visible = false;
-            }
-
-            return elements;
+            
+        }else{
+            element.visible = false;
         }
+
+        return element;
     }
 
     /**
