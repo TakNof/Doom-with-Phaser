@@ -60,6 +60,7 @@ class Enemy extends Living{
         this.sprite3D = new Sprite(this.scene, {x: positionX, y: positionY}, enemyImgStr, this.getSize, 3)
         this.sprite3D.setVisible = visible;
         this.setAttackSound(canvasSize);
+        this.setDeathSound(canvasSize);
     }
 
 
@@ -101,7 +102,7 @@ class Enemy extends Living{
      */
     get getProjectiles3D(){
         return this.enemyProjectiles3D;
-    }  
+    }
 
     /**
      * Sets the projectile properties of the enemy.
@@ -185,6 +186,8 @@ class Enemy extends Living{
             this.setHealth = 0;
             this.setAbleToShoot = false;
 
+            this.playDeathSound();
+
             if(critical){
                 player.heal(bulletProperties.damage*0.04);
             }else{
@@ -197,13 +200,11 @@ class Enemy extends Living{
 
     waitToDestroy(){
         if(this.getProjectiles2D.getChildren().length != 0){
-            console.log("Projectiles still existing");
             this.setVisible = false;
             this.getEnemy3D.setVisible = false;
             this.getSprite.body.enable = false;
             
         }else{
-            console.log("Projectiles destroyed");
             this.getEnemy3D.getSprite.destroy();
             this.getSprite.destroy();
             this.setIsAlive = false;
@@ -231,6 +232,29 @@ class Enemy extends Living{
      */
     playAttackSound(){
         this.getAttackSound().playSound();
+    }
+
+    /**
+     * Sets the death sound of the player.
+     * @param {{width: Number, height: Number}} canvasSize 
+     */
+    setDeathSound(canvasSize){
+        this.deathSound = new Sound(this.scene, canvasSize, "cacodemon_death_sound");
+    }
+    
+    /**
+     * Gets the death sound of the player.
+     * @returns {Sound}
+     */
+    getDeathSound(){
+        return this.deathSound;
+    }
+
+    /**
+     * Plays the death sound of the player.
+     */
+    playDeathSound(){
+        this.getDeathSound().playSound();
     }
 
     /**
@@ -328,27 +352,7 @@ class Enemy extends Living{
 
                 projectile.shootProjectile(this);
                 this.playAttackSound();
-
-                for(let i = 0; i < this.getProjectiles2D.getChildren().length; i++){
-                    let projecitleSound = new Sound(this.scene, canvasSize, "cacodemon_energy_bomb_sound");
-                    projecitleSound.setSoundPanning(
-                        this.hypoCalc(
-                            this.getProjectiles2D.getChildren()[i].x, player.getPositionX,
-                            this.getProjectiles2D.getChildren()[i].y, player.getPositionY
-                        ),
-                        this.angleToElement2({
-                            x: this.getProjectiles2D.getChildren()[i].x,
-                            y: this.getProjectiles2D.getChildren()[i].y
-                            },
-                            player.getPosition
-                        ) + Math.PI,
-                        player.getAngle
-                    );
-                    projecitleSound.playSound();
-                }
-
                 
-
                 this.lastShotTimer = time;
             }
         }

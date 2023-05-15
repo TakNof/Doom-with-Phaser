@@ -30,10 +30,12 @@ class Player extends Living{
 
         this.cursors = this.scene.input.keyboard.createCursorKeys();
         this.keySpace = this.scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
-        this.keySpace.emitOnRepeat = true;
 
         this.setMaxHealth = maxHealth;
         this.setHealth = this.getMaxHealth;
+
+        this.setHurtSound();
+        this.setDeathSound();
     }
     
     /**
@@ -85,6 +87,52 @@ class Player extends Living{
      */
     get getCamera(){
         return this.playerCamera;
+    }
+
+    /**
+     * Sets the hurt sound of the player.
+     * @param {{width: Number, height: Number}} canvasSize 
+     */
+    setHurtSound(canvasSize){
+        this.hurtSound = new Sound(this.scene, canvasSize, "player_hurt_sound");
+    }
+    
+    /**
+     * Gets the hurt sound of the player.
+     * @returns {Sound}
+     */
+    getHurtSound(){
+        return this.hurtSound;
+    }
+
+    /**
+     * Plays the hurt sound of the player.
+     */
+    playHurtSound(){
+        this.getHurtSound().playSound();
+    }
+
+    /**
+     * Sets the death sound of the player.
+     * @param {{width: Number, height: Number}} canvasSize 
+     */
+    setDeathSound(canvasSize){
+        this.deathSound = new Sound(this.scene, canvasSize, "player_death_sound");
+    }
+    
+    /**
+     * Gets the death sound of the player.
+     * @returns {Sound}
+     */
+    getDeathSound(){
+        return this.deathSound;
+    }
+
+    /**
+     * Plays the death sound of the player.
+     */
+    playDeathSound(){
+        this.getDeathSound().playSound();
     }
 
     /**
@@ -175,24 +223,28 @@ class Player extends Living{
     __checkDamage(projectile, projectile3D, bulletProperties, distanceLimits, currentDistance){
         projectile.destroy();
         projectile3D.destroy();
+
         let damage = bulletProperties.damage;
 
         if(currentDistance > distanceLimits.min && currentDistance < distanceLimits.max){
             damage *= 220/currentDistance;
-            console.log(`${this} Normal damage ${damage}`);
+            // console.log(`${this} Normal damage ${damage}`);
         }else if(currentDistance >= distanceLimits.max){
             damage *= 1/distanceLimits.max;
-            console.log(`${this} Minimal damage ${damage}`);
+            // console.log(`${this} Minimal damage ${damage}`);
         }else if(currentDistance <= distanceLimits.min){
             damage *= bulletProperties.critical * 220/currentDistance;
-            console.log(`${this} Critical damage ${damage}`);
+            // console.log(`${this} Critical damage ${damage}`);
         }
 
         if(this.getHealth - damage <= 0){
             this.setHealth = 0;
             
+            this.playDeathSound();
+
             this.isAlive = false;
         }else{
+            this.playHurtSound();
             this.setHealth = this.getHealth - damage;
         }
     }

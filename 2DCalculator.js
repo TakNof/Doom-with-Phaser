@@ -54,7 +54,7 @@ let cacodemons2;
 
 let enemyangleOffset = Math.PI/2;
 let chaseDistance = 400;
-let allowChase = false;
+let allowChase = true;
 
 
 //Stablishing the velocity standards for the player and enemies.
@@ -102,11 +102,13 @@ function preload(){
     this.load.image("wall", "./assets/wall.png", {frameWidth: 32, frameHeight: 32});
 
     this.load.image("player", "./assets/doomguy64x64.png", {frameWidth: 64, frameHeight: 64});
-    this.load.audio("player_hurt", "./assets/sounds/Player/player_hurt_sound.wav")
+    this.load.audio("player_hurt_sound", "./assets/sounds/Player/player_hurt_sound.wav");
+    this.load.audio("player_death_sound", "./assets/sounds/Player/player_death_sound.wav");
 
     this.load.image("small_cacodemon", "./assets/enemy.jpg", {frameWidth: 64, frameHeight: 64});
     this.load.image("cacodemon", "./assets/cacodemon.png");
     this.load.audio("cacodemon_attack_sound", "./assets/sounds/enemies/cacodemon/cacodemon_attack_sound.wav");
+    this.load.audio("cacodemon_death_sound", "./assets/sounds/enemies/cacodemon/cacodemon_death_sound.wav");
 
     this.load.image("energy_bomb", "./assets/energy_bomb.png");
     this.load.image("small_energy_bomb", "./assets/small_energy_bomb.png", {frameWidth: 12, frameHeight: 12});
@@ -130,7 +132,7 @@ function create(){
     walls.createWalls();
     
     //Here we create the player.
-    player = new Player(this, {x: canvasSize.width/2, y:canvasSize.height/2}, "player", wallBlockSize*2, 0, defaultVelocity, angleOperator, Infinity);
+    player = new Player(this, {x: canvasSize.width/2, y:canvasSize.height/2}, "player", wallBlockSize*2, 0, defaultVelocity, angleOperator, 100);
 
     //Here we create the raycaster of the player and we pass it the position of the walls to make the calculations.
     player.setRaycaster(walls.getWallMatrix, raysAmount,  playerFOVangleOffset);
@@ -183,10 +185,17 @@ function update(){
 
         player.shoot();
 
+        //The basic movement of the enemy according to the player's position.
+        cacodemons.move(player.getPosition);
+    
+        cacodemons.shoot(player);
+
         for(let enemy of cacodemons.getEnemies){
             walls.evalCollision(enemy.getProjectiles2D, enemy.getProjectiles3D);
 
             enemy.evalProjectileCollision(player);
+
+            enemy.getDeathSound().setSoundPanning(enemy.getDistanceToPlayer, enemy.angleToElement + Math.PI, player.getAngle);
 
             if(enemy.getHealth == 0){
                 enemy.waitToDestroy();
@@ -214,11 +223,6 @@ function update(){
 
         walls.evalCollision(player.getPlayerCurrentWeapon.getProjectiles);
         
-    
-        //The basic movement of the enemy according to the player's position.
-        cacodemons.move(player.getPosition);
-    
-        cacodemons.shoot(player);
     }else{
         player.getHUD.displayDeathText();
         setTimeout(() => {

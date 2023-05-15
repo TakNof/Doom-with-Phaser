@@ -8,6 +8,7 @@ class Sound{
         this.sound = this.scene.sound.add(key);
     }
 
+    
     setSoundPanning(distanceToPlayer, playerToEnemyAngle, playerAngle){
         playerToEnemyAngle = this.adjustAngleValue(playerToEnemyAngle);
 
