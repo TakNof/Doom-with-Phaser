@@ -15,6 +15,8 @@ class HUD{
         this.deathText.setOrigin(0.5);
         this.victoryText.setOrigin(0.5);
 
+        this.hurtDamageRedScreen = this.scene.add.rectangle(this.canvasSize.width/2, 1.5*this.canvasSize.height, this.canvasSize.width, this.canvasSize.height, colors.crimsonRed, 0).setDepth(80);
+
         this.setEnemiesHealthArray = enemies;
     }
 
@@ -85,4 +87,10 @@ class HUD{
         
     }
 
+    displayHurtRedScreen(){
+        this.hurtDamageRedScreen.fillAlpha = 0.4;
+        setTimeout(()=>{
+            this.hurtDamageRedScreen.fillAlpha = 0;
+        },200)
+    }
 }

@@ -294,6 +294,7 @@ class Living extends Sprite{
                 this.setHealth = this.maxHealth;
             }else{
                 this.setHealth = this.getHealth + healValue;
+                this.playHealSound();
             }
         }
     }

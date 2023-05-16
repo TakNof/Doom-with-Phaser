@@ -300,67 +300,79 @@ class Camera{
         /**
          * This for loop is used to analize the distance of each enemy and estimate the depth of drawing of the enemy
          */
-        let distances = Array(this.amountEnemies2D);
+        let amountObjectsToDraw = 0
+        for(let enemy of this.enemies2D){
+            amountObjectsToDraw += 1;
+            for(let projectile of enemy.getProjectiles2D.getChildren()){
+                amountObjectsToDraw += 1;
+            }
+        }
 
-        for(let i = 0; i < this.amountEnemies2D; i++){
-            if(this.enemies2D[i].getEnemy3D.getVisible){
-                for(let j = 0; j < this.amountEnemies2D; j++){
-                    distances[j] = [this.enemies2D[j].getDistanceToPlayer, j];
-                }
+        let enemiesWithAttributes = Array(this.amountEnemies2D);
+        
+        for(let [i, enemy] of this.enemies2D.entries()){
+            enemiesWithAttributes[i] = {name: "Enemy", position: i, distance: enemy.getDistanceToPlayer};
+            if(enemiesWithAttributes[i].projectiles == undefined){
+                enemiesWithAttributes[i].projectiles = [];
+            }
+            for(let [j ,projectile] of enemy.getProjectiles2D.getChildren().entries()){
+                let projectileDistance = this.hypoCalc(
+                    projectile.x, this.player.getPositionX,
+                    projectile.y, this.player.getPositionY
+                );
+                enemiesWithAttributes[i].projectiles.push({name: "Projectile", position1: i, position2: j, distance: projectileDistance});
 
-                distances.sort(function(a, b) {
-                    return a[0] - b[0];
-                });
+            }
+        }
 
-                for(let j = 0; j < this.amountEnemies2D; j++){
-                    distances[j][0] = this.amountEnemies2D - j + 2;
-                }
+        // console.log(enemiesWithAttributes);
 
-                distances.sort(function(a, b) {
-                    return a[1] - b[1];
-                });
+        let distances = [];
 
-                for(let i = 0; i < this.amountEnemies2D; i++){
-                    //If the wall is closer to the enemy than the player, we need to set the depth of the enemy behind of the depth of the walls.
-                    if(this.enemies2D[i].getDistanceToPlayer > this.enemies2D[i].getRayData.distance[0]){
-                        this.enemies2D[i].getEnemy3D.setDepth = 0;
-                    }else{
-                        this.enemies2D[i].getEnemy3D.setDepth = distances[i][0];
+        for (let enemy of enemiesWithAttributes) {
+            if(this.enemies2D[enemy.position].getEnemy3D.getVisible){
+                distances.push({'element': enemy['name'], 'distance': enemy['distance'], position: enemy['position']});
+            }
+            if(enemy['projectiles']){
+                for (let projectile of enemy['projectiles']) {
+                    if(this.enemies2D[enemy.position].getProjectiles3D.getChildren()[projectile.position2].visible){
+                        distances.push({'element': projectile['name'], 'distance': projectile['distance'], position1: projectile["position1"], position2: projectile["position2"]});
                     }
                 }
-            }
-            
+            }       
         }
+
+        distances.sort((a, b) => -a['distance'] + b['distance']);
+
+        for (let [i, distance] of distances.entries()) {
+            if(distance['element'] == "Enemy"){
+                if(this.enemies2D[distance["position"]].getDistanceToPlayer > this.enemies2D[distance["position"]].getRayData.distance[0]){
+                    this.enemies2D[distance["position"]].getEnemy3D.setDepth = 0;
+                }else{
+                    this.enemies2D[distance["position"]].getEnemy3D.setDepth = i + 2;
+                }
+            }else if(distance['element'] == "Projectile"){
+                this.enemies2D[distance["position1"]].getProjectiles3D.getChildren()[distance["position2"]].setDepth(i + 2);
+            }
+        }
+
+        // console.log(distances);
     }
 
     /**
      * Due we need to calculate multiple elements comming from the enemy, create this general method with
      * the stablished procedure.
      * @param {Array} elements
-     * @param {Array<Number>} angleElementToPlayer
+     * @param {Array<Number>} anglePlayerToElement
      */
-    drawEnemyElements(element, angleElementToPlayer, distanceToPlayer, scaleDivisor, heightMultiplier){
-        let adjust;
-       
-        adjust = {x0: 0, x1024: 0};
-
-        /** 
-         * According to the current angle of the element respect to the player, we check if that angle is located in the fourth quadrant.
-         * If so we change the adjust value of the respectrive fov angle, to allow second conditional to check if the element is located
-         * between the two angles of the fov. 
-         */     
-        if(angleElementToPlayer + Math.PI/2 >= 2*Math.PI){
-            adjust.x1024 = 1;
-        }else if(angleElementToPlayer - Math.PI/2 <= 0){
-            adjust.x0 = 1;
-        }
-        
+    drawEnemyElements(element, anglePlayerToElement, distanceToPlayer, scaleDivisor, heightMultiplier){     
         /**
          * According to the adjust values calculeted previously, the evaluation values of the player's fov angles will change between 0 and 1,
          * the 1 in the adjust value will allow the angle of that fov end to substract or add a whole lap. With that, the conditional will work
          * properly, avoiding the issue of the angle reset when reaching 360 degrees or 2PI radians.
          */
-        if(angleElementToPlayer > this.getArcAngles.x0 - 2*Math.PI*adjust.x0 && angleElementToPlayer < this.getArcAngles.x1024 + 2*Math.PI*adjust.x1024){
+        // if(anglePlayerToElement > this.getArcAngles.x0 - 2*Math.PI*adjust.x0 && anglePlayerToElement < this.getArcAngles.x1024 + 2*Math.PI*adjust.x1024){
+        if(this.checkElementWithinFOV(anglePlayerToElement)){
             element.visible = true;
             
             let enemyHeight = this.player.getGraphicator.setEnemyHeight(distanceToPlayer);
@@ -373,7 +385,7 @@ class Camera{
                 element.scaleX = enemyHeight/scaleDivisor;
             }
             
-            element.x = this.drawElementByPlayerPov(angleElementToPlayer);
+            element.x = this.drawElementByPlayerPov(anglePlayerToElement);
             element.y = (heightMultiplier*this.canvasSize.height - this.canvasSize.height/enemyHeight);  
             
                 
@@ -383,6 +395,38 @@ class Camera{
         }
 
         return element;
+    }
+
+    /**
+     * Checks if the object is visible in player's FOV.
+     * @param {Number} anglePlayerToElement 
+     * @returns {boolean}
+     */
+    checkElementWithinFOV(anglePlayerToElement){
+        /** 
+         * The reset of the degrees of rotation of the elements its a big issue with verifying the visibility of an object.
+         * With these conditionals we solve that issue. If the x0 angle is greater than the x1024 angle, it means the second
+         * fov angle has done a loop already, so we use other conditional checking if the angle of the element is greater than
+         * the first fov angle or if it is less than the second fov angle.
+         * 
+         * In case the x1024 angle is greater than the x0 angle, the procedure would be the normal procedure of checking 
+         * if the angle of the element is withing the range of the angles of the fov.
+         */
+        if (this.getArcAngles.x0 > this.getArcAngles.x1024) {
+            if (anglePlayerToElement >= this.getArcAngles.x0 || anglePlayerToElement <= this.getArcAngles.x1024) {
+                // Object is within the player's field of view
+                return true;
+            }else{
+                return false;
+            }
+        } else {
+            if (anglePlayerToElement >= this.getArcAngles.x0 && anglePlayerToElement <= this.getArcAngles.x1024) {
+                // Object is within the player's field of view
+                return true;
+            }else{
+                return false;
+            }
+        }
     }
 
     /**

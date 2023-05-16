@@ -102,6 +102,7 @@ function preload(){
     this.load.image("wall", "./assets/wall.png", {frameWidth: 32, frameHeight: 32});
 
     this.load.image("player", "./assets/doomguy64x64.png", {frameWidth: 64, frameHeight: 64});
+    this.load.audio("player_heal_sound", "./assets/sounds/Player/player_heal_sound.wav");
     this.load.audio("player_hurt_sound", "./assets/sounds/Player/player_hurt_sound.wav");
     this.load.audio("player_death_sound", "./assets/sounds/Player/player_death_sound.wav");
 
@@ -158,9 +159,6 @@ function create(){
     cacodemons = new Cacodemon(this, canvasSize, amountEnemies, walls.getWallMatrix, walls.getWallNumberRatio, wallBlockSize, defaultVelocity, chaseDistance, allowChase);
     cacodemons.create(player.getPosition);
 
-    // cacodemons2 = new Cacodemon2(this, amountEnemies, walls.getWallMatrix, walls.getWallNumberRatio, wallBlockSize, defaultVelocity, chaseDistance, allowChase);
-    // cacodemons2.create(player.getPosition);
-
     for(let enemy of cacodemons.getEnemies){
         walls.setColliders(enemy.getColliderElements);
     }
@@ -175,7 +173,7 @@ function create(){
     music = this.sound.add('at_dooms_gate');
     music.setVolume(0.5);
     music.loop = true;
-    // music.play();
+    music.play();
 }
 
 function update(){

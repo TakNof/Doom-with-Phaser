@@ -36,6 +36,7 @@ class Player extends Living{
 
         this.setHurtSound();
         this.setDeathSound();
+        this.setHealSound();
     }
     
     /**
@@ -87,6 +88,30 @@ class Player extends Living{
      */
     get getCamera(){
         return this.playerCamera;
+    }
+
+     /**
+     * Sets the hurt sound of the player.
+     * @param {{width: Number, height: Number}} canvasSize 
+     */
+     setHealSound(canvasSize){
+        this.healSound = new Sound(this.scene, canvasSize, "player_heal_sound");
+        this.healSound.sound.setVolume(3);
+    }
+    
+    /**
+     * Gets the hurt sound of the player.
+     * @returns {Sound}
+     */
+    getHealSound(){
+        return this.healSound;
+    }
+
+    /**
+     * Plays the hurt sound of the player.
+     */
+    playHealSound(){
+        this.getHealSound().playSound();
     }
 
     /**
@@ -245,6 +270,7 @@ class Player extends Living{
             this.isAlive = false;
         }else{
             this.playHurtSound();
+            this.getHUD.displayHurtRedScreen();
             this.setHealth = this.getHealth - damage;
         }
     }
