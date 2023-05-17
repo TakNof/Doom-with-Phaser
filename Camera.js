@@ -55,8 +55,8 @@ class Camera{
      */
     setArcAngles(){
         this.arcAngles = {
-            x0: this.player.adjustAngleValue(this.playerGlobalAngle - this.fov/2),
-            x1024:this.player.adjustAngleValue(this.playerGlobalAngle + this.fov/2)
+            x0: this.adjustAngleValue(this.playerGlobalAngle - this.fov/2),
+            x1024:this.adjustAngleValue(this.playerGlobalAngle + this.fov/2)
         };
     }
 
@@ -76,7 +76,7 @@ class Camera{
      * Sets the angle of the player into global degrees scale, then the method setArcAngles is called.
      */
     setPlayerGlobalAngle(){
-        this.playerGlobalAngle = this.player.adjustAngleValue(this.player.getAngle + 3*Math.PI/2);
+        this.playerGlobalAngle = this.adjustAngleValue(this.player.getAngle + 3*Math.PI/2);
         this.setArcAngles();
     }
 
@@ -92,7 +92,7 @@ class Camera{
      */
     setEnemyAngleToPlayerInv(){
         for(let i = 0; i < this.amountEnemies2D; i++){
-            this.enemyAngleToPlayerInv[i] = this.enemies2D[0].adjustAngleValue(this.enemies2D[i].getAngleToElement + Math.PI);
+            this.enemyAngleToPlayerInv[i] = this.adjustAngleValue(this.enemies2D[i].getAngleToElement + Math.PI);
         }
     }
 
@@ -146,7 +146,7 @@ class Camera{
     setProjectilesAngleToPlayerInv(playerPosition){
         for(let i = 0; i < this.amountEnemies2D; i++){
             this.projectilesAngleToPlayerInv[i] =
-            this.enemies2D[0].adjustAngleValue(
+            this.adjustAngleValue(
                 this.angleToElement({
                     x: this.enemies2D[i].getProjectiles2D.x,
                     y: this.enemies2D[i].getProjectiles2D.y
@@ -281,17 +281,19 @@ class Camera{
             for(let i = 0; i < enemy.getProjectiles2D.getChildren().length; i++){
                 enemy.getProjectiles3D.getChildren()[i] = this.drawEnemyElements(
                     enemy.getProjectiles3D.getChildren()[i],
-                    this.angleToElement({
-                        x: enemy.getProjectiles2D.getChildren()[i].x,
-                        y: enemy.getProjectiles2D.getChildren()[i].y
-                        },
-                        this.player.getPosition
-                    ) + Math.PI,
+                    this.adjustAngleValue(
+                        this.angleToElement({
+                            x: enemy.getProjectiles2D.getChildren()[i].x,
+                            y: enemy.getProjectiles2D.getChildren()[i].y
+                            },
+                            this.player.getPosition
+                        ) + Math.PI
+                    ),
                     this.hypoCalc(
                         enemy.getProjectiles2D.getChildren()[i].x, this.player.getPositionX,
                         enemy.getProjectiles2D.getChildren()[i].y, this.player.getPositionY
                     ),
-                    1000,
+                    600,
                     1.5
                 );
             }
@@ -371,7 +373,6 @@ class Camera{
          * the 1 in the adjust value will allow the angle of that fov end to substract or add a whole lap. With that, the conditional will work
          * properly, avoiding the issue of the angle reset when reaching 360 degrees or 2PI radians.
          */
-        // if(anglePlayerToElement > this.getArcAngles.x0 - 2*Math.PI*adjust.x0 && anglePlayerToElement < this.getArcAngles.x1024 + 2*Math.PI*adjust.x1024){
         if(this.checkElementWithinFOV(anglePlayerToElement)){
             element.visible = true;
             
@@ -413,20 +414,25 @@ class Camera{
          * if the angle of the element is withing the range of the angles of the fov.
          */
         if (this.getArcAngles.x0 > this.getArcAngles.x1024) {
-            if (anglePlayerToElement >= this.getArcAngles.x0 || anglePlayerToElement <= this.getArcAngles.x1024) {
-                // Object is within the player's field of view
-                return true;
-            }else{
-                return false;
-            }
+            return !!(anglePlayerToElement >= this.getArcAngles.x0 || anglePlayerToElement <= this.getArcAngles.x1024);
         } else {
-            if (anglePlayerToElement >= this.getArcAngles.x0 && anglePlayerToElement <= this.getArcAngles.x1024) {
-                // Object is within the player's field of view
-                return true;
-            }else{
-                return false;
-            }
+            return !!(anglePlayerToElement >= this.getArcAngles.x0 && anglePlayerToElement <= this.getArcAngles.x1024);
         }
+    }
+
+    /**
+     * Allows to adjust the angle value of the rotation to be within the range of 0 and 2PI.
+     * @param {Number} angle The angle to be within the range of 0 and 2PI.
+     * @returns {Number}
+     */
+    adjustAngleValue(angle){
+        if(angle < 0){
+            angle += 2*Math.PI;
+        }else if(angle > 2*Math.PI){
+            angle -= 2*Math.PI;
+        }
+
+        return angle;
     }
 
     /**

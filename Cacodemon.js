@@ -49,7 +49,7 @@ class Cacodemon{
                 enemyPosition.y = (i*32 + 32);
 
                 //Here we create an enemy.
-                this.enemies[enemiesPlaced] =  new Enemy(this.scene, enemyPosition, "small_cacodemon", wallBlockSize*2, 1, defaultVelocity, chaseDistance, allowChase);
+                this.enemies[enemiesPlaced] =  new Enemy(this.scene, enemyPosition, "small_cacodemon", wallBlockSize*2, 1, this.defaultVelocity, chaseDistance, allowChase);
                 
                 //Here we set the particular enemy projetcile properties based on the properties of this class.
                 this.enemies[enemiesPlaced].setBulletProperties = this.bulletProperties;

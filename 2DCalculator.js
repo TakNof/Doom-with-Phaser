@@ -47,14 +47,14 @@ let playerAngleOffset = 3*Math.PI/2
 let playerFOVangleOffset = playerAngleOffset - playerFOV/2
 
 //Stablishing the enemy and its initial position.
-let amountEnemies = 10;
+let amountEnemies = 1;
 
 let cacodemons;
 let cacodemons2;
 
 let enemyangleOffset = Math.PI/2;
 let chaseDistance = 400;
-let allowChase = true;
+let allowChase = false;
 
 
 //Stablishing the velocity standards for the player and enemies.
@@ -133,7 +133,7 @@ function create(){
     walls.createWalls();
     
     //Here we create the player.
-    player = new Player(this, {x: canvasSize.width/2, y:canvasSize.height/2}, "player", wallBlockSize*2, 0, defaultVelocity, angleOperator, 100);
+    player = new Player(this, {x: canvasSize.width/2, y:canvasSize.height/2}, "player", wallBlockSize*2, 0, defaultVelocity, angleOperator, Infinity);
 
     //Here we create the raycaster of the player and we pass it the position of the walls to make the calculations.
     player.setRaycaster(walls.getWallMatrix, raysAmount,  playerFOVangleOffset);
@@ -156,7 +156,7 @@ function create(){
     walls.setColliders(player.getColliderElements);
 
     //We create a certain amount of cacodemons.
-    cacodemons = new Cacodemon(this, canvasSize, amountEnemies, walls.getWallMatrix, walls.getWallNumberRatio, wallBlockSize, defaultVelocity, chaseDistance, allowChase);
+    cacodemons = new Cacodemon(this, canvasSize, amountEnemies, walls.getWallMatrix, walls.getWallNumberRatio, wallBlockSize, defaultVelocity/2, chaseDistance, allowChase);
     cacodemons.create(player.getPosition);
 
     for(let enemy of cacodemons.getEnemies){
@@ -222,14 +222,27 @@ function update(){
         walls.evalCollision(player.getPlayerCurrentWeapon.getProjectiles);
         
     }else{
-        player.getHUD.displayDeathText();
+        if(player.getScore() == undefined){
+            player.setTimeAlive();
+            player.setScore("Defeat", amountEnemies);
+            player.getHUD.displayDeathText();
+
+            player.getHUD.displayScoreText("Defeat", player.getScore());
+        }
+        
         setTimeout(() => {
             this.scene.pause();
         }, 1000);
     }
 
     if(cacodemons.getEnemies.length == 0){
-        player.getHUD.displayVictoryText();
+        if(player.getScore() == undefined){
+            player.setTimeAlive();
+            player.setScore("Victory", amountEnemies);
+            player.getHUD.displayVictoryText();
+
+            player.getHUD.displayScoreText("Victory", player.getScore());    
+        }        
     }
     
     // player.getHUD.setEnemiesHealthValue = cacodemons.getEnemies;

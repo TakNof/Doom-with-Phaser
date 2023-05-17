@@ -172,15 +172,17 @@ class Enemy extends Living{
 
         if(currentDistance > distanceLimits.min && currentDistance < distanceLimits.max){
             damage *= 220/currentDistance;
-            console.log(`${this} Normal damage ${damage}`);
+            // console.log(`${this} Normal damage ${damage}`);
         }else if(currentDistance >= distanceLimits.max){
             damage *= 1/distanceLimits.max;
-            console.log(`${this} Minimal damage ${damage}`);
+            // console.log(`${this} Minimal damage ${damage}`);
         }else if(currentDistance <= distanceLimits.min){
             damage *= bulletProperties.critical * 220/currentDistance;
-            console.log(`${this} Critical damage ${damage}`);
+            // console.log(`${this} Critical damage ${damage}`);
             critical = true;
         }
+
+        player.addDamageDealed(damage);
 
         if(this.getHealth - damage <= 0){
             this.setHealth = 0;

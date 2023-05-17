@@ -37,6 +37,10 @@ class Player extends Living{
         this.setHurtSound();
         this.setDeathSound();
         this.setHealSound();
+
+        this.rounds_shot = 0;
+        this.damageDealed = 0;
+        this.damageReceived = 0;
     }
     
     /**
@@ -262,17 +266,91 @@ class Player extends Living{
             // console.log(`${this} Critical damage ${damage}`);
         }
 
+        this.addDamageReceived(damage);
+
         if(this.getHealth - damage <= 0){
             this.setHealth = 0;
             
             this.playDeathSound();
 
             this.isAlive = false;
+
         }else{
             this.playHurtSound();
             this.getHUD.displayHurtRedScreen();
             this.setHealth = this.getHealth - damage;
         }
+    }
+
+    /**
+     * Sets the time the player has been alive.
+     */
+    setTimeAlive(){
+        this.timeAlive = this.scene.time.now/1000;
+    }
+
+    /**
+     * Gets the time the player has been alive.
+     * @returns {Number}
+     */    
+    getTimeAlive(){
+        return this.timeAlive;
+    }
+
+    addRoundShot(){
+        this.rounds_shot +=1;
+    }
+
+    getRoundsShot(){
+        return this.rounds_shot;
+    }
+
+    addDamageDealed(damage){
+        this.damageDealed += damage;
+    }
+
+    getDamageDealed(){
+        return this.damageDealed;
+    }
+
+    addDamageReceived(damage){
+        this.damageReceived += damage;
+    }
+
+    getDamageReceived(){
+        return this.damageReceived;
+    }
+
+    setScore(type, enemiesAmount){
+        let score = {timeScore: 0, shotsScore: 0, damageDealedScore: 0, damageReceivedScore: 0, totalScore: 0};
+        switch (type) {
+            case "Victory":
+                score.timeScore = `TIME ALIVE = ${Math.round(this.getTimeAlive())}s + BONUS`; 
+                score.totalScore += (1000000/this.getTimeAlive());
+                break;
+
+            case "Defeat":
+                score.timeScore = `TIME ALIVE = ${Math.round(this.getTimeAlive())}s`; 
+                score.totalScore += this.getTimeAlive()*10;
+                break;
+
+            default:
+                throw new Error("Invalid type: " + type);
+        }
+        score.shotsScore = `SHOTS = ${Math.round(this.getRoundsShot())}`;
+        score.damageDealedScore = `DAMAGE DEALED = ${Math.round(this.getDamageDealed())}`;
+        score.damageReceivedScore = `DAMAGE RECIEVED = -${Math.round(this.getDamageReceived())}`;
+
+        score.totalScore += this.getRoundsShot()/enemiesAmount;
+        score.totalScore += this.getDamageDealed();
+        score.totalScore -= this.getDamageReceived();
+        
+        this.score = score;
+        this.score.totalScore = Math.round(score.totalScore/10)*10;
+    }
+
+    getScore(){
+        return this.score;
     }
 
     /**
@@ -345,6 +423,8 @@ class Player extends Living{
                 this.getPlayerCurrentWeapon.playSoundEffect();
 
                 this.lastShotTimer = time;
+
+                this.addRoundShot();
             }
         }
     }

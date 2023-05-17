@@ -4,13 +4,13 @@ class HUD{
         this.canvasSize = canvasSize;
 
         this.style = {font: "bold 48px Impact", fill: colors.limeGreen.replace("0x", "#"), backgroundColor: colors.DarkGreen.replace("0x", "#")};
-        this.style2 = {font: "bold 200px Impact", fill: colors.crimsonRed.replace("0x", "#"), backgroundColor: colors.black.replace("0x", "#")};
+        this.deathStyle = {font: "bold 200px Impact", fill: colors.crimsonRed.replace("0x", "#"), backgroundColor: colors.black.replace("0x", "#")};
 
-        this.style3 = {font: "bold 200px Impact", fill: colors.DarkGreen.replace("0x", "#"), backgroundColor: colors.limeGreen.replace("0x", "#")};
+        this.victoryStyle = {font: "bold 200px Impact", fill: colors.DarkGreen.replace("0x", "#"), backgroundColor: colors.limeGreen.replace("0x", "#")};
         this.healthValue = this.scene.add.text(this.canvasSize.width - 140, 1.01*this.canvasSize.height, "", this.style).setDepth(80);
 
-        this.deathText = this.scene.add.text(-this.canvasSize.width/2, -this.canvasSize.height, "YOU DIED", this.style2).setDepth(80);
-        this.victoryText = this.scene.add.text(-this.canvasSize.width/2, -this.canvasSize.height, "YOU WON", this.style3).setDepth(80);
+        this.deathText = this.scene.add.text(-this.canvasSize.width/2, -this.canvasSize.height, "YOU DIED", this.deathStyle).setDepth(80);
+        this.victoryText = this.scene.add.text(-this.canvasSize.width/2, -this.canvasSize.height, "YOU WON", this.victoryStyle).setDepth(80);
 
         this.deathText.setOrigin(0.5);
         this.victoryText.setOrigin(0.5);
@@ -75,14 +75,14 @@ class HUD{
 
     displayDeathText(){
        this.deathText.x = this.canvasSize.width/2;
-       this.deathText.y = this.canvasSize.height*1.5;
+       this.deathText.y = this.canvasSize.height*1.2;
        this.deathText.setOrigin(0.5);
         
     }
 
     displayVictoryText(){
         this.victoryText.x = this.canvasSize.width/2;
-        this.victoryText.y = this.canvasSize.height*1.5;
+        this.victoryText.y = this.canvasSize.height*1.2;
         this.victoryText.setOrigin(0.5);
         
     }
@@ -92,5 +92,36 @@ class HUD{
         setTimeout(()=>{
             this.hurtDamageRedScreen.fillAlpha = 0;
         },200)
+    }
+
+    displayScoreText(type, score){
+        let currentStyle;
+        switch (type) {
+            case "Victory":
+                currentStyle = this.victoryStyle;
+                break;
+            case "Defeat":
+                currentStyle = this.deathStyle;
+                break;
+
+            default:
+                throw new Error("Invalid type: " + type);
+        }
+
+        if(!this.scoreText){
+            let iterations = 0;
+            for(let typeScore in score){
+                if(typeScore === "totalScore"){
+                    this.scoreText = this.scene.add.text(this.canvasSize.width/2, this.canvasSize.height*(iterations+14)/10, `YOUR SCORE: ${score[typeScore]}`, currentStyle).setDepth(80);
+                    this.scoreText.setStyle({fontSize: "40px"});
+                    this.scoreText.setOrigin(0.5);
+                }else{
+                    let specifiedScore = this.scene.add.text(this.canvasSize.width/2, this.canvasSize.height*(iterations+14)/10, `${score[typeScore]}`, currentStyle).setDepth(80);
+                    specifiedScore.setStyle({fontSize: "32px"});
+                    specifiedScore.setOrigin(0.5);
+                }
+                iterations += 1;
+            }
+        }
     }
 }
