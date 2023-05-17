@@ -341,9 +341,9 @@ class Player extends Living{
         score.damageDealedScore = `DAMAGE DEALED = ${Math.round(this.getDamageDealed())}`;
         score.damageReceivedScore = `DAMAGE RECIEVED = -${Math.round(this.getDamageReceived())}`;
 
-        score.totalScore += this.getRoundsShot()/enemiesAmount;
-        score.totalScore += this.getDamageDealed();
-        score.totalScore -= this.getDamageReceived();
+        score.totalScore += this.getRoundsShot()/enemiesAmount*10;
+        score.totalScore += this.getDamageDealed()*10;
+        score.totalScore -= this.getDamageReceived()*10;
         
         this.score = score;
         this.score.totalScore = Math.round(score.totalScore/10)*10;
