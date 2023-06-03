@@ -16,6 +16,7 @@ class HUD{
         this.victoryText.setOrigin(0.5);
 
         this.hurtDamageRedScreen = this.scene.add.rectangle(this.canvasSize.width/2, 1.5*this.canvasSize.height, this.canvasSize.width, this.canvasSize.height, colors.crimsonRed, 0).setDepth(80);
+        this.healDamageRedScreen = this.scene.add.rectangle(this.canvasSize.width/2, 1.5*this.canvasSize.height, this.canvasSize.width, this.canvasSize.height, colors.limeGreen, 0).setDepth(80);
 
         this.setEnemiesHealthArray = enemies;
     }
@@ -88,9 +89,16 @@ class HUD{
     }
 
     displayHurtRedScreen(){
-        this.hurtDamageRedScreen.fillAlpha = 0.4;
+        this.hurtDamageRedScreen.fillAlpha = 0.2;
         setTimeout(()=>{
             this.hurtDamageRedScreen.fillAlpha = 0;
+        },200)
+    }
+
+    displayHealRedScreen(){
+        this.healDamageRedScreen.fillAlpha = 0.2;
+        setTimeout(()=>{
+            this.healDamageRedScreen.fillAlpha = 0;
         },200)
     }
 

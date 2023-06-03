@@ -295,6 +295,7 @@ class Living extends Sprite{
             }else{
                 this.setHealth = this.getHealth + healValue;
                 this.playHealSound();
+                this.getHUD.displayHealRedScreen();
             }
         }
     }

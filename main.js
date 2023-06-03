@@ -88,8 +88,9 @@ const shotgun = {
         min: 180,
         max: 1000
     },
-    soundDir: "./assets/sounds/weapons/shotgun/shotgun-sound.mp3",
-    spriteDir: "./assets/weapons/shotgun/shotgun.png"
+    soundDir: "./assets/weapons/shotgun/Sounds/shotgun_sound.mp3",
+    spriteDir: "./assets/weapons/shotgun/SpriteSheet/shotgun.png",
+    animationJsonDir: "assets/weapons/shotgun/SpriteSheet/shotgun.json"
 }
 
 const weapons = {shotgun: shotgun};
@@ -101,23 +102,23 @@ let music;
 function preload(){
     this.load.image("wall", "./assets/wall.png", {frameWidth: 32, frameHeight: 32});
 
-    this.load.image("player", "./assets/doomguy64x64.png", {frameWidth: 64, frameHeight: 64});
-    this.load.audio("player_heal_sound", "./assets/sounds/Player/player_heal_sound.wav");
-    this.load.audio("player_hurt_sound", "./assets/sounds/Player/player_hurt_sound.wav");
-    this.load.audio("player_death_sound", "./assets/sounds/Player/player_death_sound.wav");
+    this.load.image("player", "./assets/Player/Sprites/doomguy64x64.png", {frameWidth: 64, frameHeight: 64});
+    this.load.audio("player_heal_sound", "./assets/Player/Sounds/player_heal_sound.wav");
+    this.load.audio("player_hurt_sound", "./assets/Player/Sounds/player_hurt_sound.wav");
+    this.load.audio("player_death_sound", "./assets/Player/Sounds/player_death_sound.wav");
 
-    this.load.image("small_cacodemon", "./assets/enemy.jpg", {frameWidth: 64, frameHeight: 64});
-    this.load.image("cacodemon", "./assets/cacodemon.png");
-    this.load.audio("cacodemon_attack_sound", "./assets/sounds/enemies/cacodemon/cacodemon_attack_sound.wav");
-    this.load.audio("cacodemon_death_sound", "./assets/sounds/enemies/cacodemon/cacodemon_death_sound.wav");
+    this.load.image("small_cacodemon", "./assets/enemies/cacodemon/Sprites/small_cacodemon.jpg", {frameWidth: 64, frameHeight: 64});
+    this.load.image("cacodemon", "./assets/enemies/cacodemon/Sprites/cacodemon.png");
+    this.load.audio("cacodemon_attack_sound", "./assets/enemies/cacodemon/Sounds/cacodemon_attack_sound.wav");
+    this.load.audio("cacodemon_death_sound", "./assets/enemies/cacodemon/Sounds/cacodemon_death_sound.wav");
 
-    this.load.image("energy_bomb", "./assets/energy_bomb.png");
-    this.load.image("small_energy_bomb", "./assets/small_energy_bomb.png", {frameWidth: 12, frameHeight: 12});
+    this.load.image("energy_bomb", "./assets/enemies/cacodemon/Sprites/energy_bomb.png");
+    this.load.image("small_energy_bomb", "./assets/enemies/cacodemon/Sprites/small_cacodemon.jpg", {frameWidth: 12, frameHeight: 12});
     this.load.audio("cacodemon_energy_bomb_sound", "./assets/sounds/enemies/cacodemon/cacodemon_energy_bomb_sound.wav");
 
-    this.load.atlas(weapons.shotgun.name, weapons.shotgun.spriteDir, "assets/weapons/shotgun/shotgun.json");
+    this.load.atlas(weapons.shotgun.name, weapons.shotgun.spriteDir, weapons.shotgun.animationJsonDir);
     this.load.audio(weapons.shotgun.name + '_sound', weapons.shotgun.soundDir);
-    this.load.image("bullet", "./assets/bullet.png", {frameWidth: 12, frameHeight: 12});
+    this.load.image("bullet", "./assets/Player/Sprites/bullet.png", {frameWidth: 12, frameHeight: 12});
 
     this.load.audio("at_dooms_gate", "assets/music/at_dooms_gate.wav");
 }
@@ -173,7 +174,7 @@ function create(){
     music = this.sound.add('at_dooms_gate');
     music.setVolume(0.5);
     music.loop = true;
-    music.play();
+    // music.play();
 }
 
 function update(){

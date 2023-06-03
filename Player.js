@@ -100,7 +100,7 @@ class Player extends Living{
      */
      setHealSound(canvasSize){
         this.healSound = new Sound(this.scene, canvasSize, "player_heal_sound");
-        this.healSound.sound.setVolume(3);
+        this.healSound.sound.setVolume(8);
     }
     
     /**

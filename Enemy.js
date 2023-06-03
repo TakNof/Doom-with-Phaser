@@ -195,7 +195,6 @@ class Enemy extends Living{
             }else{
                 player.heal(damage*0.08);
             }
-
         }else{
             this.setHealth = this.getHealth - damage;
         }
