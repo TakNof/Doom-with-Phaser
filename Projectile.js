@@ -29,8 +29,8 @@ class Projectile extends Living{
      * @param {String} projectileImgStr 
      * @param {boolean} visible 
      */
-    setProjectile3D(positionX, positionY, ProjectileImgStr, visible = false){
-        this.sprite3D = new Sprite(this.scene, {x: positionX, y: positionY}, ProjectileImgStr, this.getSize, 3)
+    setProjectile3D(scene3D, positionX, positionY, ProjectileImgStr, visible = false){
+        this.sprite3D = new Sprite(scene3D, {x: positionX, y: positionY}, ProjectileImgStr, this.getSize, 3)
         this.sprite3D.setVisible = visible;
     }
 

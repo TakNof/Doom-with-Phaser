@@ -17,8 +17,10 @@ class Player extends Living{
     * @param {Number} maxHealth The maximum health of the player.
     * 
     */
-    constructor(scene, playerOriginInfo, playerImgStr, size, depth, defaultVelocity, playerAngleOperator, maxHealth){
+    constructor(scene, scene3D, playerOriginInfo, playerImgStr, size, depth, defaultVelocity, playerAngleOperator, maxHealth){
         super(scene, playerOriginInfo, playerImgStr, size, depth, defaultVelocity);
+
+        this.scene3D = scene3D;
 
         this.playerAngleOperator = playerAngleOperator;
 
@@ -48,7 +50,7 @@ class Player extends Living{
      * @param {String} canvasSize 
      */
     set setGraphicator(canvasSize){
-        this.playerGraphicator = new Graphicator(this.scene, canvasSize, this.size, this.raysAmount);
+        this.playerGraphicator = new Graphicator(this.scene3D, canvasSize, this.size, this.raysAmount);
     }
 
     /**
@@ -66,7 +68,7 @@ class Player extends Living{
      * @param {Array<Enemy>} enemies2D 
      */
     setCamera(canvasSize, fov, enemies2D){
-        this.playerCamera = new Camera(this.scene, canvasSize, fov, this, enemies2D);
+        this.playerCamera = new Camera(this.scene3D, canvasSize, fov, this, enemies2D);
     }
 
     /**
@@ -74,8 +76,8 @@ class Player extends Living{
      * @param {Object} canvasSize
      */
     setHUD(canvasSize, enemies = undefined){
-        this.playerHUD = new HUD(this.scene, canvasSize, enemies);
-        this.playerHUD.setHealthValue = player.getHealth;
+        this.playerHUD = new HUD(this.scene3D, canvasSize, enemies);
+        this.playerHUD.setHealthValue = this.getHealth;
     }
 
     /**
@@ -182,8 +184,8 @@ class Player extends Living{
 
         for(let i = 0; i < length; i++){
             this.playerWeapons[i] = new Weapon(
-                this.scene,
-                {x: canvasSize.width/2, y: canvasSize.height*1.8},
+                this.scene3D,
+                {x: canvasSize.width/2, y: canvasSize.height*0.8},
                 properties[i].name,
                 512,
                 80,

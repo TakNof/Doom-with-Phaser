@@ -14,8 +14,10 @@ class Enemy extends Living{
     * @param {number} depth The depth of rendering of the sprite.
     * @param {number} defaultVelocity The default velocity for the living sprite.
     */
-    constructor(scene, enemyOriginInfo, enemyImgStr, size, depth, defaultVelocity, chaseDistance, allowChase){
-        super(scene, enemyOriginInfo, enemyImgStr, size, depth, defaultVelocity/2);
+    constructor(scene, scene3D, enemyOriginInfo, enemyImgStr, size, depth, defaultVelocity, chaseDistance, allowChase){
+        super(scene, enemyOriginInfo, enemyImgStr, size, depth, defaultVelocity);
+
+        this.scene3D = scene3D;
 
         this.setRotation = this.originInfo.ang;
         this.setAngle = this.originInfo.ang;
@@ -57,7 +59,7 @@ class Enemy extends Living{
      * @param {boolean} visible 
      */
     setEnemy3D(canvasSize, positionX, positionY, enemyImgStr, visible = false){
-        this.sprite3D = new Sprite(this.scene, {x: positionX, y: positionY}, enemyImgStr, this.getSize, 3)
+        this.sprite3D = new Sprite(this.scene3D, {x: positionX, y: positionY}, enemyImgStr, this.getSize, 3)
         this.sprite3D.setVisible = visible;
         this.setAttackSound(canvasSize);
         this.setDeathSound(canvasSize);
@@ -146,6 +148,7 @@ class Enemy extends Living{
         this.scene.physics.collide(this.getSprite, shooter.getPlayerCurrentWeapon.getProjectiles,
             function(sprite, projectile){
                 thisObject.__checkDamage(
+                    shooter,
                     projectile,
                     shooter.getPlayerCurrentWeapon.getBulletProperties,
                     shooter.getPlayerCurrentWeapon.getDistanceLimits,
@@ -159,13 +162,14 @@ class Enemy extends Living{
      * This method is called when a projectile has collided with a living sprite,
      * here he health and the state of the living sprite is determined by the
      * damage and limit distances of the projected projectiles.
+     * @param {Living} shooter
      * @param {Projectile} projectile 
      * @param {Number} damage 
      * @param {Object} distanceLimits 
      * @param {Number} currentDistance 
      * @returns 
      */
-    __checkDamage(projectile, bulletProperties, distanceLimits, currentDistance){
+    __checkDamage(shooter, projectile, bulletProperties, distanceLimits, currentDistance){
         projectile.destroy();
         let damage = bulletProperties.damage;
         let critical = false;
@@ -182,7 +186,7 @@ class Enemy extends Living{
             critical = true;
         }
 
-        player.addDamageDealed(damage);
+        shooter.addDamageDealed(damage);
 
         if(this.getHealth - damage <= 0){
             this.setHealth = 0;
@@ -191,9 +195,9 @@ class Enemy extends Living{
             this.playDeathSound();
 
             if(critical){
-                player.heal(bulletProperties.damage*0.04);
+                shooter.heal(bulletProperties.damage*0.04);
             }else{
-                player.heal(damage*0.08);
+                shooter.heal(damage*0.08);
             }
         }else{
             this.setHealth = this.getHealth - damage;
@@ -264,7 +268,7 @@ class Enemy extends Living{
      * @param {Number} canvasWidth
      * @param {Number} playerAngle
      */
-    setgetAttackPanning(canvasWidth, playerAngle){
+    setAttackPanning(canvasWidth, playerAngle){
         let anglePlayerToEnemy = this.adjustAngleValue(this.getAngleToElement + Math.PI);
 
         let angleAdjustedFromPlayer = this.adjustAngleValue(anglePlayerToEnemy - playerAngle);
@@ -349,7 +353,7 @@ class Enemy extends Living{
                 let projectile = new Projectile(this.scene, this.getPosition, "small_energy_bomb", 32, 80, 100);
                 this.getProjectiles2D.add(projectile.getSprite);
 
-                projectile.setProjectile3D(canvasSize.width/2, canvasSize.width/2, "energy_bomb");            
+                projectile.setProjectile3D(this.scene3D, canvasSize.width/2, canvasSize.width/2, "energy_bomb");            
                 this.getProjectiles3D.add(projectile.getProjectile3D.getSprite);
 
                 projectile.shootProjectile(this);

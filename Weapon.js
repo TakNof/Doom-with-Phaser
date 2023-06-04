@@ -16,7 +16,7 @@ class Weapon extends Sprite{
     constructor(scene, originInfo, spriteImgStr, size, depth, {damage, velocity, delay, critical}, {min, max}){
         super(scene, originInfo, spriteImgStr, size, depth);
 
-        this.bulletProperties = {damage: damage, velocity: velocity, delay: delay*1000, critical, critical};
+        this.bulletProperties = {damage: damage, velocity: velocity, delay: delay*1000, critical: critical};
         this.distanceLimits = {min: min, max: max};
 
         this.setAnimationName();

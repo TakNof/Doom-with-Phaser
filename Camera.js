@@ -357,7 +357,6 @@ class Camera{
                 this.enemies2D[distance["position1"]].getProjectiles3D.getChildren()[distance["position2"]].setDepth(i + 2);
             }
         }
-
         // console.log(distances);
     }
 
@@ -387,7 +386,7 @@ class Camera{
             }
             
             element.x = this.drawElementByPlayerPov(anglePlayerToElement);
-            element.y = (heightMultiplier*this.canvasSize.height - this.canvasSize.height/enemyHeight);  
+            element.y = (heightMultiplier*this.canvasSize.height/3 + this.canvasSize.height/enemyHeight);  
             
                 
             

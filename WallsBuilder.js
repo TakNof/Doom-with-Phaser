@@ -40,7 +40,7 @@ class WallsBuilder{
             let blockExtension = {x: 0, y: 0};
             let wallPosition = {x: 0, y: 0};
 
-            for(let i = 0; i < amountWalls; i++){
+            for(let i = 0; i < this.amountWalls; i++){
                 //within this loop we generate the walls through random positioning
                 //and scale of each wall.
 

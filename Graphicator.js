@@ -20,7 +20,7 @@ class Graphicator{
         this.rectangles = Array(raysAmount);
 
         for(let i = 0; i < this.rectanglesAmount; i++){
-            this.rectangles[i] = this.scene.add.rectangle(this.rectanglesWidth/2 + i*this.rectanglesWidth, this.canvasSize.height + 0.8*this.canvasSize.height, this.rectanglesWidth, this.canvasSize.height/3,"0x00ff00").setDepth(1);;
+            this.rectangles[i] = this.scene.add.rectangle(this.rectanglesWidth/2 + i*this.rectanglesWidth, 0.8*this.canvasSize.height, this.rectanglesWidth, this.canvasSize.height/3,"0x00ff00").setDepth(1);;
             this.scene.physics.add.existing(this.rectangles[i], false);
         }
 
@@ -35,7 +35,7 @@ class Graphicator{
         //This method allows the recalculation of the 3D ray coordinates and redraws it.
         for(let i = 0; i < this.rectanglesAmount; i++){
             this.setRectangleHeight = rayDistance[i];
-            this.rectangles[i].setPosition(this.rectanglesWidth/2 + i*this.rectanglesWidth, (this.canvasSize.height + 0.8*this.canvasSize.height) - this.getRectangleHeight/2);
+            this.rectangles[i].setPosition(this.rectanglesWidth/2 + i*this.rectanglesWidth, (0.8*this.canvasSize.height) - this.getRectangleHeight/2);
             this.rectangles[i].setSize(this.rectanglesWidth, this.getRectangleHeight);
     
             if(typeOfHit[i] === "vertical"){

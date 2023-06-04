@@ -21,15 +21,14 @@ class Game extends Phaser.Scene{
         this.player;
         this.playerFOV = 90*Math.PI/180;
         this.playerAngleOffset = 3*Math.PI/2
-        this.playerFOVangleOffset = playerAngleOffset - playerFOV/2
+        this.playerFOVangleOffset = this.playerAngleOffset - this.playerFOV/2
 
         //Stablishing the enemy and its initial position.
         this.amountEnemies = 12  ;
 
         this.cacodemons;
-        this.cacodemons2;
 
-        this.enemyangleOffset = Math.PI/2;
+        this.enemyAngleOffset = Math.PI/2;
         this.chaseDistance = 400;
         this.allowChase = true;
 
@@ -42,16 +41,6 @@ class Game extends Phaser.Scene{
 
         //Stablishing the raycaster elements.
         this.raysAmount = 100;
-
-        //Stablishing the default color codes for drawing elements.
-        this.colors = {
-            limeGreen: "0x00ff00",
-            DarkGreen : "0x004200",
-            black: "0x000000",
-            crimsonRed: "0xDC143C",
-            sapphireBlue: "0x0F52BA"
-        };
-
 
         this.shotgun = {
             name: "shotgun",
@@ -91,68 +80,68 @@ class Game extends Phaser.Scene{
         this.load.audio("cacodemon_death_sound", "./assets/enemies/cacodemon/Sounds/cacodemon_death_sound.wav");
 
         this.load.image("energy_bomb", "./assets/enemies/cacodemon/Sprites/energy_bomb.png");
-        this.load.image("small_energy_bomb", "./assets/enemies/cacodemon/Sprites/small_cacodemon.jpg", {frameWidth: 12, frameHeight: 12});
-        this.load.audio("cacodemon_energy_bomb_sound", "./assets/sounds/enemies/cacodemon/cacodemon_energy_bomb_sound.wav");
+        this.load.image("small_energy_bomb", "./assets/enemies/cacodemon/Sprites/small_energy_bomb.png", {frameWidth: 12, frameHeight: 12});
+        this.load.audio("cacodemon_energy_bomb_sound", "./assets/enemies/cacodemon/Sounds/cacodemon_energy_bomb_sound.wav");
 
-        this.load.atlas(weapons.shotgun.name, weapons.shotgun.spriteDir, weapons.shotgun.animationJsonDir);
-        this.load.audio(weapons.shotgun.name + '_sound', weapons.shotgun.soundDir);
+        this.load.atlas(this.weapons.shotgun.name, this.weapons.shotgun.spriteDir, this.weapons.shotgun.animationJsonDir);
+        this.load.audio(this.weapons.shotgun.name + '_sound', this.weapons.shotgun.soundDir);
         this.load.image("bullet", "./assets/Player/Sprites/bullet.png", {frameWidth: 12, frameHeight: 12});
 
         this.load.audio("at_dooms_gate", "assets/music/at_dooms_gate.wav");
     }
 
     create(){ 
-        this.physics.world.setBounds(0, 0, canvasSize.width, canvasSize.height);
+        this.physics.world.setBounds(0, 0, this.canvasSize.width, this.canvasSize.height);
 
         //Creating the grid.
-        this.grid = this.add.grid(0, 0, canvasSize.width*2, canvasSize.height*2, 32, 32, 0x00b9f2).setAltFillStyle(0x016fce).setOutlineStyle();
+        this.grid = this.add.grid(0, 0, this.canvasSize.width*2, this.canvasSize.height*2, 32, 32, 0x00b9f2).setAltFillStyle(0x016fce).setOutlineStyle();
 
         //Here we create the walls of the map.
-        this.walls = new WallsBuilder(this, "wall", canvasSize, wallBlockSize, amountWalls, generateWalls, generateRandomWalls);
+        this.walls = new WallsBuilder(this, "wall", this.canvasSize, this.wallBlockSize, this.amountWalls, this.generateWalls, this.generateRandomWalls);
         this.walls.createWalls();
         
         //Here we create the player.
-        this.player = new Player(this, {x: canvasSize.width/2, y:canvasSize.height/2}, "player", wallBlockSize*2, 0, defaultVelocity, angleOperator, 100);
+        this.player = new Player(this, {x: this.canvasSize.width/2, y: this.canvasSize.height/2}, "player", this.wallBlockSize*2, 0, this.defaultVelocity, this.angleOperator, 100);
 
         //Here we create the raycaster of the player and we pass it the position of the walls to make the calculations.
-        this.player.setRaycaster(walls.getWallMatrix, raysAmount,  playerFOVangleOffset);
-        this.player.getRaycaster.setAngleStep(playerFOV);
+        this.player.setRaycaster(this.walls.getWallMatrix, this.raysAmount,  this.playerFOVangleOffset);
+        this.player.getRaycaster.setAngleStep(this.playerFOV);
 
         //Here we put the color of the rays of the player.
         // player.setDebug = true;
-        player.setSpriteRays(colors.limeGreen);
+        this.player.setSpriteRays(colors.limeGreen);
 
         //here we create the graphicator of the raycaster of the player.
-        this.player.setGraphicator = canvasSize;
+        this.player.setGraphicator = this.canvasSize;
 
         //We set all the elements we need to collide with the walls.
         this.player.setColliderElements();
 
-        this.player.setWeapons(canvasSize, [weapons.shotgun], [{damage: 80, velocity: 1000, delay: 1}],[{min: 250, max: 1000}]);
+        this.player.setWeapons(this.canvasSize, [this.weapons.shotgun]);
         this.player.getPlayerCurrentWeapon.setAnimationFrames(8, 10, 0);
 
         //We load those elements to the walls object.
-        this.walls.setColliders(player.getColliderElements);
+        this.walls.setColliders(this.player.getColliderElements);
 
         //We create a certain amount of cacodemons.
-        this.cacodemons = new Cacodemon(this, canvasSize, amountEnemies, walls.getWallMatrix, walls.getWallNumberRatio, wallBlockSize, defaultVelocity/2, chaseDistance, allowChase);
-        this.cacodemons.create(player.getPosition);
+        this.cacodemons = new Cacodemon(this, this.canvasSize,this.amountEnemies, this.walls.getWallMatrix, this.walls.getWallNumberRatio, this.wallBlockSize, this.defaultVelocity/2, this.chaseDistance, this.allowChase);
+        this.cacodemons.create(this.player.getPosition, this.enemyAngleOffset);
 
         for(let enemy of this.cacodemons.getEnemies){
             this.walls.setColliders(enemy.getColliderElements);
         }
 
-        this.player.setHUD(canvasSize);
+        this.player.setHUD(this.canvasSize);
         
-        // player.setHUD(canvasSize, cacodemons.getEnemies);
+        // player.setHUD(this.canvasSize, cacodemons.getEnemies);
 
         //Here we stablish the camera of the player with the raycaster, graphicator and the enemies positions.
-        this.player.setCamera(canvasSize, playerFOV, cacodemons.getEnemies); 
+        this.player.setCamera(this.canvasSize, this.playerFOV, this.cacodemons.getEnemies); 
         
         this.music = this.sound.add('at_dooms_gate');
         this.music.setVolume(0.5);
         this.music.loop = true;
-        // music.play();
+        // this.music.play();
     }
 
     update(){
@@ -163,24 +152,24 @@ class Game extends Phaser.Scene{
             this.player.shoot();
 
             //The basic movement of the enemy according to the player's position.
-            this.cacodemons.move(player.getPosition);
+            this.cacodemons.move(this.player.getPosition);
         
-            this.cacodemons.shoot(player);
+            this.cacodemons.shoot(this.player);
 
             for(let enemy of this.cacodemons.getEnemies){
-                this.walls.evalCollision(this.enemy.getProjectiles2D, this.enemy.getProjectiles3D);
+                this.walls.evalCollision(enemy.getProjectiles2D, enemy.getProjectiles3D);
 
-                this.enemy.evalProjectileCollision(this.player);
+                enemy.evalProjectileCollision(this.player);
 
-                this.enemy.getDeathSound().setSoundPanning(this.enemy.getDistanceToPlayer, this.enemy.angleToElement + Math.PI, this.player.getAngle);
+                enemy.getDeathSound().setSoundPanning(enemy.getDistanceToPlayer, enemy.angleToElement + Math.PI, this.player.getAngle);
 
-                if(this.enemy.getHealth == 0){
-                    this.enemy.waitToDestroy();
+                if(enemy.getHealth == 0){
+                    enemy.waitToDestroy();
                 }
                 
-                if(!this.enemy.getIsAlive){
+                if(!enemy.getIsAlive){
         
-                    this.cacodemons.getEnemies.splice(this.cacodemons.getEnemies.indexOf(this.enemy), 1);
+                    this.cacodemons.getEnemies.splice(this.cacodemons.getEnemies.indexOf(enemy), 1);
                     this.cacodemons.amount -= 1;
                     
                     // player.getHUD.getEnemiesHealthValue[i].destroy();
@@ -198,7 +187,7 @@ class Game extends Phaser.Scene{
             
             // player.getHUD.setEnemiesHealthValue = cacodemons.getEnemies;
 
-            this.walls.evalCollision(this.player.getthis.PlayerCurrentWeapon.getProjectiles);
+            this.walls.evalCollision(this.player.getPlayerCurrentWeapon.getProjectiles);
             
         }else{
             if(this.player.getScore() == undefined){
@@ -226,7 +215,7 @@ class Game extends Phaser.Scene{
         
         // this.player.getHUD.setEnemiesHealthValue = cacodemons.getEnemies;
 
-        this.player.getCamera.setEnemies(cacodemons.getEnemies);
+        this.player.getCamera.setEnemies(this.cacodemons.getEnemies);
 
         //Here we draw the 3D representation of the map.
         this.player.getCamera.draw3DWorld();
