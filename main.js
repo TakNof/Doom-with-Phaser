@@ -1,31 +1,15 @@
-var config1 = {
+let config = {
     type: Phaser.AUTO,
-    physics: {
-        default: 'arcade',
+    physics:{
+        default: "arcade",
         arcade: {
             debug: false
         }
     },
     width: 1024,
     height: 768,
-    parent: 'canvas1',
-    scene: Game2D
-};
-
-var config2 = {
-    type: Phaser.AUTO,
-    physics: {
-        default: 'arcade',
-        arcade: {
-            debug: false
-        }
-    },
-    width: 1024,
-    height: 768,
-    parent: 'canvas2',
-    // scene: [MainMenuScene, Game3D],
-    scene: Game3D
-};
+    scene: [MainMenuScene, Game2D, Game3D]
+}
 
 let sharedScenes= {};
 
@@ -56,5 +40,4 @@ const shotgun = {
 
 const weapons = {shotgun: shotgun};
 
-let game1 = new Phaser.Game(config1);
-let game2 = new Phaser.Game(config2);
+let game = new Phaser.Game(config);

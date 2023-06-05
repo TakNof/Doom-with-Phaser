@@ -66,10 +66,11 @@ class Game2D extends Phaser.Scene{
 
         
         this.scene.setVisible(false);
-        this.game.canvas.style.display = 'none';
+        // this.game.canvas.style.display = 'none';
     }
 
-    create(){ 
+    create(){
+
         sharedScenes.game2D = this;
 
         let game3D = sharedScenes.game3D;
@@ -215,13 +216,11 @@ class Game3D extends Phaser.Scene {
         this.load.audio(weapons.shotgun.name + '_sound', weapons.shotgun.soundDir);
         this.load.image("bullet", "./assets/Player/Sprites/bullet.png", {frameWidth: 12, frameHeight: 12});
 
-        this.load.image("small_cacodemon", "./assets/enemies/cacodemon/Sprites/small_cacodemon.jpg", {frameWidth: 64, frameHeight: 64});
         this.load.image("cacodemon", "./assets/enemies/cacodemon/Sprites/cacodemon.png");
         this.load.audio("cacodemon_attack_sound", "./assets/enemies/cacodemon/Sounds/cacodemon_attack_sound.wav");
         this.load.audio("cacodemon_death_sound", "./assets/enemies/cacodemon/Sounds/cacodemon_death_sound.wav");
 
         this.load.image("energy_bomb", "./assets/enemies/cacodemon/Sprites/energy_bomb.png");
-        this.load.image("small_energy_bomb", "./assets/enemies/cacodemon/Sprites/small_energy_bomb.png", {frameWidth: 12, frameHeight: 12});
         this.load.audio("cacodemon_energy_bomb_sound", "./assets/enemies/cacodemon/Sounds/cacodemon_energy_bomb_sound.wav");
     }
 
