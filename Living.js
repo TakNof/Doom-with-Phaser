@@ -6,7 +6,8 @@ class Living extends Sprite{
     /**
     * The constructor of Living Class.
     * @constructor
-    * @param {Scene} scene The current scene of the game to place the sprite.
+    * @param {Scene} scene The scene to place the 2D sprites in the game.
+    * @param {Scene} scene3D The scene to place the 3D sprites in the game.
     * @param {Object} originInfo  A list with the initial positioning information for the sprite.
     * @param {string} spriteImgStr An str of the image name given in the preload method of the main class.
     * @param {number}size The size of the sprite in pixels.

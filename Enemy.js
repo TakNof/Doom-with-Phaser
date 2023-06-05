@@ -7,7 +7,8 @@ class Enemy extends Living{
     /**
     * The constructor of Enemy Class.
     * @constructor
-    * @param {Scene} scene The current scene of the game to place the sprite.
+    * @param {Scene} scene The scene to place the 2D sprites in the game.
+    * @param {Scene} scene3D The scene to place the 3D sprites in the game.
     * @param {Object} enemyOriginInfo  A list with the initial positioning information for the sprite.
     * @param {string} enemyImgStr An str of the image name given in the preload method of the main class.
     * @param {number} size The size of the sprite in pixels.
@@ -350,7 +351,7 @@ class Enemy extends Living{
         if(this.inSight && this.getAbleToShoot){
             let time = this.scene.time.now;
             if (time - this.lastShotTimer > properties.delay + randNumber*100) {
-                let projectile = new Projectile(this.scene, this.getPosition, "small_energy_bomb", 32, 80, 100);
+                let projectile = new Projectile(this.scene, this.getPosition, "small_energy_bomb", 32, 80, properties.velocity);
                 this.getProjectiles2D.add(projectile.getSprite);
 
                 projectile.setProjectile3D(this.scene3D, canvasSize.width/2, canvasSize.width/2, "energy_bomb");            

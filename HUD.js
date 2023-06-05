@@ -1,4 +1,10 @@
 class HUD{
+    /**
+     * The constructor of the HUD class.
+    * @param {Scene} scene The scene to place the HUD elements in the game.
+     * @param {{width: width, height: height}} canvasSize The size of the canvas to place the HUD elements.
+     * @param {Array <Enemy>} enemies An array of the enemies to place their stats in the HUD.
+     */
     constructor(scene, canvasSize, enemies = undefined) {
         this.scene = scene;
         this.canvasSize = canvasSize;

@@ -10,11 +10,16 @@ class Sound{
 
     
     setSoundPanning(distanceToPlayer, playerToEnemyAngle, playerAngle){
-        playerToEnemyAngle = this.adjustAngleValue(playerToEnemyAngle);
+        let x;
+        if(isNaN(playerToEnemyAngle)){
+            x = 0;
+        }else{
+            playerToEnemyAngle = this.adjustAngleValue(playerToEnemyAngle);
 
-        let angleAdjustedFromPlayer = this.adjustAngleValue(playerToEnemyAngle - playerAngle);
-        
-        let x = Math.cos(angleAdjustedFromPlayer) * distanceToPlayer;
+            let angleAdjustedFromPlayer = this.adjustAngleValue(playerToEnemyAngle - playerAngle);
+            
+            x = Math.cos(angleAdjustedFromPlayer) * distanceToPlayer;
+        }
 
         if(x == 0){
             x = this.canvasSize.width/2;
