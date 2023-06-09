@@ -10,10 +10,11 @@ class HUD{
         this.canvasSize = canvasSize;
 
         this.style = {font: "bold 48px Impact", fill: colors.limeGreen.replace("0x", "#"), backgroundColor: colors.DarkGreen.replace("0x", "#")};
-        this.deathStyle = {font: "bold 200px Impact", fill: colors.crimsonRed.replace("0x", "#"), backgroundColor: colors.black.replace("0x", "#")};
 
+        this.deathStyle = {font: "bold 200px Impact", fill: colors.crimsonRed.replace("0x", "#"), backgroundColor: colors.black.replace("0x", "#")};
         this.victoryStyle = {font: "bold 200px Impact", fill: colors.DarkGreen.replace("0x", "#"), backgroundColor: colors.limeGreen.replace("0x", "#")};
-        this.healthValue = this.scene.add.text(this.canvasSize.width - 140, 0.01*this.canvasSize.height, "", this.style).setDepth(80);
+
+        this.healthValue = this.scene.add.text(this.canvasSize.width - 280, 0.01*this.canvasSize.height, "", this.style).setDepth(80);
 
         this.deathText = this.scene.add.text(-this.canvasSize.width/2, -this.canvasSize.height, "YOU DIED", this.deathStyle).setDepth(80);
         this.victoryText = this.scene.add.text(-this.canvasSize.width/2, -this.canvasSize.height, "YOU WON", this.victoryStyle).setDepth(80);
@@ -32,7 +33,7 @@ class HUD{
      * @param {Number} value
      */
     set setHealthValue(value){
-        this.healthValue.setText(`${value.toFixed(1)}%`);        
+        this.healthValue.setText(`Health ${value.toFixed(1)}%`);        
     }
 
     /**

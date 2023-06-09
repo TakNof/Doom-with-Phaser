@@ -31,7 +31,14 @@ class Player extends Living{
         this.setXcomponent();
         this.setYcomponent();
 
+        let keys = ["W", "A", "S", "D"];
+
         this.cursors = this.scene.input.keyboard.createCursorKeys();
+
+       for(let key of keys) {
+            this.cursors[key] = this.scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes[key]);
+        }
+
         this.keySpace = this.scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
 
         this.setMaxHealth = maxHealth;
@@ -44,6 +51,7 @@ class Player extends Living{
         this.rounds_shot = 0;
         this.damageDealed = 0;
         this.damageReceived = 0;
+        this.creationTime = this.scene3D.time.now;
     }
     
     /**
@@ -289,7 +297,7 @@ class Player extends Living{
      * Sets the time the player has been alive.
      */
     setTimeAlive(){
-        this.timeAlive = this.scene.time.now/1000;
+        this.timeAlive = (this.scene.time.now - this.creationTime)/1000;
     }
 
     /**
@@ -372,14 +380,13 @@ class Player extends Living{
         this.raycaster.setSpritePosition = this.getPosition;
 
 
-        if(this.cursors.up.isDown ^ this.cursors.down.isDown){
-            
-            if (this.cursors.up.isDown){
+        if((this.cursors.up.isDown ^ this.cursors.down.isDown) || (this.cursors["W"].isDown ^ this.cursors["S"].isDown)){
+            if (this.cursors.up.isDown || this.cursors["W"].isDown){
                 //Here we use the velocity calculated, and we change its sign accordingly to the direction of movement.
                 this.setVelocityX = this.getXcomponent;
                 this.setVelocityY = this.getYcomponent;  
 
-            }else if(this.cursors.down.isDown){    
+            }else if(this.cursors.down.isDown || this.cursors["S"].isDown){    
                 this.setVelocityX = -this.getXcomponent;
                 this.setVelocityY = -this.getYcomponent;
             }
@@ -392,17 +399,17 @@ class Player extends Living{
             }
         }
     
-        if(this.cursors.left.isDown ^ this.cursors.right.isDown){
+        if((this.cursors.left.isDown ^ this.cursors.right.isDown) || (this.cursors["A"].isDown ^ this.cursors["D"].isDown)){
 
             //Here we use trigonometrics to calculate the x and y component of the velocity.
             this.setXcomponent();
             this.setYcomponent();    
     
-            if (this.cursors.left.isDown){
+            if (this.cursors.left.isDown || this.cursors["A"].isDown){
                 this.setAngle =  this.adjustAngleValue(this.getAngle - this.playerAngleOperator);
                 this.setRotation = this.getAngle;
 
-            }else if(this.cursors.right.isDown){
+            }else if(this.cursors.right.isDown || this.cursors["D"].isDown){
                 this.setAngle = this.adjustAngleValue(this.getAngle + this.playerAngleOperator);
                 this.setRotation = this.getAngle;
             }
@@ -418,6 +425,7 @@ class Player extends Living{
     shoot(){
         if(this.keySpace.isDown){
             let time = this.scene.time.now;
+            console.log(time);
             if (time - this.lastShotTimer > this.playerCurrentWeapon.getDelayBetweenShots) {
                 this.getPlayerCurrentWeapon.getSprite.play(this.getPlayerCurrentWeapon.getAnimationName);
                 let projectile = new Projectile(this.scene, this.getPosition, "bullet", 12, 80, this.playerCurrentWeapon.getBulletVelocity);

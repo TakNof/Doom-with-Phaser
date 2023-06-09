@@ -25,40 +25,6 @@ class Weapon extends Sprite{
     }
     
     /**
-     * Sets the animation frames to animate the sprite sheet.
-     * @param {Number} start 
-     * @param {Number} end 
-     */
-    setAnimationFrames(end, framerate, repeat){
-        this.scene.anims.create({
-            key: this.getAnimationName,
-            frames: this.scene.anims.generateFrameNames(this.getSpriteImgStr, {
-                start: 0,
-                end: end,
-                prefix: this.getSpriteImgStr+"_",
-                suffix: ".png"
-            }),
-            frameRate: framerate,
-            repeat: repeat
-        });
-    }
-
-    /**
-     * Sets the animation name.
-     */
-    setAnimationName(){
-        this.animationName = this.getSpriteImgStr + "Animation";
-    }
-
-    /**
-     * Gets the animation name.
-     * @returns {String}
-     */
-    get getAnimationName(){
-        return this.animationName;
-    }
-
-    /**
      * Sets the sound effect of the weapon.
      */
     setSoundEffect(){

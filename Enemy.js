@@ -33,6 +33,8 @@ class Enemy extends Living{
         this.allowChase = allowChase;
 
         this.inSight = false;
+
+        this.creationTime = this.scene.time.now;
     }
 
     /**
@@ -326,8 +328,6 @@ class Enemy extends Living{
             this.setVelocityX = this.getXcomponent;
             this.setVelocityY = this.getYcomponent;
 
-            //We want the enemy to react when we are 
-
             if(this.getDebug === true){
                 for(let ray of this.spriteRays.rays){
                     ray.body.setVelocityX(this.getVelocityX);
@@ -349,9 +349,9 @@ class Enemy extends Living{
     shoot(properties, randNumber, player, canvasSize){
         this.getAttackSound().setSoundPanning(this.getDistanceToPlayer, this.angleToElement + Math.PI, player.getAngle);
         if(this.inSight && this.getAbleToShoot){
-            let time = this.scene.time.now;
+            let time = this.scene.time.now - this.creationTime;
             if (time - this.lastShotTimer > properties.delay + randNumber*100) {
-                let projectile = new Projectile(this.scene, this.getPosition, "small_energy_bomb", 32, 80, properties.velocity);
+                let projectile = new Projectile(this.scene, this.getPosition, "small_energy_bomb", 16, 80, properties.velocity);
                 this.getProjectiles2D.add(projectile.getSprite);
 
                 projectile.setProjectile3D(this.scene3D, canvasSize.width/2, canvasSize.width/2, "energy_bomb");            

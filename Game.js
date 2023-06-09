@@ -42,7 +42,11 @@ class Game2D extends Phaser.Scene{
         //Stablishing the raycaster elements.
         this.raysAmount = 100;
 
-        this.music;   
+        this.music; 
+    }
+
+    init() {
+        this.sys.game.loop.time = 0;
     }
 
     //With the preload method we preload the sprites and we generate the object from the raycaster class.
@@ -59,7 +63,7 @@ class Game2D extends Phaser.Scene{
         this.load.audio("cacodemon_attack_sound", "./assets/enemies/cacodemon/Sounds/cacodemon_attack_sound.wav");
         this.load.audio("cacodemon_death_sound", "./assets/enemies/cacodemon/Sounds/cacodemon_death_sound.wav");
 
-        this.load.image("small_energy_bomb", "./assets/enemies/cacodemon/Sprites/small_energy_bomb.png", {frameWidth: 12, frameHeight: 12});
+        this.load.image("small_energy_bomb", "./assets/enemies/cacodemon/Sprites/small_energy_bomb.png", {frameWidth: 4, frameHeight: 4});
         this.load.audio("cacodemon_energy_bomb_sound", "./assets/enemies/cacodemon/Sounds/cacodemon_energy_bomb_sound.wav");
 
         this.load.audio("at_dooms_gate", "assets/music/at_dooms_gate.wav");
@@ -70,10 +74,11 @@ class Game2D extends Phaser.Scene{
     }
 
     create(){
-
         sharedScenes.game2D = this;
 
         let game3D = sharedScenes.game3D;
+
+        this.controlKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.CTRL);
 
         this.physics.world.setBounds(0, 0, this.canvasSize.width, this.canvasSize.height);
 
@@ -92,7 +97,7 @@ class Game2D extends Phaser.Scene{
         this.player.getRaycaster.setAngleStep(this.playerFOV);
 
         //Here we put the color of the rays of the player.
-        // player.setDebug = true;
+        // this.player.setDebug = true;
         this.player.setSpriteRays(colors.limeGreen);
 
         //here we create the graphicator of the raycaster of the player.
@@ -182,9 +187,9 @@ class Game2D extends Phaser.Scene{
                 this.player.getHUD.displayScoreText("Defeat", this.player.getScore());
             }
             
-            setTimeout(() => {
-                this.scene.pause();
-            }, 1000);
+            // setTimeout(() => {
+            //     this.scene.pause();
+            // }, 1000);
         }
 
         if(this.cacodemons.getEnemies.length == 0){
@@ -203,6 +208,15 @@ class Game2D extends Phaser.Scene{
 
         //Here we draw the 3D representation of the map.
         this.player.getCamera.draw3DWorld();
+
+        if(this.controlKey.isDown){
+            this.music.stop();
+            this.scene.stop("Game3D");
+            this.scene.stop("Game2D");
+            
+            this.scene.launch("Game3D");
+            this.scene.start("Game2D");
+        }
     }
 }
 
@@ -217,6 +231,7 @@ class Game3D extends Phaser.Scene {
         this.load.image("bullet", "./assets/Player/Sprites/bullet.png", {frameWidth: 12, frameHeight: 12});
 
         this.load.image("cacodemon", "./assets/enemies/cacodemon/Sprites/cacodemon.png");
+        this.load.atlas("cacodemon_attack", "./assets/enemies/cacodemon/Sprites/attackSpriteSheet/Caco_att_animation.png", "./assets/enemies/cacodemon/Sprites/attackSpriteSheet/Caco_att_animation.json");
         this.load.audio("cacodemon_attack_sound", "./assets/enemies/cacodemon/Sounds/cacodemon_attack_sound.wav");
         this.load.audio("cacodemon_death_sound", "./assets/enemies/cacodemon/Sounds/cacodemon_death_sound.wav");
 
