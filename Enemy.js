@@ -35,6 +35,14 @@ class Enemy extends Living{
         this.inSight = false;
 
         this.creationTime = this.scene.time.now;
+
+        this.setEnemy3D(canvasSize.width/2, canvasSize.height/2, "cacodemon");
+        
+        let animationsToSet = ["attack"];
+
+        this.setAnimations(animationsToSet);
+
+        this.getAnimations()["attack"].setAnimationFrames(4, 20, 0);
     }
 
     /**
@@ -55,17 +63,16 @@ class Enemy extends Living{
 
     /**
      * Sets the sprite of the enemy which will be its representation in 3D camera.
-     * @param {{width: Number, height: Number}} canvasSize 
      * @param {number} positionX 
      * @param {number} positionY 
      * @param {String} enemyImgStr 
      * @param {boolean} visible 
      */
-    setEnemy3D(canvasSize, positionX, positionY, enemyImgStr, visible = false){
+    setEnemy3D(positionX, positionY, enemyImgStr, visible = false){
         this.sprite3D = new Sprite(this.scene3D, {x: positionX, y: positionY}, enemyImgStr, this.getSize, 3)
         this.sprite3D.setVisible = visible;
-        this.setAttackSound(canvasSize);
-        this.setDeathSound(canvasSize);
+        this.setAttackSound();
+        this.setDeathSound();
     }
 
 
@@ -222,10 +229,9 @@ class Enemy extends Living{
 
     /**
      * Sets the attack sound of the enemy.
-     * @param {{width: Number, height: Number}} canvasSize 
      */
-    setAttackSound(canvasSize){
-        this.attackSound = new Sound(this.scene, canvasSize, this.getEnemy3D.getSpriteImgStr + "_attack_sound");
+    setAttackSound(){
+        this.attackSound = new Sound(this.scene, this.getEnemy3D.getSpriteImgStr + "_attack_sound", canvasSize);
     }
     
     /**
@@ -244,15 +250,14 @@ class Enemy extends Living{
     }
 
     /**
-     * Sets the death sound of the player.
-     * @param {{width: Number, height: Number}} canvasSize 
+     * Sets the death sound of the Enemy.
      */
-    setDeathSound(canvasSize){
-        this.deathSound = new Sound(this.scene, canvasSize, "cacodemon_death_sound");
+    setDeathSound(){
+        this.deathSound = new Sound(this.scene, "cacodemon_death_sound", canvasSize);
     }
     
     /**
-     * Gets the death sound of the player.
+     * Gets the death sound of the enemy.
      * @returns {Sound}
      */
     getDeathSound(){
@@ -260,10 +265,26 @@ class Enemy extends Living{
     }
 
     /**
-     * Plays the death sound of the player.
+     * Plays the death sound of the enemy.
      */
     playDeathSound(){
         this.getDeathSound().playSound();
+    }
+    /**
+     * Sets the animations of the enemy.
+     * @param {Array<String>} animationsArray 
+     */
+    setAnimations(animationsArray){
+        this.animations = {};
+
+        for(let animation of animationsArray){
+            this.animations[animation] = new SpriteAnimation(this.scene3D, `${this.getEnemy3D.getSpriteImgStr}_${animation}`); 
+        }
+
+    }
+
+    getAnimations(){
+        return this.animations;
     }
 
     /**
@@ -346,10 +367,14 @@ class Enemy extends Living{
         this.setRotation = this.getAngle;
     }
 
-    shoot(properties, randNumber, player, canvasSize){
+    shoot(properties, randNumber, player){
         this.getAttackSound().setSoundPanning(this.getDistanceToPlayer, this.angleToElement + Math.PI, player.getAngle);
         if(this.inSight && this.getAbleToShoot){
             let time = this.scene.time.now - this.creationTime;
+            // if(time - this.lastShotTimer > properties.delay/2 + randNumber*100){
+            //     this.getEnemy3D.getSprite.play(this.getAnimations()["attack"].getAnimationName);
+            // }
+            
             if (time - this.lastShotTimer > properties.delay + randNumber*100) {
                 let projectile = new Projectile(this.scene, this.getPosition, "small_energy_bomb", 16, 80, properties.velocity);
                 this.getProjectiles2D.add(projectile.getSprite);
@@ -358,6 +383,7 @@ class Enemy extends Living{
                 this.getProjectiles3D.add(projectile.getProjectile3D.getSprite);
 
                 projectile.shootProjectile(this);
+
                 this.playAttackSound();
                 
                 this.lastShotTimer = time;

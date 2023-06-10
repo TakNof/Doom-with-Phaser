@@ -1,3 +1,5 @@
+const canvasSize = {width: 1024, height: 768};
+
 let config = {
     type: Phaser.AUTO,
     physics:{
@@ -6,8 +8,8 @@ let config = {
             debug: false
         }
     },
-    width: 1024,
-    height: 768,
+    width: canvasSize.width,
+    height: canvasSize.height,
     scene: [MainMenuScene, Game2D, Game3D]
 }
 

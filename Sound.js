@@ -1,5 +1,5 @@
 class Sound{
-    constructor(scene, canvasSize, key){
+    constructor(scene, key, canvasSize = undefined){
         this.scene = scene;
         this.key = key;
 

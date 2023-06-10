@@ -19,7 +19,7 @@ class Weapon extends Sprite{
         this.bulletProperties = {damage: damage, velocity: velocity, delay: delay*1000, critical: critical};
         this.distanceLimits = {min: min, max: max};
 
-        this.setAnimationName();
+        this.weaponShootingAnimation = new SpriteAnimation(this.scene, this.spriteImgStr);
         this.setSoundEffect();
         this.setProjectiles();
     }
@@ -43,6 +43,14 @@ class Weapon extends Sprite{
      */
     setProjectiles(){
         this.weaponProjectiles = this.scene.physics.add.group();
+    }
+
+    /**
+     * Gets the shooting animation object of the weapon.
+     * @returns 
+     */
+    getShootingAnimation(){
+        return this.weaponShootingAnimation;
     }
 
     /**

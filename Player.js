@@ -51,15 +51,14 @@ class Player extends Living{
         this.rounds_shot = 0;
         this.damageDealed = 0;
         this.damageReceived = 0;
-        this.creationTime = this.scene3D.time.now;
+        this.creationTime = this.scene.time.now;
     }
     
     /**
      * Sets the graphicator object of the player.
-     * @param {String} canvasSize 
      */
-    set setGraphicator(canvasSize){
-        this.playerGraphicator = new Graphicator(this.scene3D, canvasSize, this.size, this.raysAmount);
+    setGraphicator(){
+        this.playerGraphicator = new Graphicator(this.scene3D, this.size, this.raysAmount);
     }
 
     /**
@@ -72,20 +71,19 @@ class Player extends Living{
 
     /**
      * Sets the camera of the player.
-     * @param {String} canvasSize 
      * @param {number} fov in radians.
      * @param {Array<Enemy>} enemies2D 
      */
-    setCamera(canvasSize, fov, enemies2D){
-        this.playerCamera = new Camera(this.scene3D, canvasSize, fov, this, enemies2D);
+    setCamera(fov, enemies2D){
+        this.playerCamera = new Camera(this.scene3D, fov, this, enemies2D);
     }
 
     /**
      * Sets the HUD object of the player.
      * @param {Object} canvasSize
      */
-    setHUD(canvasSize, enemies = undefined){
-        this.playerHUD = new HUD(this.scene3D, canvasSize, enemies);
+    setHUD(enemies = undefined){
+        this.playerHUD = new HUD(this.scene3D, enemies);
         this.playerHUD.setHealthValue = this.getHealth;
     }
 
@@ -109,8 +107,8 @@ class Player extends Living{
      * Sets the hurt sound of the player.
      * @param {{width: Number, height: Number}} canvasSize 
      */
-     setHealSound(canvasSize){
-        this.healSound = new Sound(this.scene, canvasSize, "player_heal_sound");
+     setHealSound(){
+        this.healSound = new Sound(this.scene, "player_heal_sound");
         this.healSound.sound.setVolume(8);
     }
     
@@ -131,10 +129,9 @@ class Player extends Living{
 
     /**
      * Sets the hurt sound of the player.
-     * @param {{width: Number, height: Number}} canvasSize 
      */
-    setHurtSound(canvasSize){
-        this.hurtSound = new Sound(this.scene, canvasSize, "player_hurt_sound");
+    setHurtSound(){
+        this.hurtSound = new Sound(this.scene, "player_hurt_sound");
     }
     
     /**
@@ -154,10 +151,9 @@ class Player extends Living{
 
     /**
      * Sets the death sound of the player.
-     * @param {{width: Number, height: Number}} canvasSize 
      */
-    setDeathSound(canvasSize){
-        this.deathSound = new Sound(this.scene, canvasSize, "player_death_sound");
+    setDeathSound(){
+        this.deathSound = new Sound(this.scene, "player_death_sound");
     }
     
     /**
@@ -177,10 +173,9 @@ class Player extends Living{
 
     /**
      * Sets the list of weapons of the player.
-     * @param {Object} canvasSize
      * @param {Array<Object>} properties
      */
-    setWeapons(canvasSize, properties){
+    setWeapons(properties){
         let length;
 
         if(typeof(properties) == Array){
@@ -425,9 +420,8 @@ class Player extends Living{
     shoot(){
         if(this.keySpace.isDown){
             let time = this.scene.time.now;
-            console.log(time);
             if (time - this.lastShotTimer > this.playerCurrentWeapon.getDelayBetweenShots) {
-                this.getPlayerCurrentWeapon.getSprite.play(this.getPlayerCurrentWeapon.getAnimationName);
+                this.getPlayerCurrentWeapon.getSprite.play(this.getPlayerCurrentWeapon.getShootingAnimation().getAnimationName);
                 let projectile = new Projectile(this.scene, this.getPosition, "bullet", 12, 80, this.playerCurrentWeapon.getBulletVelocity);
                 this.getPlayerCurrentWeapon.getProjectiles.add(projectile.getSprite);
                 projectile.shootProjectile(this);

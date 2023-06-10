@@ -6,17 +6,15 @@ class WallsBuilder{
      * The constructor of the walls builder class.
      * @constructor
      * @param {Scene} scene The current scene of the game to place the sprite.
-     * @param {number[]} originInfo  A list with the initial positioning information for the sprite.
      * @param {string} spriteImgStr An str of the image name given in the preload method of the main class.
-     * @param {number}size The size of the sprite in pixels.
-     * @param {number} depth The depth of rendering of the sprite.
+     * @param {number} blockSize The size of the sprite in pixels.
+     * @param {boolean} generateWalls Whether to generate walls or not.
+     * @param {boolean} generateRandomWalls Whether to generate random walls or not.
      */
-    constructor(scene, spriteImgStr, canvasSize, blockSize, amountWalls, generateWalls, generateRandomWalls){
+    constructor(scene, spriteImgStr, blockSize, amountWalls, generateWalls, generateRandomWalls){
         this.scene = scene;
 
         this.spriteImgStr = spriteImgStr;
-
-        this.canvasSize = canvasSize;
 
         this.blockSize = blockSize; 
 
@@ -25,7 +23,7 @@ class WallsBuilder{
         this.generateWalls = generateWalls;
         this.generateRandomWalls = generateRandomWalls;
 
-        this.wallNumberRatio = {x: parseInt(this.canvasSize.width/this.blockSize), y: parseInt(this.canvasSize.height/this.blockSize)};
+        this.wallNumberRatio = {x: parseInt(canvasSize.width/this.blockSize), y: parseInt(canvasSize.height/this.blockSize)};
     }
 
     createWalls(){

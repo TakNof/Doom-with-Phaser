@@ -1,7 +1,7 @@
 {
     "frames": [
         {
-            "filename": "cac_att_0.png",
+            "filename": "cacodemon_attack_0.png",
             "frame": {
                 "w": 154,
                 "h": 156,
@@ -14,7 +14,7 @@
             }
         },
         {
-            "filename": "cac_att_1.png",
+            "filename": "cacodemon_attack_1.png",
             "frame": {
                 "w": 154,
                 "h": 156,
@@ -27,7 +27,7 @@
             }
         },
         {
-            "filename": "cac_att_2.png",
+            "filename": "cacodemon_attack_2.png",
             "frame": {
                 "w": 154,
                 "h": 156,
@@ -40,7 +40,7 @@
             }
         },
         {
-            "filename": "cac_att_3.png",
+            "filename": "cacodemon_attack_3.png",
             "frame": {
                 "w": 154,
                 "h": 156,

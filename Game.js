@@ -2,10 +2,6 @@ class Game2D extends Phaser.Scene{
     constructor(){
         super({key: "Game2D"});
 
-        //Stablishing the canvas size and its components.
-        this.canvasSizeStr = "1024x768";
-        this.canvasSize = {width: parseInt(this.canvasSizeStr.split("x")[0]), height: parseInt(this.canvasSizeStr.split("x")[1])};
-
         //Visual grid to visualize better the space.
         this.grid;
 
@@ -30,7 +26,7 @@ class Game2D extends Phaser.Scene{
 
         this.enemyAngleOffset = Math.PI/2;
         this.chaseDistance = 400;
-        this.allowChase = true;
+        this.allowChase = false;
 
 
         //Stablishing the velocity standards for the player and enemies.
@@ -80,17 +76,17 @@ class Game2D extends Phaser.Scene{
 
         this.controlKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.CTRL);
 
-        this.physics.world.setBounds(0, 0, this.canvasSize.width, this.canvasSize.height);
+        this.physics.world.setBounds(0, 0, canvasSize.width, canvasSize.height);
 
         //Creating the grid.
-        this.grid = this.add.grid(0, 0, this.canvasSize.width*2, this.canvasSize.height*2, 32, 32, 0x00b9f2).setAltFillStyle(0x016fce).setOutlineStyle();
+        this.grid = this.add.grid(0, 0, canvasSize.width*2, canvasSize.height*2, 32, 32, 0x00b9f2).setAltFillStyle(0x016fce).setOutlineStyle();
 
         //Here we create the walls of the map.
-        this.walls = new WallsBuilder(this, "wall", this.canvasSize, this.wallBlockSize, this.amountWalls, this.generateWalls, this.generateRandomWalls);
+        this.walls = new WallsBuilder(this, "wall", this.wallBlockSize, this.amountWalls, this.generateWalls, this.generateRandomWalls);
         this.walls.createWalls();
         
         //Here we create the player.
-        this.player = new Player(this, game3D, {x: this.canvasSize.width/2, y: this.canvasSize.height/2}, "player", this.wallBlockSize*2, 0, this.defaultVelocity, this.angleOperator, 100);
+        this.player = new Player(this, game3D, {x: canvasSize.width/2, y: canvasSize.height/2}, "player", this.wallBlockSize*2, 0, this.defaultVelocity, this.angleOperator, 100);
 
         //Here we create the raycaster of the player and we pass it the position of the walls to make the calculations.
         this.player.setRaycaster(this.walls.getWallMatrix, this.raysAmount,  this.playerFOVangleOffset);
@@ -101,31 +97,31 @@ class Game2D extends Phaser.Scene{
         this.player.setSpriteRays(colors.limeGreen);
 
         //here we create the graphicator of the raycaster of the player.
-        this.player.setGraphicator = this.canvasSize;
+        this.player.setGraphicator();
 
         //We set all the elements we need to collide with the walls.
         this.player.setColliderElements();
 
-        this.player.setWeapons(this.canvasSize, [weapons.shotgun]);
-        this.player.getPlayerCurrentWeapon.setAnimationFrames(8, 10, 0);
+        this.player.setWeapons([weapons.shotgun]);
+        this.player.getPlayerCurrentWeapon.getShootingAnimation().setAnimationFrames(8, 10, 0);
 
         //We load those elements to the walls object.
         this.walls.setColliders(this.player.getColliderElements);
 
         //We create a certain amount of cacodemons.
-        this.cacodemons = new Cacodemon(this, game3D, this.canvasSize,this.amountEnemies, this.walls.getWallMatrix, this.walls.getWallNumberRatio, this.wallBlockSize, this.defaultVelocity/2, this.chaseDistance, this.allowChase);
+        this.cacodemons = new Cacodemon(this, game3D, this.amountEnemies, this.walls.getWallMatrix, this.walls.getWallNumberRatio, this.wallBlockSize, this.defaultVelocity/2, this.chaseDistance, this.allowChase);
         this.cacodemons.create(this.player.getPosition, this.enemyAngleOffset);
 
         for(let enemy of this.cacodemons.getEnemies){
             this.walls.setColliders(enemy.getColliderElements);
         }
 
-        this.player.setHUD(this.canvasSize);
+        this.player.setHUD();
         
-        // player.setHUD(this.canvasSize, cacodemons.getEnemies);
+        // player.setHUD(cacodemons.getEnemies);
 
         //Here we stablish the camera of the player with the raycaster, graphicator and the enemies positions.
-        this.player.setCamera(this.canvasSize, this.playerFOV, this.cacodemons.getEnemies); 
+        this.player.setCamera(this.playerFOV, this.cacodemons.getEnemies); 
         
         this.music = this.sound.add('at_dooms_gate');
         this.music.setVolume(0.5);
@@ -231,7 +227,7 @@ class Game3D extends Phaser.Scene {
         this.load.image("bullet", "./assets/Player/Sprites/bullet.png", {frameWidth: 12, frameHeight: 12});
 
         this.load.image("cacodemon", "./assets/enemies/cacodemon/Sprites/cacodemon.png");
-        this.load.atlas("cacodemon_attack", "./assets/enemies/cacodemon/Sprites/attackSpriteSheet/Caco_att_animation.png", "./assets/enemies/cacodemon/Sprites/attackSpriteSheet/Caco_att_animation.json");
+        this.load.atlas("cacodemon_attack", "./assets/enemies/cacodemon/Sprites/attackSpriteSheet/cacodemon_attack.png", "./assets/enemies/cacodemon/Sprites/attackSpriteSheet/cacodemon_attack.json");
         this.load.audio("cacodemon_attack_sound", "./assets/enemies/cacodemon/Sounds/cacodemon_attack_sound.wav");
         this.load.audio("cacodemon_death_sound", "./assets/enemies/cacodemon/Sounds/cacodemon_death_sound.wav");
 

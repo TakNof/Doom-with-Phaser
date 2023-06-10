@@ -5,21 +5,19 @@ class Camera{
     /**
      * The constructor of Camera Class.
      * @param {Scene} scene The scene to render.
-     * @param {{x: number, y: number}} canvasSize The size of the canvas to place the camera.
      * @param {number} fov The view of the camera in radians. 
      * @param {Player} player A player object from the Player Class.
      * @param {[Enemy]} enemies2D An array of enemy objects from the Enemy Class.
      */
-    constructor(scene, canvasSize, fov, player, enemies2D){
+    constructor(scene, fov, player, enemies2D){
         this.scene = scene;
-        this.canvasSize = canvasSize;
 
         this.fov = fov;
         this.player = player;
         this.setPlayerGlobalAngle();
         this.setArcAngles();
 
-        this.fovArcLenght = this.canvasSize.width;
+        this.fovArcLenght = canvasSize.width;
 
         this.fovArcRadius = this.fovArcLenght/this.fov;
         this.setEnemies(enemies2D);
@@ -386,7 +384,7 @@ class Camera{
             }
             
             element.x = this.drawElementByPlayerPov(anglePlayerToElement);
-            element.y = (heightMultiplier*this.canvasSize.height/3 + this.canvasSize.height/enemyHeight);  
+            element.y = (heightMultiplier*canvasSize.height/3 + canvasSize.height/enemyHeight);  
             
                 
             

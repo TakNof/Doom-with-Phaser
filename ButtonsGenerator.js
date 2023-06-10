@@ -36,7 +36,7 @@ class ButtonsGenerator{
     }
 
     setSelectorMovingSound(selectorStr){
-        this.selector.sound = new Sound(this.scene, this.canvasSize, `${selectorStr}_sound`)
+        this.selector.sound = new Sound(this.scene, `${selectorStr}_sound`)
     }
 
     getSelectorMovingSound(){
