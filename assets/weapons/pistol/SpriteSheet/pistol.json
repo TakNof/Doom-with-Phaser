@@ -1,0 +1,112 @@
+{
+    "frames": [
+        {
+            "filename": "pistol_0.png",
+            "frame": {
+                "w": 114,
+                "h": 124,
+                "x": 0,
+                "y": 0
+            },
+            "anchor": {
+                "x": 0.5,
+                "y": 0.5
+            }
+        },
+        {
+            "filename": "pistol_1.png",
+            "frame": {
+                "w": 158,
+                "h": 164,
+                "x": 0,
+                "y": 124
+            },
+            "anchor": {
+                "x": 0.5,
+                "y": 0.5
+            }
+        },
+        {
+            "filename": "pistol_2.png",
+            "frame": {
+                "w": 158,
+                "h": 210,
+                "x": 0,
+                "y": 288
+            },
+            "anchor": {
+                "x": 0.5,
+                "y": 0.5
+            }
+        },
+        {
+            "filename": "pistol_3.png",
+            "frame": {
+                "w": 132,
+                "h": 162,
+                "x": 0,
+                "y": 498
+            },
+            "anchor": {
+                "x": 0.5,
+                "y": 0.5
+            }
+        },
+        {
+            "filename": "pistol_4.png",
+            "frame": {
+                "w": 122,
+                "h": 162,
+                "x": 0,
+                "y": 660
+            },
+            "anchor": {
+                "x": 0.5,
+                "y": 0.5
+            }
+        },
+        {
+            "filename": "pistol_5.png",
+            "frame": {
+                "w": 156,
+                "h": 206,
+                "x": 0,
+                "y": 822
+            },
+            "anchor": {
+                "x": 0.5,
+                "y": 0.5
+            }
+        },
+        {
+            "filename": "pistol_6.png",
+            "frame": {
+                "w": 122,
+                "h": 162,
+                "x": 0,
+                "y": 1028
+            },
+            "anchor": {
+                "x": 0.5,
+                "y": 0.5
+            }
+        },
+        {
+            "filename": "pistol_7.png1",
+            "frame": {
+                "w": 114,
+                "h": 124,
+                "x": 0,
+                "y": 1190
+            },
+            "anchor": {
+                "x": 0.5,
+                "y": 0.5
+            }
+        }
+    ],
+    "meta": {
+        "description": "Atlas generado con Atlas Packer Gamma V2",
+        "web": "https://gammafp.github.io/atlas-packer-phaser/"
+    }
+}

@@ -186,13 +186,13 @@ class Enemy extends Living{
 
         if(currentDistance > distanceLimits.min && currentDistance < distanceLimits.max){
             damage *= 220/currentDistance;
-            // console.log(`${this} Normal damage ${damage}`);
+            console.log(`${this} Normal damage ${damage}`);
         }else if(currentDistance >= distanceLimits.max){
             damage *= 1/distanceLimits.max;
-            // console.log(`${this} Minimal damage ${damage}`);
+            console.log(`${this} Minimal damage ${damage}`);
         }else if(currentDistance <= distanceLimits.min){
             damage *= bulletProperties.critical * 220/currentDistance;
-            // console.log(`${this} Critical damage ${damage}`);
+            console.log(`${this} Critical damage ${damage}`);
             critical = true;
         }
 
@@ -205,7 +205,7 @@ class Enemy extends Living{
             this.playDeathSound();
 
             if(critical){
-                shooter.heal(bulletProperties.damage*0.04);
+                shooter.heal(bulletProperties.damage*0.04 + damage*0.05);
             }else{
                 shooter.heal(damage*0.08);
             }
@@ -371,9 +371,9 @@ class Enemy extends Living{
         this.getAttackSound().setSoundPanning(this.getDistanceToPlayer, this.angleToElement + Math.PI, player.getAngle);
         if(this.inSight && this.getAbleToShoot){
             let time = this.scene.time.now - this.creationTime;
-            // if(time - this.lastShotTimer > properties.delay/2 + randNumber*100){
-            //     this.getEnemy3D.getSprite.play(this.getAnimations()["attack"].getAnimationName);
-            // }
+            if(time - this.lastShotTimer > properties.delay/2 + randNumber*100){
+                this.getEnemy3D.getSprite.play(this.getAnimations()["attack"].getAnimationName);
+            }
             
             if (time - this.lastShotTimer > properties.delay + randNumber*100) {
                 let projectile = new Projectile(this.scene, this.getPosition, "small_energy_bomb", 16, 80, properties.velocity);

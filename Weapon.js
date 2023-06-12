@@ -20,8 +20,15 @@ class Weapon extends Sprite{
         this.distanceLimits = {min: min, max: max};
 
         this.weaponShootingAnimation = new SpriteAnimation(this.scene, this.spriteImgStr);
+        this.switchWeaponDelay = 1000;
         this.setSoundEffect();
         this.setProjectiles();
+
+        this.switchWeaponSounds = Array(3);
+
+        for(let i = 0; i < 3; i++){
+            this.switchWeaponSounds[i] = new Sound(this.scene, `switch_weapon_sound_${i + 1}`);
+        } 
     }
     
     /**
@@ -36,6 +43,11 @@ class Weapon extends Sprite{
      */
     playSoundEffect(){
         this.soundEffectName.play();
+    }
+
+    playSwitchWeaponSound(){
+        let index = getRndInteger(0, 2);
+        this.switchWeaponSounds[index].playSound();
     }
 
     /**

@@ -35,11 +35,46 @@ const shotgun = {
         min: 180,
         max: 1000
     },
+    animationParams:{
+        end: 8,
+        framerate: 10,
+    },
     soundDir: "./assets/weapons/shotgun/Sounds/shotgun_sound.mp3",
     spriteDir: "./assets/weapons/shotgun/SpriteSheet/shotgun.png",
     animationJsonDir: "assets/weapons/shotgun/SpriteSheet/shotgun.json"
 }
 
-const weapons = {shotgun: shotgun};
+const pistol = {
+    name: "pistol",
+    bulletProperties:{
+        damage: 40,
+        velocity: 800,
+        delay: 0.3,
+        critical: 1.3
+    },
+    distanceLimits:{
+        min: 250,
+        max: 600
+    },    
+    animationParams:{
+        end: 8,
+        framerate: 15,
+    },
+    soundDir: "./assets/weapons/pistol/Sounds/pistol_sound.wav",
+    spriteDir: "./assets/weapons/pistol/SpriteSheet/pistol.png",
+    animationJsonDir: "assets/weapons/pistol/SpriteSheet/pistol.json"
+}
+
+const weapons = [pistol, shotgun];
 
 let game = new Phaser.Game(config);
+
+/**
+     * This method allows us to get a number between the specified range.
+     * @param {number} min 
+     * @param {number} max 
+     * @returns {randomNumber}
+     */
+function getRndInteger(min, max) {
+    return Math.floor(Math.random() * (max - min) ) + min;
+}

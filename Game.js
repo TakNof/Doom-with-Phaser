@@ -26,7 +26,7 @@ class Game2D extends Phaser.Scene{
 
         this.enemyAngleOffset = Math.PI/2;
         this.chaseDistance = 400;
-        this.allowChase = false;
+        this.allowChase = true;
 
 
         //Stablishing the velocity standards for the player and enemies.
@@ -74,7 +74,7 @@ class Game2D extends Phaser.Scene{
 
         let game3D = sharedScenes.game3D;
 
-        this.controlKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.CTRL);
+        this.keyCtrl = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.CTRL);
 
         this.physics.world.setBounds(0, 0, canvasSize.width, canvasSize.height);
 
@@ -102,8 +102,7 @@ class Game2D extends Phaser.Scene{
         //We set all the elements we need to collide with the walls.
         this.player.setColliderElements();
 
-        this.player.setWeapons([weapons.shotgun]);
-        this.player.getPlayerCurrentWeapon.getShootingAnimation().setAnimationFrames(8, 10, 0);
+        this.player.setWeapons(weapons);
 
         //We load those elements to the walls object.
         this.walls.setColliders(this.player.getColliderElements);
@@ -126,15 +125,15 @@ class Game2D extends Phaser.Scene{
         this.music = this.sound.add('at_dooms_gate');
         this.music.setVolume(0.5);
         this.music.loop = true;
-        this.music.play();
+        // this.music.play();
     }
 
     update(){
         //The basic movement of the player.
         if(this.player.getIsAlive){
             this.player.move();
-
             this.player.shoot();
+            this.player.switchWeapons();
 
             //The basic movement of the enemy according to the player's position.
             this.cacodemons.move(this.player.getPosition);
@@ -205,7 +204,7 @@ class Game2D extends Phaser.Scene{
         //Here we draw the 3D representation of the map.
         this.player.getCamera.draw3DWorld();
 
-        if(this.controlKey.isDown){
+        if(this.keyCtrl.isDown){
             this.music.stop();
             this.scene.stop("Game3D");
             this.scene.stop("Game2D");
@@ -222,8 +221,15 @@ class Game3D extends Phaser.Scene {
     }
 
     preload(){
-        this.load.atlas(weapons.shotgun.name, weapons.shotgun.spriteDir, weapons.shotgun.animationJsonDir);
-        this.load.audio(weapons.shotgun.name + '_sound', weapons.shotgun.soundDir);
+        for(let weapon of weapons){
+            this.load.atlas(weapon.name, weapon.spriteDir, weapon.animationJsonDir);
+            this.load.audio(weapon.name + '_sound', weapon.soundDir);
+        }
+
+        for(let i = 0; i < 3; i++){
+            this.load.audio(`switch_weapon_sound_${i + 1}`, `assets/weapons/switch_weapon_sound_${i + 1}.wav`);
+        }
+        
         this.load.image("bullet", "./assets/Player/Sprites/bullet.png", {frameWidth: 12, frameHeight: 12});
 
         this.load.image("cacodemon", "./assets/enemies/cacodemon/Sprites/cacodemon.png");

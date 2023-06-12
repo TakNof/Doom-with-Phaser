@@ -50,21 +50,21 @@ class WallsBuilder{
                     //Due we need to make some tests we have this conditional, so we can create a more controlled map if needed.
 
                     //We stablish the starting grid point of the wall in x,y.
-                    wallStart.x = this.getRndInteger(0, this.wallNumberRatio.x);
-                    wallStart.y = this.getRndInteger(0, this.wallNumberRatio.y);
+                    wallStart.x = getRndInteger(0, this.wallNumberRatio.x);
+                    wallStart.y = getRndInteger(0, this.wallNumberRatio.y);
 
                     //And then the extension of the wall in x, y as well.
                     //This while loop will prevent the walls from being generated out of bounds.
                     do{
-                        blockExtension.x = this.getRndInteger(1, 5);
-                        blockExtension.y = this.getRndInteger(1, 5);
+                        blockExtension.x = getRndInteger(1, 5);
+                        blockExtension.y = getRndInteger(1, 5);
                         
                     }while(blockExtension.x + wallStart.x > this.wallNumberRatio.x ||
                         blockExtension.y + wallStart.y > this.wallNumberRatio.y);    
                     
                 }else{
                     wallStart.x = 15;
-                    wallStart.y = this.getRndInteger(0, 8);
+                    wallStart.y = getRndInteger(0, 8);
         
                     blockExtension.x = 3;
                     blockExtension.y = 3;
@@ -167,15 +167,5 @@ class WallsBuilder{
      */
     get getWallNumberRatio(){
         return this.wallNumberRatio;
-    }
-
-    /**
-     * This method allows us to get a number between the specified range.
-     * @param {number} min 
-     * @param {number} max 
-     * @returns {randomNumber}
-     */
-    getRndInteger(min, max) {
-        return Math.floor(Math.random() * (max - min) ) + min;
     }
 }

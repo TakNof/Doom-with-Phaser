@@ -41,6 +41,8 @@ class Player extends Living{
 
         this.keySpace = this.scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
 
+        this.keyShift = this.scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SHIFT);
+
         this.setMaxHealth = maxHealth;
         this.setHealth = this.getMaxHealth;
 
@@ -51,6 +53,7 @@ class Player extends Living{
         this.rounds_shot = 0;
         this.damageDealed = 0;
         this.damageReceived = 0;
+        this.lastSwitchWeaponTimer = 0;
         this.creationTime = this.scene.time.now;
     }
     
@@ -173,16 +176,10 @@ class Player extends Living{
 
     /**
      * Sets the list of weapons of the player.
-     * @param {Array<Object>} properties
+     * @param {Array<Object>} weapons
      */
-    setWeapons(properties){
-        let length;
-
-        if(typeof(properties) == Array){
-            length = properties.length;
-        }else{
-            length = 1;
-        }
+    setWeapons(weapons){
+        let length = weapons.length;
 
         this.playerWeapons = Array(length);
 
@@ -190,18 +187,44 @@ class Player extends Living{
             this.playerWeapons[i] = new Weapon(
                 this.scene3D,
                 {x: canvasSize.width/2, y: canvasSize.height*0.8},
-                properties[i].name,
+                weapons[i].name,
                 512,
                 80,
-                properties[i].bulletProperties,
-                properties[i].distanceLimits,
+                weapons[i].bulletProperties,
+                weapons[i].distanceLimits,
             );
+
+            this.playerWeapons[i].getShootingAnimation().setAnimationFrames(weapons[i].animationParams.end, weapons[i].animationParams.framerate);
         }
 
         for(let i = 1; i < length; i++){
             this.playerWeapons[i].setVisible = false;
         }
         this.playerCurrentWeapon = this.playerWeapons[0];
+    }
+
+    switchWeapons(){
+        if(this.keyShift.isDown){
+            let time = this.scene.time.now;
+            if (time - this.lastSwitchWeaponTimer  > this.playerCurrentWeapon.switchWeaponDelay) {
+                this.playerCurrentWeapon.playSwitchWeaponSound();
+
+                this.playerCurrentWeapon.setVisible = false;
+
+                let index = this.playerWeapons.indexOf(this.playerCurrentWeapon);
+
+                if(index == this.playerWeapons.length - 1){
+                    this.playerCurrentWeapon = this.playerWeapons[0];
+                }else{
+                    this.playerCurrentWeapon = this.playerWeapons[index + 1];
+                }
+
+                this.playerCurrentWeapon.setVisible = true;
+
+                this.lastShotTimer = 0;
+                this.lastSwitchWeaponTimer = time;
+            }
+        }
     }
 
     /**
