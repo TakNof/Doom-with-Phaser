@@ -67,7 +67,7 @@ const pistol = {
 
 const weapons = [pistol, shotgun];
 
-let game = new Phaser.Game(config);
+const game = new Phaser.Game(config);
 
 /**
      * This method allows us to get a number between the specified range.

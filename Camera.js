@@ -291,8 +291,8 @@ class Camera{
                         enemy.getProjectiles2D.getChildren()[i].x, this.player.getPositionX,
                         enemy.getProjectiles2D.getChildren()[i].y, this.player.getPositionY
                     ),
-                    2000,
-                    1.5
+                    2200,
+                    1.65
                 );
             }
         }

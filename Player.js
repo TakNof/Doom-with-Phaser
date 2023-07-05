@@ -1,4 +1,4 @@
-/**
+ /**
  * This class extends to Living class, due the "living" sprites could be
  * players or enemies. Furthermore, this class implements all the movement controlers for the player/s.
  */
@@ -107,10 +107,10 @@ class Player extends Living{
      * @param {Array<Object>} weapons
      */
     setWeapons(weapons){
-        this.playerWeapons = [];
+        this.playerWeapons = new Array(weapons.length);
 
         for(let [i, weapon] of weapons.entries()){
-            this.playerWeapons.push(new Weapon(
+            this.playerWeapons[i] = new Weapon(
                 this.scene3D,
                 {x: canvasSize.width/2, y: canvasSize.height*0.9},
                 weapon.name,
@@ -119,8 +119,7 @@ class Player extends Living{
                 weapon.bulletProperties,
                 weapon.distanceLimits,
                 weapon.animationParams
-                )
-            );
+                );
 
             this.playerWeapons[i].setVisible = false;
         }
@@ -325,7 +324,7 @@ class Player extends Living{
         this.raycaster.setSpritePosition = this.getPosition;
 
 
-        if((this.cursors.up.isDown ^ this.cursors.down.isDown) || (this.cursors["W"].isDown ^ this.cursors["S"].isDown)){
+        if((this.cursors.up.isDown ^ this.cursors.down.isDown) ^ (this.cursors["W"].isDown ^ this.cursors["S"].isDown)){
             if (this.cursors.up.isDown || this.cursors["W"].isDown){
                 //Here we use the velocity calculated, and we change its sign accordingly to the direction of movement.
                 this.setVelocityX = this.getXcomponent;
@@ -344,7 +343,7 @@ class Player extends Living{
             }
         }
     
-        if((this.cursors.left.isDown ^ this.cursors.right.isDown) || (this.cursors["A"].isDown ^ this.cursors["D"].isDown)){
+        if((this.cursors.left.isDown ^ this.cursors.right.isDown) ^ (this.cursors["A"].isDown ^ this.cursors["D"].isDown)){
 
             //Here we use trigonometrics to calculate the x and y component of the velocity.
             this.setXcomponent();

@@ -9,7 +9,7 @@ class Game2D extends Phaser.Scene{
         this.walls;
         this.wallOrder;
         this.wallBlockSize = 32;
-        this.amountWalls = 10;
+        this.amountWalls = 15;
         this.generateWalls = true;
         this.generateRandomWalls = true;
 
@@ -147,8 +147,7 @@ class Game2D extends Phaser.Scene{
                 this.walls.evalCollision(enemy.getProjectiles2D, enemy.getProjectiles3D);
 
                 enemy.evalProjectileCollision(this.player);
-
-                enemy.getDeathSound().setSoundPanning(enemy.getDistanceToPlayer, enemy.angleToElement + Math.PI, this.player.getAngle);
+                enemy.getSpriteSounds("death").setSoundPanning(enemy.getDistanceToPlayer, enemy.angleToElement + Math.PI, this.player.getAngle);
 
                 if(enemy.getHealth == 0){
                     enemy.waitToDestroy();
@@ -190,7 +189,7 @@ class Game2D extends Phaser.Scene{
             // }, 1000);
         }
 
-        if(this.cacodemons.getEnemies.length == 0 && this.player.getScore() == undefined){
+        if((this.cacodemons.getEnemies.length == 0 || (this.cacodemons.getEnemies[0].getHealth == 0 && this.cacodemons.getEnemies.length == 1)) && this.player.getScore() == undefined){
             this.player.setTimeAlive();
             this.player.setScore("Victory", this.amountEnemies);
             this.player.getHUD.displayVictoryText();
@@ -233,10 +232,17 @@ class Game3D extends Phaser.Scene {
         
         this.load.image("bullet", "./assets/Player/Sprites/bullet.png", {frameWidth: 12, frameHeight: 12});
 
+        let enemyActions = ["attack", "hurt", "death"];
+
+        for(let animationName of ["heal", "hurt", "death"]){
+            this.load.audio(`player_${animationName}_sound`, `./assets/Player/Sounds/player_${animationName}_sound.wav`);
+        }
+
         this.load.image("cacodemon", "./assets/enemies/cacodemon/Sprites/cacodemon.png");
-        this.load.atlas("cacodemon_attack", "./assets/enemies/cacodemon/Sprites/attackSpriteSheet/cacodemon_attack.png", "./assets/enemies/cacodemon/Sprites/attackSpriteSheet/cacodemon_attack.json");
-        this.load.audio("cacodemon_attack_sound", "./assets/enemies/cacodemon/Sounds/cacodemon_attack_sound.wav");
-        this.load.audio("cacodemon_death_sound", "./assets/enemies/cacodemon/Sounds/cacodemon_death_sound.wav");
+        for(let action of enemyActions){
+            this.load.atlas(`cacodemon_${action}`, `./assets/enemies/cacodemon/Sprites/animations/cacodemon_${action}.png`, `./assets/enemies/cacodemon/Sprites/animations/cacodemon_${action}.json`);
+            this.load.audio(`cacodemon_${action}_sound`, `./assets/enemies/cacodemon/sounds/cacodemon_${action}_sound.wav`)
+        }
 
         this.load.image("energy_bomb", "./assets/enemies/cacodemon/Sprites/energy_bomb.png");
         this.load.audio("cacodemon_energy_bomb_sound", "./assets/enemies/cacodemon/Sounds/cacodemon_energy_bomb_sound.wav");

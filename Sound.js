@@ -1,9 +1,7 @@
 class Sound{
-    constructor(scene, key, canvasSize = undefined){
+    constructor(scene, key){
         this.scene = scene;
         this.key = key;
-
-        this.canvasSize = canvasSize
 
         this.sound = this.scene.sound.add(key);
     }
@@ -22,12 +20,12 @@ class Sound{
         }
 
         if(x == 0){
-            x = this.canvasSize.width/2;
+            x = canvasSize.width/2;
         }else{
-            x += this.canvasSize.width/2;
+            x += canvasSize.width/2;
         }
 
-        this.sound.setPan(Phaser.Math.Linear(-1, 1, x / this.canvasSize.width));
+        this.sound.setPan(Phaser.Math.Linear(-1, 1, x / canvasSize.width));
     }
 
     playSound(){

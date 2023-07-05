@@ -1,0 +1,138 @@
+{
+    "frames": [
+        {
+            "filename": "cacodemon_attack_0.png",
+            "frame": {
+                "w": 259.2,
+                "h": 259.2,
+                "x": 0,
+                "y": 0
+            },
+            "anchor": {
+                "x": 0.5,
+                "y": 0.5
+            }
+        },
+        {
+            "filename": "cacodemon_attack_1.png",
+            "frame": {
+                "w": 259.2,
+                "h": 259.2,
+                "x": 259.2,
+                "y": 0
+            },
+            "anchor": {
+                "x": 0.5,
+                "y": 0.5
+            }
+        },
+        {
+            "filename": "cacodemon_attack_2.png",
+            "frame": {
+                "w": 259.2,
+                "h": 259.2,
+                "x": 518.4,
+                "y": 0
+            },
+            "anchor": {
+                "x": 0.5,
+                "y": 0.5
+            }
+        },
+        {
+            "filename": "cacodemon_attack_3.png",
+            "frame": {
+                "w": 259.2,
+                "h": 259.2,
+                "x": 0,
+                "y": 259.2
+            },
+            "anchor": {
+                "x": 0.5,
+                "y": 0.5
+            }
+        },
+        {
+            "filename": "cacodemon_attack_4.png",
+            "frame": {
+                "w": 259.2,
+                "h": 259.2,
+                "x": 259.2,
+                "y": 259.2
+            },
+            "anchor": {
+                "x": 0.5,
+                "y": 0.5
+            }
+        },
+        {
+            "filename": "cacodemon_attack_5.png",
+            "frame": {
+                "w": 259.2,
+                "h": 259.2,
+                "x": 518.4,
+                "y": 259.2
+            },
+            "anchor": {
+                "x": 0.5,
+                "y": 0.5
+            }
+        },
+        {
+            "filename": "cacodemon_attack_6.png",
+            "frame": {
+                "w": 259.2,
+                "h": 259.2,
+                "x": 0,
+                "y": 518.4
+            },
+            "anchor": {
+                "x": 0.5,
+                "y": 0.5
+            }
+        },
+        {
+            "filename": "cacodemon_attack_7.png",
+            "frame": {
+                "w": 259.2,
+                "h": 259.2,
+                "x": 259.2,
+                "y": 518.4
+            },
+            "anchor": {
+                "x": 0.5,
+                "y": 0.5
+            }
+        },
+        {
+            "filename": "cacodemon_attack_8.png",
+            "frame": {
+                "w": 259.2,
+                "h": 259.2,
+                "x": 518.4,
+                "y": 518.4
+            },
+            "anchor": {
+                "x": 0.5,
+                "y": 0.5
+            }
+        },
+        {
+            "filename": "cacodemon_attack_9.png",
+            "frame": {
+                "w": 259.2,
+                "h": 259.2,
+                "x": 0,
+                "y": 777.6
+            },
+            "anchor": {
+                "x": 0.5,
+                "y": 0.5
+            }
+        }
+    ],
+    "meta": {
+        "description": "Atlas generado con Atlas Packer Gamma V2",
+        "web": "https://gammafp.github.io/atlas-packer-phaser/"
+    }
+}

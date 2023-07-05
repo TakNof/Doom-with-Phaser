@@ -38,11 +38,26 @@ class Enemy extends Living{
 
         this.creationTime = this.scene.time.now;
         
-        let animationsToSet = ["attack"];
+        let animationsToSet = [
+            {
+                name: "attack",
+                animationParams:{
+                    end: 10,
+                    framerate: 15,
+                }
+            },
+            {
+                name: "hurt",
+                animationParams:{
+                    end: 8,
+                    framerate: 15
+                }
+            }
+        ];   
 
         this.setAnimations(animationsToSet);
 
-        this.getAnimations("attack").setAnimationFrames(8, 10, 0);
+        this.setSpriteSounds("cacodemon", ["hurt", "death", "attack"]);
     }
 
     /**
@@ -71,8 +86,6 @@ class Enemy extends Living{
     setEnemy3D(positionX, positionY, enemyImgStr, visible = false){
         this.sprite3D = new Sprite(this.scene3D, {x: positionX, y: positionY}, enemyImgStr, this.getSize, 3)
         this.sprite3D.setVisible = visible;
-        this.setAttackSound();
-        this.setDeathSound();
     }
 
 
@@ -185,13 +198,13 @@ class Enemy extends Living{
 
         if(currentDistance > distanceLimits.min && currentDistance < distanceLimits.max){
             damage *= 220/currentDistance;
-            console.log(`${this} Normal damage ${damage}`);
+            // console.log(`${this} Normal damage ${damage}`);
         }else if(currentDistance >= distanceLimits.max){
             damage *= 1/distanceLimits.max;
-            console.log(`${this} Minimal damage ${damage}`);
+            // console.log(`${this} Minimal damage ${damage}`);
         }else if(currentDistance <= distanceLimits.min){
             damage *= bulletProperties.critical * 220/currentDistance;
-            console.log(`${this} Critical damage ${damage}`);
+            // console.log(`${this} Critical damage ${damage}`);
             critical = true;
         }
 
@@ -201,15 +214,18 @@ class Enemy extends Living{
             this.setHealth = 0;
             this.setAbleToShoot = false;
 
-            this.playDeathSound();
+            this.getSpriteSounds("death").playSound();
 
             if(critical){
                 shooter.heal(bulletProperties.damage*0.08);
             }else{
                 shooter.heal(damage*0.08);
             }
+            
         }else{
             this.setHealth = this.getHealth - damage;
+            this.getSpriteSounds("hurt").playSound();
+            this.getEnemy3D.getSprite.play(this.getAnimations("hurt").getAnimationName);
         }
     }
 
@@ -227,49 +243,6 @@ class Enemy extends Living{
     }
 
     /**
-     * Sets the attack sound of the enemy.
-     */
-    setAttackSound(){
-        this.attackSound = new Sound(this.scene, this.getEnemy3D.getSpriteImgStr + "_attack_sound", canvasSize);
-    }
-    
-    /**
-     * Gets the attack sound of the enemy.
-     * @returns {Sound}
-     */
-    getAttackSound(){
-        return this.attackSound;
-    }
-
-    /**
-     * Plays the sound effect of the enemy.
-     */
-    playAttackSound(){
-        this.getAttackSound().playSound();
-    }
-
-    /**
-     * Sets the death sound of the Enemy.
-     */
-    setDeathSound(){
-        this.deathSound = new Sound(this.scene, "cacodemon_death_sound", canvasSize);
-    }
-    
-    /**
-     * Gets the death sound of the enemy.
-     * @returns {Sound}
-     */
-    getDeathSound(){
-        return this.deathSound;
-    }
-
-    /**
-     * Plays the death sound of the enemy.
-     */
-    playDeathSound(){
-        this.getDeathSound().playSound();
-    }
-    /**
      * Sets the animations of the enemy.
      * @param {Array<String>} animationsArray 
      */
@@ -277,7 +250,8 @@ class Enemy extends Living{
         this.animations = {};
 
         for(let animation of animationsArray){
-            this.animations[animation] = new SpriteAnimation(this.scene3D, `${this.getEnemy3D.getSpriteImgStr}_${animation}`); 
+            this.animations[animation.name] = new SpriteAnimation(this.scene3D, `${this.getEnemy3D.getSpriteImgStr}_${animation.name}`);
+            this.animations[animation.name].setAnimationFrames(animation.animationParams.end, animation.animationParams.framerate, animation.animationParams.repeat);
         }
 
     }
@@ -367,25 +341,24 @@ class Enemy extends Living{
     }
 
     shoot(properties, randNumber, player){
-        this.getAttackSound().setSoundPanning(this.getDistanceToPlayer, this.angleToElement + Math.PI, player.getAngle);
+        this.getSpriteSounds("attack").setSoundPanning(this.getDistanceToPlayer, this.angleToElement + Math.PI, player.getAngle);
         if(this.inSight && this.getAbleToShoot){
             let time = this.scene.time.now - this.creationTime;
-            if(time - this.lastShotTimer > properties.delay/2 + randNumber*100){
+
+            if(time - this.lastShotTimer > properties.delay + randNumber*100){
                 this.getEnemy3D.getSprite.play(this.getAnimations("attack").getAnimationName);
-            }
-            
-            if (time - this.lastShotTimer > properties.delay + randNumber*100) {
-                let projectile = new Projectile(this.scene, this.getPosition, "small_energy_bomb", 16, 80, properties.velocity);
-                this.getProjectiles2D.add(projectile.getSprite);
-
-                projectile.setProjectile3D(this.scene3D, canvasSize.width/2, canvasSize.width/2, "energy_bomb");            
-                this.getProjectiles3D.add(projectile.getProjectile3D.getSprite);
-
-                projectile.shootProjectile(this);
-
-                this.playAttackSound();
-                
                 this.lastShotTimer = time;
+                setTimeout(() =>{
+                    let projectile = new Projectile(this.scene, this.getPosition, "small_energy_bomb", 16, 80, properties.velocity);
+                    this.getProjectiles2D.add(projectile.getSprite);
+
+                    projectile.setProjectile3D(this.scene3D, canvasSize.width/2, canvasSize.width/2, "energy_bomb");            
+                    this.getProjectiles3D.add(projectile.getProjectile3D.getSprite);
+
+                    projectile.shootProjectile(this);
+
+                    this.getSpriteSounds("attack").playSound();
+                }, 300)
             }
         }
     }
