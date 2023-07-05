@@ -13,16 +13,18 @@ class Weapon extends Sprite{
     * @param {number[]} delayBetweenBullets The delay in seconds between the shots the weapon sprite.
     *  
     */
-    constructor(scene, originInfo, spriteImgStr, size, depth, {damage, velocity, delay, critical}, {min, max}){
+    constructor(scene, originInfo, spriteImgStr, size, depth, bulletProperties, distanceLimits, animationParams){
         super(scene, originInfo, spriteImgStr, size, depth);
 
-        this.bulletProperties = {damage: damage, velocity: velocity, delay: delay*1000, critical: critical};
-        this.distanceLimits = {min: min, max: max};
+        this.bulletProperties = bulletProperties;
+        this.distanceLimits = distanceLimits;
 
         this.weaponShootingAnimation = new SpriteAnimation(this.scene, this.spriteImgStr);
         this.switchWeaponDelay = 1000;
         this.setSoundEffect();
         this.setProjectiles();
+
+        this.getShootingAnimation().setAnimationFrames(animationParams.end, animationParams.framerate, animationParams.repeat);
 
         this.switchWeaponSounds = Array(3);
 

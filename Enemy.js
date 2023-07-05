@@ -20,6 +20,8 @@ class Enemy extends Living{
 
         this.scene3D = scene3D;
 
+        this.setEnemy3D(canvasSize.width/2, canvasSize.height/2, "cacodemon");
+
         this.setRotation = this.originInfo.ang;
         this.setAngle = this.originInfo.ang;
 
@@ -35,14 +37,12 @@ class Enemy extends Living{
         this.inSight = false;
 
         this.creationTime = this.scene.time.now;
-
-        this.setEnemy3D(canvasSize.width/2, canvasSize.height/2, "cacodemon");
         
         let animationsToSet = ["attack"];
 
         this.setAnimations(animationsToSet);
 
-        this.getAnimations()["attack"].setAnimationFrames(4, 20, 0);
+        this.getAnimations("attack").setAnimationFrames(8, 10, 0);
     }
 
     /**
@@ -177,7 +177,6 @@ class Enemy extends Living{
      * @param {Number} damage 
      * @param {Object} distanceLimits 
      * @param {Number} currentDistance 
-     * @returns 
      */
     __checkDamage(shooter, projectile, bulletProperties, distanceLimits, currentDistance){
         projectile.destroy();
@@ -205,7 +204,7 @@ class Enemy extends Living{
             this.playDeathSound();
 
             if(critical){
-                shooter.heal(bulletProperties.damage*0.04 + damage*0.05);
+                shooter.heal(bulletProperties.damage*0.08);
             }else{
                 shooter.heal(damage*0.08);
             }
@@ -283,8 +282,8 @@ class Enemy extends Living{
 
     }
 
-    getAnimations(){
-        return this.animations;
+    getAnimations(element){
+        return this.animations[element];
     }
 
     /**
@@ -372,7 +371,7 @@ class Enemy extends Living{
         if(this.inSight && this.getAbleToShoot){
             let time = this.scene.time.now - this.creationTime;
             if(time - this.lastShotTimer > properties.delay/2 + randNumber*100){
-                this.getEnemy3D.getSprite.play(this.getAnimations()["attack"].getAnimationName);
+                this.getEnemy3D.getSprite.play(this.getAnimations("attack").getAnimationName);
             }
             
             if (time - this.lastShotTimer > properties.delay + randNumber*100) {

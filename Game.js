@@ -20,13 +20,15 @@ class Game2D extends Phaser.Scene{
         this.playerFOVangleOffset = this.playerAngleOffset - this.playerFOV/2
 
         //Stablishing the enemy and its initial position.
-        this.amountEnemies = 12  ;
+        this.amountEnemies = 12;
 
         this.cacodemons;
 
         this.enemyAngleOffset = Math.PI/2;
         this.chaseDistance = 400;
         this.allowChase = true;
+        this.allowShoot = true;
+        this.playerHealth = 100;
 
 
         //Stablishing the velocity standards for the player and enemies.
@@ -41,18 +43,15 @@ class Game2D extends Phaser.Scene{
         this.music; 
     }
 
-    init() {
-        this.sys.game.loop.time = 0;
-    }
-
     //With the preload method we preload the sprites and we generate the object from the raycaster class.
     preload(){
         this.load.image("wall", "./assets/wall.png", {frameWidth: 32, frameHeight: 32});
 
         this.load.image("player", "./assets/Player/Sprites/doomguy64x64.png", {frameWidth: 64, frameHeight: 64});
-        this.load.audio("player_heal_sound", "./assets/Player/Sounds/player_heal_sound.wav");
-        this.load.audio("player_hurt_sound", "./assets/Player/Sounds/player_hurt_sound.wav");
-        this.load.audio("player_death_sound", "./assets/Player/Sounds/player_death_sound.wav");
+
+        for(let soundName of ["heal", "hurt", "death"]){
+            this.load.audio(`player_${soundName}_sound`, `./assets/Player/Sounds/player_${soundName}_sound.wav`);
+        }
 
         this.load.image("small_cacodemon", "./assets/enemies/cacodemon/Sprites/small_cacodemon.jpg", {frameWidth: 64, frameHeight: 64});
 
@@ -86,14 +85,14 @@ class Game2D extends Phaser.Scene{
         this.walls.createWalls();
         
         //Here we create the player.
-        this.player = new Player(this, game3D, {x: canvasSize.width/2, y: canvasSize.height/2}, "player", this.wallBlockSize*2, 0, this.defaultVelocity, this.angleOperator, 100);
+        this.player = new Player(this, game3D, {x: canvasSize.width/2, y: canvasSize.height/2}, "player", this.wallBlockSize*2, 0, this.defaultVelocity, this.angleOperator, this.playerHealth);
 
         //Here we create the raycaster of the player and we pass it the position of the walls to make the calculations.
         this.player.setRaycaster(this.walls.getWallMatrix, this.raysAmount,  this.playerFOVangleOffset);
         this.player.getRaycaster.setAngleStep(this.playerFOV);
 
         //Here we put the color of the rays of the player.
-        // this.player.setDebug = true;
+        this.player.setDebug = true;
         this.player.setSpriteRays(colors.limeGreen);
 
         //here we create the graphicator of the raycaster of the player.
@@ -125,7 +124,9 @@ class Game2D extends Phaser.Scene{
         this.music = this.sound.add('at_dooms_gate');
         this.music.setVolume(0.5);
         this.music.loop = true;
-        // this.music.play();
+        this.music.play();
+
+        this.sound.volume = 1;
     }
 
     update(){
@@ -137,9 +138,11 @@ class Game2D extends Phaser.Scene{
 
             //The basic movement of the enemy according to the player's position.
             this.cacodemons.move(this.player.getPosition);
-        
-            this.cacodemons.shoot(this.player);
-
+            
+            if(this.allowShoot){
+                this.cacodemons.shoot(this.player);
+            }   
+            
             for(let enemy of this.cacodemons.getEnemies){
                 this.walls.evalCollision(enemy.getProjectiles2D, enemy.getProjectiles3D);
 
@@ -174,7 +177,7 @@ class Game2D extends Phaser.Scene{
             this.walls.evalCollision(this.player.getPlayerCurrentWeapon.getProjectiles);
             
         }else{
-            if(this.player.getScore() == undefined){
+            if(!this.player.getIsAlive && this.player.getScore() == undefined){
                 this.player.setTimeAlive();
                 this.player.setScore("Defeat", this.amountEnemies);
                 this.player.getHUD.displayDeathText();
@@ -187,15 +190,13 @@ class Game2D extends Phaser.Scene{
             // }, 1000);
         }
 
-        if(this.cacodemons.getEnemies.length == 0){
-            if(this.player.getScore() == undefined){
-                this.player.setTimeAlive();
-                this.player.setScore("Victory", this.amountEnemies);
-                this.player.getHUD.displayVictoryText();
+        if(this.cacodemons.getEnemies.length == 0 && this.player.getScore() == undefined){
+            this.player.setTimeAlive();
+            this.player.setScore("Victory", this.amountEnemies);
+            this.player.getHUD.displayVictoryText();
 
-                this.player.getHUD.displayScoreText("Victory", this.player.getScore());    
-            }        
-        }
+            this.player.getHUD.displayScoreText("Victory", this.player.getScore());          
+    }
         
         // this.player.getHUD.setEnemiesHealthValue = cacodemons.getEnemies;
 

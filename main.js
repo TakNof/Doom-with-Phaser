@@ -28,7 +28,7 @@ const shotgun = {
     bulletProperties:{
         damage: 80,
         velocity: 1000,
-        delay: 1,
+        delay: 1000,
         critical: 2.2
     },
     distanceLimits:{
@@ -39,7 +39,7 @@ const shotgun = {
         end: 8,
         framerate: 10,
     },
-    soundDir: "./assets/weapons/shotgun/Sounds/shotgun_sound.mp3",
+    soundDir: "./assets/weapons/shotgun/Sounds/shotgun_sound.wav",
     spriteDir: "./assets/weapons/shotgun/SpriteSheet/shotgun.png",
     animationJsonDir: "assets/weapons/shotgun/SpriteSheet/shotgun.json"
 }
@@ -49,7 +49,7 @@ const pistol = {
     bulletProperties:{
         damage: 40,
         velocity: 800,
-        delay: 0.3,
+        delay: 300,
         critical: 1.3
     },
     distanceLimits:{

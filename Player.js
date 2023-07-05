@@ -31,11 +31,9 @@ class Player extends Living{
         this.setXcomponent();
         this.setYcomponent();
 
-        let keys = ["W", "A", "S", "D"];
-
         this.cursors = this.scene.input.keyboard.createCursorKeys();
 
-       for(let key of keys) {
+       for(let key of ["W", "A", "S", "D"]) {
             this.cursors[key] = this.scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes[key]);
         }
 
@@ -46,9 +44,7 @@ class Player extends Living{
         this.setMaxHealth = maxHealth;
         this.setHealth = this.getMaxHealth;
 
-        this.setHurtSound();
-        this.setDeathSound();
-        this.setHealSound();
+        this.setSpriteSounds("player", ["hurt", "death", "heal"]);
 
         this.rounds_shot = 0;
         this.damageDealed = 0;
@@ -106,101 +102,32 @@ class Player extends Living{
         return this.playerCamera;
     }
 
-     /**
-     * Sets the hurt sound of the player.
-     * @param {{width: Number, height: Number}} canvasSize 
-     */
-     setHealSound(){
-        this.healSound = new Sound(this.scene, "player_heal_sound");
-        this.healSound.sound.setVolume(8);
-    }
-    
-    /**
-     * Gets the hurt sound of the player.
-     * @returns {Sound}
-     */
-    getHealSound(){
-        return this.healSound;
-    }
-
-    /**
-     * Plays the hurt sound of the player.
-     */
-    playHealSound(){
-        this.getHealSound().playSound();
-    }
-
-    /**
-     * Sets the hurt sound of the player.
-     */
-    setHurtSound(){
-        this.hurtSound = new Sound(this.scene, "player_hurt_sound");
-    }
-    
-    /**
-     * Gets the hurt sound of the player.
-     * @returns {Sound}
-     */
-    getHurtSound(){
-        return this.hurtSound;
-    }
-
-    /**
-     * Plays the hurt sound of the player.
-     */
-    playHurtSound(){
-        this.getHurtSound().playSound();
-    }
-
-    /**
-     * Sets the death sound of the player.
-     */
-    setDeathSound(){
-        this.deathSound = new Sound(this.scene, "player_death_sound");
-    }
-    
-    /**
-     * Gets the death sound of the player.
-     * @returns {Sound}
-     */
-    getDeathSound(){
-        return this.deathSound;
-    }
-
-    /**
-     * Plays the death sound of the player.
-     */
-    playDeathSound(){
-        this.getDeathSound().playSound();
-    }
-
     /**
      * Sets the list of weapons of the player.
      * @param {Array<Object>} weapons
      */
     setWeapons(weapons){
-        let length = weapons.length;
+        this.playerWeapons = [];
 
-        this.playerWeapons = Array(length);
-
-        for(let i = 0; i < length; i++){
-            this.playerWeapons[i] = new Weapon(
+        for(let [i, weapon] of weapons.entries()){
+            this.playerWeapons.push(new Weapon(
                 this.scene3D,
-                {x: canvasSize.width/2, y: canvasSize.height*0.8},
-                weapons[i].name,
-                512,
+                {x: canvasSize.width/2, y: canvasSize.height*0.9},
+                weapon.name,
+                canvasSize.width/2,
                 80,
-                weapons[i].bulletProperties,
-                weapons[i].distanceLimits,
+                weapon.bulletProperties,
+                weapon.distanceLimits,
+                weapon.animationParams
+                )
             );
 
-            this.playerWeapons[i].getShootingAnimation().setAnimationFrames(weapons[i].animationParams.end, weapons[i].animationParams.framerate);
-        }
-
-        for(let i = 1; i < length; i++){
             this.playerWeapons[i].setVisible = false;
         }
+
         this.playerCurrentWeapon = this.playerWeapons[0];
+        this.playerCurrentWeapon.setVisible = true;
+        
     }
 
     switchWeapons(){
@@ -300,12 +227,12 @@ class Player extends Living{
         if(this.getHealth - damage <= 0){
             this.setHealth = 0;
             
-            this.playDeathSound();
+            this.getSpriteSounds("death").playSound();
 
             this.isAlive = false;
 
         }else{
-            this.playHurtSound();
+            this.getSpriteSounds("hurt").playSound();
             this.getHUD.displayHurtRedScreen();
             this.setHealth = this.getHealth - damage;
         }

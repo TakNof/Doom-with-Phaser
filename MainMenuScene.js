@@ -40,16 +40,16 @@ class MainMenuScene extends Phaser.Scene {
                 case 0:
                     this.scene.start("Game2D");
                     this.scene.launch("Game3D");
-                    break;
+                break;
 
-                case 1:
-                    break;
+                // case 1:
+                //     break;
 
-                case 2:
-                    break;
+                // case 2:
+                //     break;
             
-                default:
-                    break;
+                // default:
+                //     break;
             }
         }
 

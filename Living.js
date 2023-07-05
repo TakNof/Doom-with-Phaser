@@ -252,6 +252,22 @@ class Living extends Sprite{
     get getAngleToElement(){
         return this.angleToElement;
     }
+    /**
+     * 
+     * @param {String} name
+     * @param {Array<String>} soundNames
+     */
+    setSpriteSounds(name, soundNames){
+        this.spriteSounds = {};
+
+        for(let element of soundNames){
+            this.spriteSounds[element] = new Sound(this.scene, `${name}_${element}_sound`);
+        }
+    }
+
+    getSpriteSounds(element){
+        return this.spriteSounds[element];
+    }
 
     /**
      * Sets the max health of the living sprite.
@@ -295,14 +311,10 @@ class Living extends Sprite{
                 this.setHealth = this.maxHealth;
             }else{
                 this.setHealth = this.getHealth + healValue;
-                this.playHealSound();
+                this.getSpriteSounds("heal").playSound();
                 this.getHUD.displayHealRedScreen();
             }
         }
-    }
-
-    set setHurtSound(key){
-        this.soundEffectName = this.scene.sound.add(key);
     }
 
     /**
