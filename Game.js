@@ -9,7 +9,7 @@ class Game2D extends Phaser.Scene{
         this.walls;
         this.wallOrder;
         this.wallBlockSize = 32;
-        this.amountWalls = 15;
+        this.amountWalls = 12;
         this.generateWalls = true;
         this.generateRandomWalls = true;
 
@@ -124,7 +124,7 @@ class Game2D extends Phaser.Scene{
         this.music = this.sound.add('at_dooms_gate');
         this.music.setVolume(0.5);
         this.music.loop = true;
-        this.music.play();
+        // this.music.play();
 
         this.sound.volume = 1;
     }
@@ -148,6 +148,7 @@ class Game2D extends Phaser.Scene{
 
                 enemy.evalProjectileCollision(this.player);
                 enemy.getSpriteSounds("death").setSoundPanning(enemy.getDistanceToPlayer, enemy.angleToElement + Math.PI, this.player.getAngle);
+                enemy.getSpriteSounds("hurt").setSoundPanning(enemy.getDistanceToPlayer, enemy.angleToElement + Math.PI, this.player.getAngle);
 
                 if(enemy.getHealth == 0){
                     enemy.waitToDestroy();

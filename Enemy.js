@@ -42,14 +42,14 @@ class Enemy extends Living{
             {
                 name: "attack",
                 animationParams:{
-                    end: 10,
+                    end: 9,
                     framerate: 15,
                 }
             },
             {
                 name: "hurt",
                 animationParams:{
-                    end: 8,
+                    end: 7,
                     framerate: 15
                 }
             }
@@ -221,7 +221,7 @@ class Enemy extends Living{
             }else{
                 shooter.heal(damage*0.08);
             }
-            
+
         }else{
             this.setHealth = this.getHealth - damage;
             this.getSpriteSounds("hurt").playSound();
@@ -258,41 +258,6 @@ class Enemy extends Living{
 
     getAnimations(element){
         return this.animations[element];
-    }
-
-    /**
-     * Sets the panning effect to the attack sound effect of the enemy.
-     * @param {Number} canvasWidth
-     * @param {Number} playerAngle
-     */
-    setAttackPanning(canvasWidth, playerAngle){
-        let anglePlayerToEnemy = this.adjustAngleValue(this.getAngleToElement + Math.PI);
-
-        let angleAdjustedFromPlayer = this.adjustAngleValue(anglePlayerToEnemy - playerAngle);
-        
-        let x = Math.cos(angleAdjustedFromPlayer) * this.getDistanceToPlayer;
-
-        if(x == 0){
-            x = canvasWidth/2;
-        }else{
-            x += canvasWidth/2;
-        }
-
-        this.attackSound.setPan(Phaser.Math.Linear(-1, 1, x / canvasWidth));
-    }
-
-    /**
-     * This method stablishes the angle of the enemy respect to the element.
-     * @param {number} elementPosition1 The position of the element1.
-     * @param {number} elementPosition2 The position of the element2.
-     * @returns {number} 
-     */
-    angleToElement2(elementPosition1, elementPosition2){
-        if(elementPosition1.x > elementPosition2.x){
-            return Math.atan((elementPosition1.y - elementPosition2.y)/(elementPosition1.x - elementPosition2.x)) + Math.PI;
-        }else{
-            return Math.atan((elementPosition1.y - elementPosition2.y)/(elementPosition1.x - elementPosition2.x))
-        }
     }
 
     /**
@@ -341,8 +306,8 @@ class Enemy extends Living{
     }
 
     shoot(properties, randNumber, player){
-        this.getSpriteSounds("attack").setSoundPanning(this.getDistanceToPlayer, this.angleToElement + Math.PI, player.getAngle);
         if(this.inSight && this.getAbleToShoot){
+            this.getSpriteSounds("attack").setSoundPanning(this.getDistanceToPlayer, this.angleToElement + Math.PI, player.getAngle);
             let time = this.scene.time.now - this.creationTime;
 
             if(time - this.lastShotTimer > properties.delay + randNumber*100){

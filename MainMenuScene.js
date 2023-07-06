@@ -38,8 +38,8 @@ class MainMenuScene extends Phaser.Scene {
         if(this.keySpace.isDown || this.keyEnter.isDown){
             switch (this.menuButtons.selectorPosition) {
                 case 0:
-                    this.scene.start("Game2D");
                     this.scene.launch("Game3D");
+                    this.scene.start("Game2D");
                 break;
 
                 // case 1:

@@ -27,7 +27,7 @@ const shotgun = {
     name: "shotgun",
     bulletProperties:{
         damage: 80,
-        velocity: 1000,
+        velocity: 2000,
         delay: 1000,
         critical: 2.2
     },
@@ -36,7 +36,7 @@ const shotgun = {
         max: 1000
     },
     animationParams:{
-        end: 8,
+        end: 9,
         framerate: 10,
     },
     soundDir: "./assets/weapons/shotgun/Sounds/shotgun_sound.wav",
@@ -48,8 +48,8 @@ const pistol = {
     name: "pistol",
     bulletProperties:{
         damage: 40,
-        velocity: 800,
-        delay: 300,
+        velocity: 1600,
+        delay: 350,
         critical: 1.3
     },
     distanceLimits:{
@@ -57,7 +57,7 @@ const pistol = {
         max: 600
     },    
     animationParams:{
-        end: 8,
+        end: 7,
         framerate: 15,
     },
     soundDir: "./assets/weapons/pistol/Sounds/pistol_sound.wav",
@@ -70,11 +70,27 @@ const weapons = [pistol, shotgun];
 const game = new Phaser.Game(config);
 
 /**
-     * This method allows us to get a number between the specified range.
-     * @param {number} min 
-     * @param {number} max 
-     * @returns {randomNumber}
-     */
+ * This method allows us to get a number between the specified range.
+ * @param {number} min 
+ * @param {number} max 
+ * @returns {randomNumber}
+ */
 function getRndInteger(min, max) {
     return Math.floor(Math.random() * (max - min) ) + min;
 }
+
+
+/**
+ * Allows to adjust the angle value of the rotation to be within the range of 0 and 2PI.
+ * @param {Number} angle The angle to be within the range of 0 and 2PI.
+ * @returns {Number}
+ */
+function adjustAngleValue(angle){
+        if(angle < 0){
+            angle += 2*Math.PI;
+        }else if(angle > 2*Math.PI){
+            angle -= 2*Math.PI;
+        }
+
+        return angle;
+    }
