@@ -25,7 +25,7 @@ class Sound{
             x += canvasSize.width/2;
         }
 
-        this.sound.setPan(Phaser.Math.Linear(-1, 1, x / canvasSize.width));
+        this.sound.setPan(Phaser.Math.Clamp(Phaser.Math.Linear(-1, 1, x / canvasSize.width), -1, 1));
     }
 
     playSound(){

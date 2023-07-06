@@ -166,10 +166,7 @@ class Game2D extends Phaser.Scene{
                     break;
                 }
         
-                this.player.evalProjectileCollision(enemy);
-
-                this.player.getHUD.setHealthValue = this.player.getHealth;
-            
+                this.player.evalProjectileCollision(enemy);            
             }
             
             // player.getHUD.setEnemiesHealthValue = cacodemons.getEnemies;
@@ -224,7 +221,7 @@ class Game3D extends Phaser.Scene {
     preload(){
         for(let weapon of weapons){
             this.load.atlas(weapon.name, weapon.spriteDir, weapon.animationJsonDir);
-            this.load.audio(weapon.name + '_sound', weapon.soundDir);
+            this.load.audio(`${weapon.name}_sound`, weapon.soundDir);
         }
 
         for(let i = 0; i < 3; i++){

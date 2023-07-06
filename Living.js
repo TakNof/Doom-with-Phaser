@@ -10,7 +10,7 @@ class Living extends Sprite{
     * @param {Scene} scene3D The scene to place the 3D sprites in the game.
     * @param {Object} originInfo  A list with the initial positioning information for the sprite.
     * @param {string} spriteImgStr An str of the image name given in the preload method of the main class.
-    * @param {number}size The size of the sprite in pixels.
+    * @param {number} size The size of the sprite in pixels.
     * @param {number} depth The depth of rendering of the sprite.
     * @param {number} defaultVelocity The default velocity for the living sprite.
     * 
@@ -307,11 +307,13 @@ class Living extends Sprite{
      */
     heal(healValue){
         if(this.getHealth != this.maxHealth){
-            if(this.getHealth+ healValue > this.maxHealth){
+            if(this.getHealth + healValue > this.maxHealth){
                 this.setHealth = this.maxHealth;
             }else{
                 this.setHealth = this.getHealth + healValue;
                 this.getSpriteSounds("heal").playSound();
+                
+                this.getHUD.setHealthValue = this.getHealth;
                 this.getHUD.displayHealRedScreen();
             }
         }

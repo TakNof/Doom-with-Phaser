@@ -235,6 +235,8 @@ class Player extends Living{
             this.getHUD.displayHurtRedScreen();
             this.setHealth = this.getHealth - damage;
         }
+
+        this.getHUD.setHealthValue = this.getHealth;
     }
 
     /**
