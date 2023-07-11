@@ -36,7 +36,7 @@ const shotgun = {
         max: 1000
     },
     animationParams:{
-        end: 9,
+        end: 8,
         framerate: 10,
     },
     soundDir: "./assets/weapons/shotgun/Sounds/shotgun_sound.wav",

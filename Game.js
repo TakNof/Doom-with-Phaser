@@ -64,7 +64,7 @@ class Game2D extends Phaser.Scene{
         this.load.audio("at_dooms_gate", "assets/music/at_dooms_gate.wav");
 
         
-        this.scene.setVisible(false);
+        // this.scene.setVisible(false);
         // this.game.canvas.style.display = 'none';
     }
 
@@ -92,7 +92,7 @@ class Game2D extends Phaser.Scene{
         this.player.getRaycaster.setAngleStep(this.playerFOV);
 
         //Here we put the color of the rays of the player.
-        this.player.setDebug = true;
+        this.player.setDebug = false;
         this.player.setSpriteRays(colors.limeGreen);
 
         //here we create the graphicator of the raycaster of the player.
@@ -126,7 +126,7 @@ class Game2D extends Phaser.Scene{
         this.music.loop = true;
         // this.music.play();
 
-        this.sound.volume = 1;
+        this.sound.volume = 0.5;
     }
 
     update(){

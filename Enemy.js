@@ -18,12 +18,12 @@ class Enemy extends Living{
     constructor(scene, scene3D, enemyOriginInfo, enemyImgStr, size, depth, defaultVelocity, chaseDistance, allowChase){
         super(scene, enemyOriginInfo, enemyImgStr, size, depth, defaultVelocity);
 
-        this.scene3D = scene3D;
+        this.sprite.scene3D = scene3D;
 
         this.setEnemy3D(canvasSize.width/2, canvasSize.height/2, "cacodemon");
 
-        this.setRotation = this.originInfo.ang;
-        this.setAngle = this.originInfo.ang;
+        this.setRotation = this.getOriginInfo.ang;
+        this.setAngle = this.getOriginInfo.ang;
 
         this.setXcomponent();
         this.setYcomponent();
@@ -36,7 +36,7 @@ class Enemy extends Living{
 
         this.inSight = false;
 
-        this.creationTime = this.scene.time.now;
+        this.creationTime = this.getScene.time.now;
         
         let animationsToSet = [
             {
@@ -84,7 +84,7 @@ class Enemy extends Living{
      * @param {boolean} visible 
      */
     setEnemy3D(positionX, positionY, enemyImgStr, visible = false){
-        this.sprite3D = new Sprite(this.scene3D, {x: positionX, y: positionY}, enemyImgStr, this.getSize, 3)
+        this.sprite3D = new Sprite(this.getScene3D, {x: positionX, y: positionY}, enemyImgStr, this.getSize, 3)
         this.sprite3D.setVisible = visible;
     }
 
@@ -104,7 +104,7 @@ class Enemy extends Living{
      * Sets the group of projectiles of the enemy.
      */
     setProjectiles2D(){
-        this.enemyProjectiles = this.scene.physics.add.group();
+        this.enemyProjectiles = this.getScene.physics.add.group();
     }
 
     /**
@@ -118,7 +118,7 @@ class Enemy extends Living{
      * Sets the projectile 3D of the enemy.
      */
     setProjectiles3D(){
-        this.enemyProjectiles3D = this.scene.physics.add.group();
+        this.enemyProjectiles3D = this.getScene.physics.add.group();
     }
 
     /**
@@ -168,7 +168,7 @@ class Enemy extends Living{
     evalProjectileCollision(shooter){
         let thisObject = this;
 
-        this.scene.physics.collide(this.getSprite, shooter.getPlayerCurrentWeapon.getProjectiles,
+        this.getScene.physics.collide(this.getSprite, shooter.getPlayerCurrentWeapon.getProjectiles,
             function(sprite, projectile){
                 thisObject.__checkDamage(
                     shooter,
@@ -250,7 +250,7 @@ class Enemy extends Living{
         this.animations = {};
 
         for(let animation of animationsArray){
-            this.animations[animation.name] = new SpriteAnimation(this.scene3D, `${this.getEnemy3D.getSpriteImgStr}_${animation.name}`);
+            this.animations[animation.name] = new SpriteAnimation(this.getScene3D, `${this.getEnemy3D.getSpriteImgStr}_${animation.name}`);
             this.animations[animation.name].setAnimationFrames(animation.animationParams.end, animation.animationParams.framerate, animation.animationParams.repeat);
         }
 
@@ -272,7 +272,7 @@ class Enemy extends Living{
             this.spriteRays.redrawRay2D(this.getPosition, this.getRayData);
         }   
 
-        this.raycaster.setSpritePosition = this.getPosition;
+        this.getRaycaster.setSpritePosition = this.getPosition;
 
         this.setAngleToElement = playerPosition;
         this.getRaycaster.setRayAngle = this.getAngleToElement;
@@ -308,16 +308,16 @@ class Enemy extends Living{
     shoot(properties, randNumber, player){
         if(this.inSight && this.getAbleToShoot){
             this.getSpriteSounds("attack").setSoundPanning(this.getDistanceToPlayer, this.angleToElement + Math.PI, player.getAngle);
-            let time = this.scene.time.now - this.creationTime;
+            let time = this.getScene.time.now - this.creationTime;
 
             if(time - this.lastShotTimer > properties.delay + randNumber*100){
                 this.getEnemy3D.getSprite.play(this.getAnimations("attack").getAnimationName);
                 this.lastShotTimer = time;
                 setTimeout(() =>{
-                    let projectile = new Projectile(this.scene, this.getPosition, "small_energy_bomb", 16, 80, properties.velocity);
+                    let projectile = new Projectile(this.getScene, this.getPosition, "small_energy_bomb", 16, 80, properties.velocity);
                     this.getProjectiles2D.add(projectile.getSprite);
 
-                    projectile.setProjectile3D(this.scene3D, canvasSize.width/2, canvasSize.width/2, "energy_bomb");            
+                    projectile.setProjectile3D(this.getScene3D, canvasSize.width/2, canvasSize.width/2, "energy_bomb");            
                     this.getProjectiles3D.add(projectile.getProjectile3D.getSprite);
 
                     projectile.shootProjectile(this);

@@ -22,14 +22,14 @@ class MainMenuScene extends Phaser.Scene {
 
     create(){
 
-        let canvas = this.game.canvas;
+        // let canvas = this.game.canvas;
 
-        let prototype = Object.getPrototypeOf(canvas);
+        // let prototype = Object.getPrototypeOf(canvas);
 
-        prototype.getContext("2d", {willReadFrequently: true});
+        // prototype.getContext("2d", {willReadFrequently: true});
 
-        console.dir(canvas);
-        console.dir(prototype);
+        // console.dir(canvas);
+        // console.dir(prototype);
 
         this.background = this.add.image(this.canvasSize.width/2, this.canvasSize.height/2, 'background').setScale(0.7);
 

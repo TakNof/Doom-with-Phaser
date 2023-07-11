@@ -23,7 +23,7 @@ class Cacodemon{
 
         this.enemies = new Array(this.amount);
 
-        this.bulletProperties = {damage: 12, velocity: 200, delay: 2800, critical: 1.5};
+        this.bulletProperties = {damage: 12, velocity: 200, delay: 3500, critical: 1.5};
         this.distanceLimits = {min: 250, max: 1000};
         
     }
@@ -46,6 +46,7 @@ class Cacodemon{
             if(!this.wallMatrix[i][j]){
                 enemyPosition.x = (j*32 + 32);
                 enemyPosition.y = (i*32 + 32);
+                enemyPosition.ang = 0;
 
                 //Here we create an enemy.
                 this.enemies[enemiesPlaced] =  new Enemy(this.scene, this.scene3D, enemyPosition, "small_cacodemon", this.blockSize*2, 1, this.defaultVelocity, this.chaseDistance, this.allowChase);

@@ -19,7 +19,7 @@ class Weapon extends Sprite{
         this.bulletProperties = bulletProperties;
         this.distanceLimits = distanceLimits;
 
-        this.weaponShootingAnimation = new SpriteAnimation(this.scene, this.spriteImgStr);
+        this.weaponShootingAnimation = new SpriteAnimation(this.getScene, this.getSpriteImgStr);
         this.switchWeaponDelay = 1000;
         this.setSoundEffect();
         this.setProjectiles();
@@ -29,7 +29,7 @@ class Weapon extends Sprite{
         this.switchWeaponSounds = Array(3);
 
         for(let i = 0; i < 3; i++){
-            this.switchWeaponSounds[i] = new Sound(this.scene, `switch_weapon_sound_${i + 1}`);
+            this.switchWeaponSounds[i] = new Sound(this.getScene, `switch_weapon_sound_${i + 1}`);
         } 
     }
     
@@ -37,7 +37,7 @@ class Weapon extends Sprite{
      * Sets the sound effect of the weapon.
      */
     setSoundEffect(){
-        this.soundEffectName = this.scene.sound.add(this.getSpriteImgStr + "_sound");
+        this.soundEffectName = this.getScene.sound.add(this.getSpriteImgStr + "_sound");
     }
 
     /**
@@ -56,7 +56,7 @@ class Weapon extends Sprite{
      * Sets the group of projectiles of the weapon.
      */
     setProjectiles(){
-        this.weaponProjectiles = this.scene.physics.add.group();
+        this.weaponProjectiles = this.getScene.physics.add.group();
     }
 
     /**
