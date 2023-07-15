@@ -43,7 +43,7 @@ class Projectile extends Living{
 
 
     /**
-     * This method allos to shoot the projectile.
+     * This method allows to shoot the projectile.
      * @param {Living} livingSprite 
      */
     shootProjectile(livingSprite){
@@ -54,8 +54,8 @@ class Projectile extends Living{
         this.getSprite.setVisible(true);
 
         this.setRotation = livingSprite.getRotation;
-        this.setXcomponent();
-        this.setYcomponent();
+        this.setXcomponent(livingSprite.getAngleOffset);
+        this.setYcomponent(livingSprite.getAngleOffset);
         this.setVelocityX = this.getXcomponent;
         this.setVelocityY = this.getYcomponent;
     }

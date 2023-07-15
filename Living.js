@@ -33,6 +33,39 @@ class Living extends Sprite{
     }
 
     /**
+     * Sets the timer of the last shot of the living sprite.
+     * @param {Time} lastShotTimer
+     */
+    set lastShotTimer(lastShotTimer){
+        this.sprite.lastShotTimer = lastShotTimer;
+    }
+
+    /**
+     * Gets the timer of the last shot of the living sprite.
+     * @return {Time} lastShotTimer
+     */
+    get lastShotTimer(){
+        return this.sprite.lastShotTimer
+    }
+
+    /**
+     * Sets the boolean to know whether the living sprite is alive or not.
+     * @param {Time} isAlive
+     */
+    set isAlive(isAlive){
+        this.sprite.isAlive = isAlive;
+    }
+
+    /**
+     * Gets the boolean to know whether the living sprite is alive or not.
+     * @return {Time} isAlive
+     */
+    get isAlive(){
+        return this.sprite.isAlive
+    }
+    
+
+    /**
      * Gets the scene3D of the player.
      * @returns scene3D 
      */
@@ -138,9 +171,10 @@ class Living extends Sprite{
 
     /**
      * Sets the X component of the velocity according to the rotation stablished of the living sprite.
+     * @param {Number} movementAdjustment
      */
-    setXcomponent(){
-        this.sprite.Xcomponent = Math.cos(this.sprite.rotation + Math.PI/2) * -this.defaultVelocity;
+    setXcomponent(movementAdjustment = 0){
+        this.sprite.Xcomponent = Math.cos(this.getRotation + movementAdjustment) * this.getDefaultVelocity;
     }
 
     /**
@@ -153,9 +187,10 @@ class Living extends Sprite{
 
     /**
      * Sets the Y component of the velocity according to the rotation stablished of the living sprite.
+     * @param {Number} movementAdjustment
      */
-    setYcomponent(){
-        this.sprite.Ycomponent = Math.sin(this.sprite.rotation + Math.PI/2) * -this.defaultVelocity;
+    setYcomponent(movementAdjustment = 0){
+        this.sprite.Ycomponent = Math.sin(this.getRotation + movementAdjustment) * this.getDefaultVelocity;
     }
 
     /**
@@ -186,6 +221,10 @@ class Living extends Sprite{
         return this.sprite.raycaster;
     }
 
+    get getRaysAmount(){
+        return this.sprite.raysAmount;
+    }
+
     /**
      * Sets the raydata through the raycaster object.
      */
@@ -207,7 +246,7 @@ class Living extends Sprite{
      */
     setSpriteRays(colorOfRays){
         if(this.getDebug){
-            this.sprite.spriteRays = new Rays(this.getScene, this.raysAmount, this.getPosition, colorOfRays);
+            this.sprite.spriteRays = new Rays(this.getScene, this.getRaysAmount, this.getPosition, colorOfRays);
             this.sprite.spriteRays.setInitialRayAngleOffset = this.getAngleOffset;
         }
     }
@@ -245,12 +284,10 @@ class Living extends Sprite{
      */
     angleToElement(elementPosition){
         if(this.getPositionX > elementPosition.x){
-            this.angleToElement = Math.atan((this.getPositionY - elementPosition.y)/(this.getPositionX - elementPosition.x)) + Math.PI;
+            return this.adjustAngleValue(Math.atan((this.getPositionY - elementPosition.y)/(this.getPositionX - elementPosition.x)) + Math.PI);
         }else{
-            this.angleToElement = Math.atan((this.getPositionY - elementPosition.y)/(this.getPositionX - elementPosition.x))
+            return this.adjustAngleValue(Math.atan((this.getPositionY - elementPosition.y)/(this.getPositionX - elementPosition.x)));
         }
-
-        return this.adjustAngleValue(this.angleToElement);
     }
 
     /**
@@ -276,7 +313,7 @@ class Living extends Sprite{
      */
     set setMaxHealth(maxHealth){
         this.sprite.maxHealth = maxHealth;
-        this.sprite.setHealth = maxHealth;
+        this.setHealth = maxHealth;
     }
 
     /**
@@ -297,6 +334,7 @@ class Living extends Sprite{
 
     /**
      * Gets the current health of the living sprite.
+     * @return {Number}
      */
     get getHealth(){
         return this.sprite.health;
@@ -318,22 +356,6 @@ class Living extends Sprite{
                 this.getHUD.displayHealRedScreen();
             }
         }
-    }
-
-    /**
-     * Sets the alive state of the Living Sprite.
-     * @param {boolean} state
-     */
-    set setIsAlive(state){
-        this.sprite.isAlive = state;
-    }
-
-    /**
-     * Gets the alive state of the Living Sprite.
-     * @param {boolean} 
-     */
-    get getIsAlive(){
-        return this.sprite.isAlive;
     }
 
      /**

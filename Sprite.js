@@ -54,19 +54,11 @@ class Sprite{
     }
 
     /**
-     * Gets the sprite name.
-     * @returns {String}
-     */
-    get getSpriteImgStr(){
-        return this.sprite.spriteImgStr;
-    }
-
-    /**
      * Sets the size of the sprite.
      * @param {number} size
      */
     set setSize(size){
-        this.size = size;
+        this.sprite.size = size;
     }
 
     /**
@@ -74,7 +66,7 @@ class Sprite{
      * @return {number}
      */
     get getSize(){
-        return this.size;
+        return this.sprite.size;
     }
 
     /**

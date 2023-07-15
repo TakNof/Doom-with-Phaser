@@ -10,13 +10,13 @@ class Cacodemon{
      * @param {Number} chaseDistance The distance (in pixels) the enemies will be allowed to chase the player.
      * @param {Boolean} allowChase If the enemies will be allowed to chase the player. 
      */
-    constructor(scene, scene3D, amount, wallMatrix, wallNumberRatio, wallBlockSize, defaultVelocity, chaseDistance, allowChase){
+    constructor(scene, scene3D, amount, wallsObject, defaultVelocity, chaseDistance, allowChase){
         this.scene = scene;
         this.scene3D = scene3D;
         this.amount = amount;
-        this.wallMatrix = wallMatrix;
-        this.wallNumberRatio = wallNumberRatio;
-        this.blockSize = wallBlockSize;
+        this.wallMatrix = wallsObject.getWallMatrix;
+        this.wallNumberRatio = wallsObject.getWallNumberRatio;
+        this.blockSize = wallsObject.getWallBlockSize;
         this.defaultVelocity = defaultVelocity;
         this.chaseDistance = chaseDistance;
         this.allowChase = allowChase;
@@ -30,9 +30,9 @@ class Cacodemon{
 
     /**
      * Here we create all the enemies.
-     * @param {boolean} value 
+     * @param {boolean} debugValue Whether to debug the enemies or not. 
      */
-    create(playerPosition, enemyAngleOffset, value = false){
+    create(enemyAngleOffset, debugValue = false){
         let enemiesPlaced = 0;
         let enemyPosition;
 
@@ -54,22 +54,22 @@ class Cacodemon{
                 //Here we set the particular enemy projetcile properties based on the properties of this class.
                 this.enemies[enemiesPlaced].setBulletProperties = this.bulletProperties;
                 this.enemies[enemiesPlaced].setDistanceLimits = this.distanceLimits;
-
-                //We pass load the player position due we need the enemy to chase the player.
-                this.enemies[enemiesPlaced].setAngleToPlayer = playerPosition;
                 
                 //Here we stablish the raycaster of the enemy, we pass it as well the matrix of walls.
+                this.enemies[enemiesPlaced].setAngleOffset = enemyAngleOffset;
                 this.enemies[enemiesPlaced].setRaycaster(this.wallMatrix, 1, enemyAngleOffset);
                 this.enemies[enemiesPlaced].getRaycaster.setAngleStep();
                 
                 //Here we put the color of the rays of the enemy.
-                this.enemies[enemiesPlaced].setDebug = value;
+                this.enemies[enemiesPlaced].setDebug = debugValue;
                 this.enemies[enemiesPlaced].setSpriteRays(colors.black);
 
                 this.enemies[enemiesPlaced].setMaxHealth = 250;
 
                 //We set all the elements we need to collide with the walls.
                 this.enemies[enemiesPlaced].setColliderElements();
+
+                console.log(this.enemies[enemiesPlaced].getHeatlh);
 
                 enemiesPlaced += 1;
             }

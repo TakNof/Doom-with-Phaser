@@ -64,6 +64,12 @@ class Graphicator{
         }   
     }
 
+    ableRectanglesVisibility(value = true){
+        for(let rectangle of this.rectangles){
+            rectangle.visible = value;
+        }
+    }
+
     /**
      * Gets the rectangle height.
      * @return {number}

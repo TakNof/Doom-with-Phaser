@@ -168,4 +168,12 @@ class WallsBuilder{
     get getWallNumberRatio(){
         return this.wallNumberRatio;
     }
+
+    /**
+     * Gets the wall block size.
+     * @return {Number}
+     */
+    get getWallBlockSize(){
+        return this.blockSize;
+    }
 }

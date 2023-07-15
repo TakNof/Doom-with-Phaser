@@ -20,22 +20,22 @@ class Game2D extends Phaser.Scene{
         this.playerFOVangleOffset = this.playerAngleOffset - this.playerFOV/2
 
         //Stablishing the enemy and its initial position.
-        this.amountEnemies = 12;
+        this.amountEnemies = 1;
 
         this.cacodemons;
 
-        this.enemyAngleOffset = Math.PI/2;
+        this.enemyAngleOffset = 3*Math.PI/2;
         this.chaseDistance = 400;
         this.allowChase = true;
         this.allowShoot = true;
-        this.playerHealth = 100;
+        this.playerHealth = Infinity;
 
 
         //Stablishing the velocity standards for the player and enemies.
         this.defaultVelocity = 300;
 
         //Rotation coeficient.
-        this.angleOperator = 0.05;
+        this.angleOperator = 4;
 
         //Stablishing the raycaster elements.
         this.raysAmount = 100;
@@ -86,6 +86,7 @@ class Game2D extends Phaser.Scene{
         
         //Here we create the player.
         this.player = new Player(this, game3D, {x: canvasSize.width/2, y: canvasSize.height/2}, "player", this.wallBlockSize*2, 0, this.defaultVelocity, this.angleOperator, this.playerHealth);
+        this.player.setAngleOffset = this.playerAngleOffset;
 
         //Here we create the raycaster of the player and we pass it the position of the walls to make the calculations.
         this.player.setRaycaster(this.walls.getWallMatrix, this.raysAmount,  this.playerFOVangleOffset);
@@ -107,8 +108,8 @@ class Game2D extends Phaser.Scene{
         this.walls.setColliders(this.player.getColliderElements);
 
         //We create a certain amount of cacodemons.
-        this.cacodemons = new Cacodemon(this, game3D, this.amountEnemies, this.walls.getWallMatrix, this.walls.getWallNumberRatio, this.wallBlockSize, this.defaultVelocity/2, this.chaseDistance, this.allowChase);
-        this.cacodemons.create(this.player.getPosition, this.enemyAngleOffset);
+        this.cacodemons = new Cacodemon(this, game3D, this.amountEnemies, this.walls, this.defaultVelocity/2, this.chaseDistance, this.allowChase);
+        this.cacodemons.create(this.enemyAngleOffset);
 
         for(let enemy of this.cacodemons.getEnemies){
             this.walls.setColliders(enemy.getColliderElements);
@@ -131,7 +132,7 @@ class Game2D extends Phaser.Scene{
 
     update(){
         //The basic movement of the player.
-        if(this.player.getIsAlive){
+        if(this.player.isAlive){
             this.player.move();
             this.player.shoot();
             this.player.switchWeapons();
@@ -154,7 +155,7 @@ class Game2D extends Phaser.Scene{
                     enemy.waitToDestroy();
                 }
                 
-                if(!enemy.getIsAlive){
+                if(!enemy.isAlive){
         
                     this.cacodemons.getEnemies.splice(this.cacodemons.getEnemies.indexOf(enemy), 1);
                     this.cacodemons.amount -= 1;
@@ -174,17 +175,13 @@ class Game2D extends Phaser.Scene{
             this.walls.evalCollision(this.player.getPlayerCurrentWeapon.getProjectiles);
             
         }else{
-            if(!this.player.getIsAlive && this.player.getScore() == undefined){
+            if(!this.player.isAlive && this.player.getScore() == undefined){
                 this.player.setTimeAlive();
                 this.player.setScore("Defeat", this.amountEnemies);
                 this.player.getHUD.displayDeathText();
 
                 this.player.getHUD.displayScoreText("Defeat", this.player.getScore());
             }
-            
-            // setTimeout(() => {
-            //     this.scene.pause();
-            // }, 1000);
         }
 
         if((this.cacodemons.getEnemies.length == 0 || (this.cacodemons.getEnemies[0].getHealth == 0 && this.cacodemons.getEnemies.length == 1)) && this.player.getScore() == undefined){
@@ -193,7 +190,7 @@ class Game2D extends Phaser.Scene{
             this.player.getHUD.displayVictoryText();
 
             this.player.getHUD.displayScoreText("Victory", this.player.getScore());          
-    }
+        }
         
         // this.player.getHUD.setEnemiesHealthValue = cacodemons.getEnemies;
 

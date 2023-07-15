@@ -90,7 +90,7 @@ class Camera{
      */
     setEnemyAngleToPlayerInv(){
         for(let i = 0; i < this.amountEnemies2D; i++){
-            this.enemyAngleToPlayerInv[i] = this.adjustAngleValue(this.enemies2D[i].getAngleToElement + Math.PI);
+            this.enemyAngleToPlayerInv[i] = this.adjustAngleValue(this.enemies2D[i].angleToElement(this.player) + Math.PI);
         }
     }
 
@@ -225,6 +225,8 @@ class Camera{
      */
     draw3DWorld(){
         this.player.getGraphicator.redraw3DScaling(this.player.getRayData.distance, this.player.getRayData.typeOfHit);
+        this.player.getGraphicator.ableRectanglesVisibility(false);
+
         if(this.enemies2D[0] instanceof Enemy){
             this.drawEnemy();
         }
@@ -436,7 +438,7 @@ class Camera{
      * This method stablishes the angle of the enemy respect to the element.
      * @param {number} elementPosition1 The position of the element1.
      * @param {number} elementPosition2 The position of the element2.
-     * @returns {number} 
+     * @returns {number} The angle to the element.
      */
     angleToElement(elementPosition1, elementPosition2){
         if(elementPosition1.x > elementPosition2.x){

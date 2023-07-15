@@ -65,7 +65,7 @@ class Player extends Living{
      * Sets the graphicator object of the player.
      */
     setGraphicator(){
-        this.sprite.graphicator = new Graphicator(this.getScene3D, this.size, this.raysAmount);
+        this.sprite.graphicator = new Graphicator(this.getScene3D, this.getSize, this.getRaysAmount);
     }
 
     /**
@@ -327,8 +327,8 @@ class Player extends Living{
         this.setRayData();
 
         if(this.getDebug === true){
-            this.spriteRays.setVelocity = 0;
-            this.spriteRays.redrawRay2D(this.getPosition, this.getRayData);
+            this.getSpriteRays.setVelocity = 0;
+            this.getSpriteRays.redrawRay2D(this.getPosition, this.getRayData);
         }     
         
         this.getRaycaster.setSpritePosition = this.getPosition;
@@ -346,36 +346,32 @@ class Player extends Living{
             }
 
             if(this.getDebug === true){
-                for(let ray of this.spriteRays.rays){
+                for(let ray of this.getSpriteRays.rays){
                     ray.body.setVelocityX(this.getVelocityX);
                     ray.body.setVelocityY(this.getVelocityY);
                 }
             }
-        }
-    
+        } 
+
         if((this.sprite.cursors.left.isDown ^ this.sprite.cursors.right.isDown) ^ (this.sprite.cursors["A"].isDown ^ this.sprite.cursors["D"].isDown)){
 
             //Here we use trigonometrics to calculate the x and y component of the velocity.
-            this.setXcomponent();
-            this.setYcomponent();    
+            this.setXcomponent(3*Math.PI/2);
+            this.setYcomponent(3*Math.PI/2);    
     
             if (this.sprite.cursors.left.isDown || this.sprite.cursors["A"].isDown){
-                this.setAngle =  this.adjustAngleValue(this.getAngle - this.getAngleOperator);
-                this.setRotation = this.getAngle;
+                this.setAngle = this.getAngle - this.getAngleOperator
 
             }else if(this.sprite.cursors.right.isDown || this.sprite.cursors["D"].isDown){
-                this.setAngle = this.adjustAngleValue(this.getAngle + this.getAngleOperator);
-                this.setRotation = this.getAngle;
+                this.setAngle = this.getAngle + this.getAngleOperator
             }
-
-            console.log(this.getAngle)
         }
 
         if(this.getDebug === true){
-            this.spriteRays.setInitialRayAngleOffset = this.getAngleOffset;
+            this.getSpriteRays.setInitialRayAngleOffset = this.getAngleOffset;
         }
-        
-        this.getRaycaster.setRayAngle = this.getAngle + this.getAngleOffset;
+
+        this.getRaycaster.setRayAngle = this.getRotation + this.getAngleOffset - (Math.PI/4);
     }
 
     shoot(){

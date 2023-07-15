@@ -61,11 +61,76 @@ class Enemy extends Living{
     }
 
     /**
+     * Sets the chase distance of the enemy
+     * @param {Number} chaseDistance
+     */
+    set chaseDistance(chaseDistance){
+        this.sprite.chaseDistance = chaseDistance;
+    }
+
+    /**
+     * Gets the chase distance of the enemy.
+     * @return {Number} chaseDistance
+     */
+    get chaseDistance(){
+        return this.sprite.chaseDistance
+    }
+
+    /**
+     * Sets the boolean to allow the enemy to chase the player.
+     * @param {Boolean} allowChase
+     */
+    set allowChase(allowChase){
+        this.sprite.allowChase = allowChase;
+    }
+
+    /**
+     * Gets the boolean to allow the enemy to chase the player.
+     * @return {Boolean} allowChase
+     */
+    get allowChase(){
+        return this.sprite.allowChase
+    }
+
+    /**
+     * Sets the boolean to let the enemy know whether is in sight or not.
+     * @param {Boolean} inSight
+     */
+    set inSight(inSight){
+        this.sprite.inSight = inSight;
+    }
+
+    /**
+     * Gets the boolean to let the enemy know whether is in sight or not.
+     * @return {Boolean} inSight
+     */
+    get inSight(){
+        return this.sprite.inSight
+    }
+
+    /**
+     * Sets the creation time of the enemy.
+     * @param {Time} creationTime
+     */
+    set creationTime(creationTime){
+        this.sprite.creationTime = creationTime;
+    }
+
+    /**
+     * Gets the creation time of the enemy.
+     * @return {Time} creationTime
+     */
+    get creationTime(){
+        return this.sprite.creationTime
+    }
+
+
+    /**
      * Sets the distance between the player and the enemy using the player's position.
      * @param {Object} player 
      */
     set setDistanceToPlayer(player){
-        this.distanceToPlayer = this.hypoCalc(this.getPositionX, player.x, this.getPositionY, player.y);
+        this.sprite.distanceToPlayer = this.hypoCalc(this.getPositionX, player.x, this.getPositionY, player.y);
     }
 
     /**
@@ -73,7 +138,7 @@ class Enemy extends Living{
      * @return {number}
      */
     get getDistanceToPlayer(){
-        return this.distanceToPlayer;
+        return this.sprite.distanceToPlayer;
     }
 
     /**
@@ -84,41 +149,41 @@ class Enemy extends Living{
      * @param {boolean} visible 
      */
     setEnemy3D(positionX, positionY, enemyImgStr, visible = false){
-        this.sprite3D = new Sprite(this.getScene3D, {x: positionX, y: positionY}, enemyImgStr, this.getSize, 3)
-        this.sprite3D.setVisible = visible;
+        this.sprite.sprite3D = new Sprite(this.getScene3D, {x: positionX, y: positionY}, enemyImgStr, this.getSize, 3)
+        this.sprite.sprite3D.setVisible = visible;
     }
 
 
     set setNewEnemy3D(newEnemy3D){
-        this.sprite3D.sprite = newEnemy3D;
+        this.sprite.sprite3D.sprite = newEnemy3D;
     }
 
     /**
      * Gets the sprite of the enemy which will be its representation in 3D camera.
      */
     get getEnemy3D(){
-        return this.sprite3D;
+        return this.sprite.sprite3D;
     }
 
     /**
      * Sets the group of projectiles of the enemy.
      */
     setProjectiles2D(){
-        this.enemyProjectiles = this.getScene.physics.add.group();
+        this.sprite.enemyProjectiles = this.getScene.physics.add.group();
     }
 
     /**
      * Gets the enemy projectiles.
      */
     get getProjectiles2D(){
-        return this.enemyProjectiles;
+        return this.sprite.enemyProjectiles;
     }
 
     /**
      * Sets the projectile 3D of the enemy.
      */
     setProjectiles3D(){
-        this.enemyProjectiles3D = this.getScene.physics.add.group();
+        this.sprite.enemyProjectiles3D = this.getScene.physics.add.group();
     }
 
     /**
@@ -126,7 +191,7 @@ class Enemy extends Living{
      * @returns {Projectile}
      */
     get getProjectiles3D(){
-        return this.enemyProjectiles3D;
+        return this.sprite.enemyProjectiles3D;
     }
 
     /**
@@ -134,7 +199,7 @@ class Enemy extends Living{
      * @param {{damage: Number, velocity: Number, delay: Number, critical: Number}} bulletProperties
      */
     set setBulletProperties(bulletProperties){
-        this.bulletProperties = bulletProperties;
+        this.sprite.bulletProperties = bulletProperties;
     }
 
     /**
@@ -142,7 +207,7 @@ class Enemy extends Living{
      * @return {{damage: Number, velocity: Number, delay: Number, critical: Number}}
      */
     get getBulletProperties(){
-        return this.bulletProperties;
+        return this.sprite.bulletProperties;
     }
 
     /**
@@ -150,7 +215,7 @@ class Enemy extends Living{
      * @param {{min: Number, max: Number}} distanceLimits
      */
     set setDistanceLimits(distanceLimits){
-        this.distanceLimits = distanceLimits;
+        this.sprite.distanceLimits = distanceLimits;
     }
 
     /**
@@ -158,7 +223,7 @@ class Enemy extends Living{
      * @return {{min: Number, max: Number}}
      */
     get getDistanceLimits(){
-        return this.distanceLimits;
+        return this.sprite.distanceLimits;
     }
 
     /**
@@ -198,13 +263,13 @@ class Enemy extends Living{
 
         if(currentDistance > distanceLimits.min && currentDistance < distanceLimits.max){
             damage *= 220/currentDistance;
-            // console.log(`${this} Normal damage ${damage}`);
+            console.log(`${this} Normal damage ${damage}`);
         }else if(currentDistance >= distanceLimits.max){
             damage *= 1/distanceLimits.max;
-            // console.log(`${this} Minimal damage ${damage}`);
+            console.log(`${this} Minimal damage ${damage}`);
         }else if(currentDistance <= distanceLimits.min){
             damage *= bulletProperties.critical * 220/currentDistance;
-            // console.log(`${this} Critical damage ${damage}`);
+            console.log(`${this} Critical damage ${damage}`);
             critical = true;
         }
 
@@ -247,17 +312,17 @@ class Enemy extends Living{
      * @param {Array<String>} animationsArray 
      */
     setAnimations(animationsArray){
-        this.animations = {};
+        this.sprite.animations = {};
 
         for(let animation of animationsArray){
-            this.animations[animation.name] = new SpriteAnimation(this.getScene3D, `${this.getEnemy3D.getSpriteImgStr}_${animation.name}`);
-            this.animations[animation.name].setAnimationFrames(animation.animationParams.end, animation.animationParams.framerate, animation.animationParams.repeat);
+            this.sprite.animations[animation.name] = new SpriteAnimation(this.getScene3D, `${this.getEnemy3D.getSpriteImgStr}_${animation.name}`);
+            this.sprite.animations[animation.name].setAnimationFrames(animation.animationParams.end, animation.animationParams.framerate, animation.animationParams.repeat);
         }
 
     }
 
     getAnimations(element){
-        return this.animations[element];
+        return this.sprite.animations[element];
     }
 
     /**
@@ -268,14 +333,15 @@ class Enemy extends Living{
         this.setRayData();
 
         if(this.getDebug === true){
-            this.spriteRays.setVelocity = 0;
-            this.spriteRays.redrawRay2D(this.getPosition, this.getRayData);
+            this.getSpriteRays.setVelocity = 0;
+            this.getSpriteRays.redrawRay2D(this.getPosition, this.getRayData);
         }   
 
         this.getRaycaster.setSpritePosition = this.getPosition;
 
-        this.setAngleToElement = playerPosition;
-        this.getRaycaster.setRayAngle = this.getAngleToElement;
+        this.setRotation = this.angleToElement(playerPosition);
+
+        this.getRaycaster.setRayAngle = this.adjustAngleValue(this.angleToElement(playerPosition));
         this.setDistanceToPlayer = playerPosition;
 
         //We want the enemy to follow us if we are in range of sight and if the distance with the player is less than the distance
@@ -288,7 +354,7 @@ class Enemy extends Living{
             this.setVelocityY = this.getYcomponent;
 
             if(this.getDebug === true){
-                for(let ray of this.spriteRays.rays){
+                for(let ray of this.getSpriteRays.rays){
                     ray.body.setVelocityX(this.getVelocityX);
                     ray.body.setVelocityY(this.getVelocityY);
                 }
@@ -301,7 +367,7 @@ class Enemy extends Living{
             this.inSight = false;
         }
         
-        this.setAngle = this.getAngleToElement + this.angleOffset
+        this.setAngle = this.angleToElement(playerPosition) - this.getAngleOffset;
         this.setRotation = this.getAngle;
     }
 
