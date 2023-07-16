@@ -27,7 +27,7 @@ class Game2D extends Phaser.Scene{
         this.enemyAngleOffset = 3*Math.PI/2;
         this.chaseDistance = 400;
         this.allowChase = true;
-        this.allowShoot = true;
+        this.allowShoot = false;
         this.playerHealth = Infinity;
 
 
@@ -38,7 +38,7 @@ class Game2D extends Phaser.Scene{
         this.angleOperator = 4;
 
         //Stablishing the raycaster elements.
-        this.raysAmount = 100;
+        this.raysAmount = 64;
 
         this.music; 
     }
@@ -138,7 +138,9 @@ class Game2D extends Phaser.Scene{
             this.player.switchWeapons();
 
             //The basic movement of the enemy according to the player's position.
-            this.cacodemons.move(this.player.getPosition);
+            if(this.cacodemons.getEnemies.length > 0){
+                this.cacodemons.move(this.player.getPosition);
+            }
             
             if(this.allowShoot){
                 this.cacodemons.shoot(this.player);
@@ -204,8 +206,8 @@ class Game2D extends Phaser.Scene{
             this.scene.stop("Game3D");
             this.scene.stop("Game2D");
             
-            this.scene.launch("Game3D");
             this.scene.start("Game2D");
+            this.scene.launch("Game3D");
         }
     }
 }

@@ -302,8 +302,8 @@ class Enemy extends Living{
             
         }else{
             this.getEnemy3D.getSprite.destroy();
+            this.isAlive = false;
             this.getSprite.destroy();
-            this.setIsAlive = false;
         }
     }
 

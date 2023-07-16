@@ -21,9 +21,9 @@ class Player extends Living{
     constructor(scene, scene3D, playerOriginInfo, playerImgStr, size, depth, defaultVelocity, playerAngleOperator, maxHealth){
         super(scene, playerOriginInfo, playerImgStr, size, depth, defaultVelocity);
 
-        this.sprite.scene3D = scene3D;
+        this.getSprite.scene3D = scene3D;
 
-        this.sprite.angleOperator = playerAngleOperator;
+        this.getSprite.angleOperator = playerAngleOperator;
 
         this.setRotation = 0;
         this.setAngle = 0;
@@ -31,26 +31,26 @@ class Player extends Living{
         this.setXcomponent();
         this.setYcomponent();
 
-        this.sprite.cursors = this.getScene.input.keyboard.createCursorKeys();
+        this.getSprite.cursors = this.getScene.input.keyboard.createCursorKeys();
 
        for(let key of ["W", "A", "S", "D"]) {
-            this.sprite.cursors[key] = this.getScene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes[key]);
+            this.getSprite.cursors[key] = this.getScene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes[key]);
         }
 
-        this.sprite.keySpace = this.getScene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
+        this.getSprite.keySpace = this.getScene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
 
-        this.sprite.keyShift = this.getScene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SHIFT);
+        this.getSprite.keyShift = this.getScene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SHIFT);
 
         this.setMaxHealth = maxHealth;
         this.setHealth = this.getMaxHealth;
 
         this.setSpriteSounds("player", ["hurt", "death", "heal"]);
 
-        this.sprite.rounds_shot = 0;
-        this.sprite.damageDealed = 0;
-        this.sprite.damageReceived = 0;
-        this.sprite.lastSwitchWeaponTimer = 0;
-        this.sprite.creationTime = this.getScene.time.now;
+        this.getSprite.roundsShot = 0;
+        this.getSprite.damageDealed = 0;
+        this.getSprite.damageReceived = 0;
+        this.getSprite.lastSwitchWeaponTimer = 0;
+        this.getSprite.creationTime = this.getScene.time.now;
     }
     
     /**
@@ -58,14 +58,14 @@ class Player extends Living{
      * @return {number}
      */
     get getAngleOperator(){
-        return this.sprite.angleOperator;
+        return this.getSprite.angleOperator;
     }
 
     /**
      * Sets the graphicator object of the player.
      */
     setGraphicator(){
-        this.sprite.graphicator = new Graphicator(this.getScene3D, this.getSize, this.getRaysAmount);
+        this.getSprite.graphicator = new Graphicator(this.getScene3D, this.getSize, this.getRaysAmount);
     }
 
     /**
@@ -73,7 +73,7 @@ class Player extends Living{
      * @returns {Graphicator}
      */
     get getGraphicator(){
-        return this.sprite.graphicator;
+        return this.getSprite.graphicator;
     }
 
     /**
@@ -81,8 +81,8 @@ class Player extends Living{
      * @param {Object} canvasSize
      */
     setHUD(enemies = undefined){
-        this.sprite.hud = new HUD(this.sprite.scene3D, enemies);
-        this.sprite.hud.setHealthValue = this.getHealth;
+        this.getSprite.hud = new HUD(this.getSprite.scene3D, enemies);
+        this.getSprite.hud.setHealthValue = this.getHealth;
     }
 
     /**
@@ -90,7 +90,7 @@ class Player extends Living{
      * @returns {HUD}
      */
     get getHUD(){
-        return this.sprite.hud;
+        return this.getSprite.hud;
     }
 
     /**
@@ -99,7 +99,7 @@ class Player extends Living{
      * @param {Array<Enemy>} enemies2D 
      */
     setCamera(fov, enemies2D){
-        this.sprite.camera = new Camera(this.sprite.scene3D, fov, this, enemies2D);
+        this.getSprite.camera = new Camera(this.getSprite.scene3D, fov, this, enemies2D);
     }
 
     /**
@@ -107,7 +107,7 @@ class Player extends Living{
      * @returns {Camera}
      */
     get getCamera(){
-        return this.sprite.camera;
+        return this.getSprite.camera;
     }
 
     /**
@@ -115,11 +115,11 @@ class Player extends Living{
      * @param {Array<Object>} weapons
      */
     setWeapons(weapons){
-        this.sprite.weapons = new Array(weapons.length);
+        this.getSprite.weapons = new Array(weapons.length);
 
         for(let [i, weapon] of weapons.entries()){
-            this.sprite.weapons[i] = new Weapon(
-                this.sprite.scene3D,
+            this.getSprite.weapons[i] = new Weapon(
+                this.getSprite.scene3D,
                 {x: canvasSize.width/2, y: canvasSize.height*0.9},
                 weapon.name,
                 canvasSize.width/2,
@@ -129,34 +129,34 @@ class Player extends Living{
                 weapon.animationParams
                 );
 
-            this.sprite.weapons[i].setVisible = false;
+            this.getSprite.weapons[i].setVisible = false;
         }
 
-        this.sprite.currentWeapon = this.sprite.weapons[0];
-        this.sprite.currentWeapon.setVisible = true;
+        this.getSprite.currentWeapon = this.getSprite.weapons[0];
+        this.getSprite.currentWeapon.setVisible = true;
         
     }
 
     switchWeapons(){
-        if(this.sprite.keyShift.isDown){
+        if(this.getSprite.keyShift.isDown){
             let time = this.getScene.time.now;
-            if (time - this.sprite.lastSwitchWeaponTimer  > this.sprite.currentWeapon.switchWeaponDelay) {
-                this.sprite.currentWeapon.playSwitchWeaponSound();
+            if (time - this.getSprite.lastSwitchWeaponTimer  > this.getSprite.currentWeapon.switchWeaponDelay) {
+                this.getSprite.currentWeapon.playSwitchWeaponSound();
 
-                this.sprite.currentWeapon.setVisible = false;
+                this.getSprite.currentWeapon.setVisible = false;
 
-                let index = this.sprite.weapons.indexOf(this.sprite.currentWeapon);
+                let index = this.getSprite.weapons.indexOf(this.getSprite.currentWeapon);
 
-                if(index == this.sprite.weapons.length - 1){
-                    this.sprite.currentWeapon = this.sprite.weapons[0];
+                if(index == this.getSprite.weapons.length - 1){
+                    this.getSprite.currentWeapon = this.getSprite.weapons[0];
                 }else{
-                    this.sprite.currentWeapon = this.sprite.weapons[index + 1];
+                    this.getSprite.currentWeapon = this.getSprite.weapons[index + 1];
                 }
 
-                this.sprite.currentWeapon.setVisible = true;
+                this.getSprite.currentWeapon.setVisible = true;
 
-                this.sprite.lastShotTimer = 0;
-                this.sprite.lastSwitchWeaponTimer = time;
+                this.getSprite.lastShotTimer = 0;
+                this.getSprite.lastSwitchWeaponTimer = time;
             }
         }
     }
@@ -166,7 +166,7 @@ class Player extends Living{
      * @returns {Array<Weapon>}
      */
     get getWeapons(){
-        return this.sprite.weapons;
+        return this.getSprite.weapons;
     }
 
     /**
@@ -174,9 +174,9 @@ class Player extends Living{
      * @param {Number} index
      */
     set setPlayerCurrentWeapon(index){
-        this.sprite.currentWeapon.setVisible = false;
+        this.getSprite.currentWeapon.setVisible = false;
 
-        this.sprite.currentWeapon = this.sprite.weapons[index].setVisible = true;
+        this.getSprite.currentWeapon = this.getSprite.weapons[index].setVisible = true;
     }
 
     /**
@@ -184,7 +184,7 @@ class Player extends Living{
      * @return {Weapon}
      */
     get getPlayerCurrentWeapon(){
-        return this.sprite.currentWeapon;
+        return this.getSprite.currentWeapon;
     }
 
     /**
@@ -251,7 +251,7 @@ class Player extends Living{
      * Sets the time the player has been alive.
      */
     setTimeAlive(){
-        this.sprite.timeAlive = (this.getScene.time.now - this.sprite.creationTime)/1000;
+        this.getSprite.timeAlive = (this.getScene.time.now - this.getSprite.creationTime)/1000;
     }
 
     /**
@@ -259,31 +259,31 @@ class Player extends Living{
      * @returns {Number}
      */    
     getTimeAlive(){
-        return this.sprite.timeAlive;
+        return this.getSprite.timeAlive;
     }
 
     addRoundShot(){
-        this.sprite.roundsShot +=1;
+        this.getSprite.roundsShot +=1;
     }
 
     getRoundsShot(){
-        return this.sprite.roundsShot;
+        return this.getSprite.roundsShot;
     }
 
     addDamageDealed(damage){
-        this.sprite.damageDealed += damage;
+        this.getSprite.damageDealed += damage;
     }
 
     getDamageDealed(){
-        return this.sprite.damageDealed;
+        return this.getSprite.damageDealed;
     }
 
     addDamageReceived(damage){
-        this.sprite.damageReceived += damage;
+        this.getSprite.damageReceived += damage;
     }
 
     getDamageReceived(){
-        return this.sprite.damageReceived;
+        return this.getSprite.damageReceived;
     }
 
     setScore(type, enemiesAmount){
@@ -310,12 +310,12 @@ class Player extends Living{
         score.totalScore += this.getDamageDealed()*10;
         score.totalScore -= this.getDamageReceived()*10;
         
-        this.sprite.score = score;
-        this.sprite.score.totalScore = Math.round(score.totalScore/10)*10;
+        this.getSprite.score = score;
+        this.getSprite.score.totalScore = Math.round(score.totalScore/10)*10;
     }
 
     getScore(){
-        return this.sprite.score;
+        return this.getSprite.score;
     }
 
     /**
@@ -334,13 +334,13 @@ class Player extends Living{
         this.getRaycaster.setSpritePosition = this.getPosition;
 
 
-        if((this.sprite.cursors.up.isDown ^ this.sprite.cursors.down.isDown) ^ (this.sprite.cursors["W"].isDown ^ this.sprite.cursors["S"].isDown)){
-            if (this.sprite.cursors.up.isDown || this.sprite.cursors["W"].isDown){
+        if((this.getSprite.cursors.up.isDown ^ this.getSprite.cursors.down.isDown) ^ (this.getSprite.cursors["W"].isDown ^ this.getSprite.cursors["S"].isDown)){
+            if (this.getSprite.cursors.up.isDown || this.getSprite.cursors["W"].isDown){
                 //Here we use the velocity calculated, and we change its sign accordingly to the direction of movement.
                 this.setVelocityX = this.getXcomponent;
                 this.setVelocityY = this.getYcomponent;  
 
-            }else if(this.sprite.cursors.down.isDown || this.sprite.cursors["S"].isDown){    
+            }else if(this.getSprite.cursors.down.isDown || this.getSprite.cursors["S"].isDown){    
                 this.setVelocityX = -this.getXcomponent;
                 this.setVelocityY = -this.getYcomponent;
             }
@@ -353,17 +353,17 @@ class Player extends Living{
             }
         } 
 
-        if((this.sprite.cursors.left.isDown ^ this.sprite.cursors.right.isDown) ^ (this.sprite.cursors["A"].isDown ^ this.sprite.cursors["D"].isDown)){
+        if((this.getSprite.cursors.left.isDown ^ this.getSprite.cursors.right.isDown) ^ (this.getSprite.cursors["A"].isDown ^ this.getSprite.cursors["D"].isDown)){
 
             //Here we use trigonometrics to calculate the x and y component of the velocity.
-            this.setXcomponent(3*Math.PI/2);
-            this.setYcomponent(3*Math.PI/2);    
+            this.setXcomponent(this.getAngleOffset);
+            this.setYcomponent(this.getAngleOffset);    
     
-            if (this.sprite.cursors.left.isDown || this.sprite.cursors["A"].isDown){
-                this.setAngle = this.getAngle - this.getAngleOperator
+            if (this.getSprite.cursors.left.isDown || this.getSprite.cursors["A"].isDown){
+                this.setAngle = this.getAngle - this.getAngleOperator;
 
-            }else if(this.sprite.cursors.right.isDown || this.sprite.cursors["D"].isDown){
-                this.setAngle = this.getAngle + this.getAngleOperator
+            }else if(this.getSprite.cursors.right.isDown || this.getSprite.cursors["D"].isDown){
+                this.setAngle = this.getAngle + this.getAngleOperator;
             }
         }
 
@@ -375,16 +375,24 @@ class Player extends Living{
     }
 
     shoot(){
-        if(this.sprite.keySpace.isDown){
+        if(this.getSprite.keySpace.isDown){
             let time = this.getScene.time.now;
-            if (time - this.sprite.lastShotTimer > this.sprite.currentWeapon.getDelayBetweenShots) {
+            if (time - this.getSprite.lastShotTimer > this.getSprite.currentWeapon.getDelayBetweenShots) {
                 this.getPlayerCurrentWeapon.getSprite.play(this.getPlayerCurrentWeapon.getShootingAnimation().getAnimationName);
-                let projectile = new Projectile(this.getScene, this.getPosition, "bullet", 12, 80, this.sprite.currentWeapon.getBulletVelocity);
-                this.getPlayerCurrentWeapon.getProjectiles.add(projectile.getSprite);
-                projectile.shootProjectile(this);
+                
+                // let projectile = new Projectile(this.getScene, this.getPosition, "bullet", 12, 80, this.getSprite.currentWeapon.getBulletVelocity);
+                // this.getPlayerCurrentWeapon.getProjectiles.add(projectile.getSprite);
+                // projectile.shootProjectile(this);
+
+                let bullet = this.getPlayerCurrentWeapon.getProjectiles.getFirstExists(false);
+
+                if(bullet){
+                    
+                }
+
                 this.getPlayerCurrentWeapon.playSoundEffect();
 
-                this.sprite.lastShotTimer = time;
+                this.getSprite.lastShotTimer = time;
 
                 this.addRoundShot();
             }

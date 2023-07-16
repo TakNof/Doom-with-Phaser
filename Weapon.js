@@ -57,6 +57,8 @@ class Weapon extends Sprite{
      */
     setProjectiles(){
         this.weaponProjectiles = this.getScene.physics.add.group();
+        this.weaponProjectiles.enableBody = true;
+        this.weaponProjectiles.physicsBodyType = Phaser.Physics.ARCADE;
     }
 
     /**
