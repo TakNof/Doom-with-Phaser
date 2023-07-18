@@ -2,7 +2,8 @@ class Weapon extends Sprite{
     /**
     * The constructor of Weapons Class.
     * @constructor
-    * @param {Scene} scene The current scene of the game to place the weapon sprite.
+    * @param {Scene} scene The scene of the game to place bullets.
+    * @param {Scene} scene3D The current scene of the game to place the weapon sprite.
     * @param {number[]} originInfo  A list with the initial positioning information for the weapon sprite.
     * @param {string} weapon spriteImgStr An str of the image name given in the preload method of the main class.
     * @param {number}size The size of the weapon sprite in pixels.
@@ -13,31 +14,41 @@ class Weapon extends Sprite{
     * @param {number[]} delayBetweenBullets The delay in seconds between the shots the weapon sprite.
     *  
     */
-    constructor(scene, originInfo, spriteImgStr, size, depth, bulletProperties, distanceLimits, animationParams){
+    constructor(scene, scene3D, originInfo, spriteImgStr, size, depth, bulletProperties, distanceLimits, animationParams){
         super(scene, originInfo, spriteImgStr, size, depth);
+
+        this.sprite.scene3D = scene3D;
 
         this.bulletProperties = bulletProperties;
         this.distanceLimits = distanceLimits;
 
-        this.weaponShootingAnimation = new SpriteAnimation(this.getScene, this.getSpriteImgStr);
+        this.weaponShootingAnimation = new SpriteAnimation(this.getScene3D, this.getSpriteImgStr);
         this.switchWeaponDelay = 1000;
         this.setSoundEffect();
-        this.setProjectiles();
+        this.setProjectiles("bullet");
 
         this.getShootingAnimation().setAnimationFrames(animationParams.end, animationParams.framerate, animationParams.repeat);
 
         this.switchWeaponSounds = Array(3);
 
         for(let i = 0; i < 3; i++){
-            this.switchWeaponSounds[i] = new Sound(this.getScene, `switch_weapon_sound_${i + 1}`);
+            this.switchWeaponSounds[i] = new Sound(this.getScene3D, `switch_weapon_sound_${i + 1}`);
         } 
+    }
+
+    /**
+     * Gets the scene3D of the player.
+     * @returns scene3D 
+     */
+    get getScene3D(){
+        return this.sprite.scene3D;
     }
     
     /**
      * Sets the sound effect of the weapon.
      */
     setSoundEffect(){
-        this.soundEffectName = this.getScene.sound.add(this.getSpriteImgStr + "_sound");
+        this.soundEffectName = this.getScene3D.sound.add(this.getSpriteImgStr + "_sound");
     }
 
     /**
@@ -54,19 +65,22 @@ class Weapon extends Sprite{
 
     /**
      * Sets the group of projectiles of the weapon.
+     * @param {String} key The key of the sprite to make the group of projectiles.
      */
-    setProjectiles(){
-        this.weaponProjectiles = this.getScene.physics.add.group();
-        this.weaponProjectiles.enableBody = true;
-        this.weaponProjectiles.physicsBodyType = Phaser.Physics.ARCADE;
-    }
+    setProjectiles(key){
+        this.weaponProjectiles = this.getScene.physics.add.group({
+			classType: Projectile,
+            maxSize: 20
+		});
 
-    /**
-     * Gets the shooting animation object of the weapon.
-     * @returns 
-     */
-    getShootingAnimation(){
-        return this.weaponShootingAnimation;
+        this.weaponProjectiles.createMultiple({
+            key: key,
+            quantity: 10,
+            active: false,
+            visible: false
+        });
+
+        Phaser.Actions.SetXY(this.weaponProjectiles.getChildren(), -32, -32);
     }
 
     /**
@@ -75,6 +89,32 @@ class Weapon extends Sprite{
      */
     get getProjectiles(){
         return this.weaponProjectiles;
+    }
+
+    /**
+     * This method allows to shoot the projectile.
+     * @param {Living} livingSprite
+     * @param {Number} velocity
+     */
+    shootProjectile(livingSprite, velocity){
+        let projectile = this.getProjectiles.getFirstDead(false);
+
+        if(projectile){
+            this.getSprite.play(this.getShootingAnimation().getAnimationName);
+
+            this.playSoundEffect();
+
+            livingSprite.addRoundShot();
+            projectile.shoot(livingSprite, velocity);
+        }
+    }
+
+    /**
+     * Gets the shooting animation object of the weapon.
+     * @returns 
+     */
+    getShootingAnimation(){
+        return this.weaponShootingAnimation;
     }
 
     /**

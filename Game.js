@@ -85,8 +85,17 @@ class Game2D extends Phaser.Scene{
         this.walls.createWalls();
         
         //Here we create the player.
-        this.player = new Player(this, game3D, {x: canvasSize.width/2, y: canvasSize.height/2}, "player", this.wallBlockSize*2, 0, this.defaultVelocity, this.angleOperator, this.playerHealth);
-        this.player.setAngleOffset = this.playerAngleOffset;
+        this.player = new Player(
+            this,
+            game3D,
+            {x: canvasSize.width/2, y: canvasSize.height/2, angleOffset: this.playerAngleOffset},
+            "player",
+            this.wallBlockSize*2,
+            0,
+            this.defaultVelocity,
+            this.angleOperator,
+            this.playerHealth,
+            this.playerAngleOffset);
 
         //Here we create the raycaster of the player and we pass it the position of the walls to make the calculations.
         this.player.setRaycaster(this.walls.getWallMatrix, this.raysAmount,  this.playerFOVangleOffset);
@@ -206,8 +215,9 @@ class Game2D extends Phaser.Scene{
             this.scene.stop("Game3D");
             this.scene.stop("Game2D");
             
-            this.scene.start("Game2D");
             this.scene.launch("Game3D");
+            this.scene.start("Game2D");
+            
         }
     }
 }

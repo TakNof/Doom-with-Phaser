@@ -28,12 +28,12 @@ class Player extends Living{
         this.setRotation = 0;
         this.setAngle = 0;
 
-        this.setXcomponent();
-        this.setYcomponent();
+        this.setXcomponent(this.getOriginInfo.angleOffset);
+        this.setYcomponent(this.getOriginInfo.angleOffset);
 
         this.getSprite.cursors = this.getScene.input.keyboard.createCursorKeys();
 
-       for(let key of ["W", "A", "S", "D"]) {
+       for(let key of ["W", "A", "S", "D", "R"]) {
             this.getSprite.cursors[key] = this.getScene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes[key]);
         }
 
@@ -119,7 +119,8 @@ class Player extends Living{
 
         for(let [i, weapon] of weapons.entries()){
             this.getSprite.weapons[i] = new Weapon(
-                this.getSprite.scene3D,
+                this.getScene,
+                this.getScene3D,
                 {x: canvasSize.width/2, y: canvasSize.height*0.9},
                 weapon.name,
                 canvasSize.width/2,
@@ -159,6 +160,10 @@ class Player extends Living{
                 this.getSprite.lastSwitchWeaponTimer = time;
             }
         }
+    }
+
+    reloadWeapons(){
+        
     }
 
     /**
@@ -356,8 +361,8 @@ class Player extends Living{
         if((this.getSprite.cursors.left.isDown ^ this.getSprite.cursors.right.isDown) ^ (this.getSprite.cursors["A"].isDown ^ this.getSprite.cursors["D"].isDown)){
 
             //Here we use trigonometrics to calculate the x and y component of the velocity.
-            this.setXcomponent(this.getAngleOffset);
-            this.setYcomponent(this.getAngleOffset);    
+            this.setXcomponent(this.getOriginInfo.angleOffset);
+            this.setYcomponent(this.getOriginInfo.angleOffset);    
     
             if (this.getSprite.cursors.left.isDown || this.getSprite.cursors["A"].isDown){
                 this.setAngle = this.getAngle - this.getAngleOperator;
@@ -368,36 +373,20 @@ class Player extends Living{
         }
 
         if(this.getDebug === true){
-            this.getSpriteRays.setInitialRayAngleOffset = this.getAngleOffset;
+            this.getSpriteRays.setInitialRayAngleOffset = this.getOriginInfo.angleOffset;
         }
 
-        this.getRaycaster.setRayAngle = this.getRotation + this.getAngleOffset - (Math.PI/4);
+        this.getRaycaster.setRayAngle = this.getRotation + this.getOriginInfo.angleOffset - (Math.PI/4);
     }
 
     shoot(){
         if(this.getSprite.keySpace.isDown){
             let time = this.getScene.time.now;
             if (time - this.getSprite.lastShotTimer > this.getSprite.currentWeapon.getDelayBetweenShots) {
-                this.getPlayerCurrentWeapon.getSprite.play(this.getPlayerCurrentWeapon.getShootingAnimation().getAnimationName);
-                
-                // let projectile = new Projectile(this.getScene, this.getPosition, "bullet", 12, 80, this.getSprite.currentWeapon.getBulletVelocity);
-                // this.getPlayerCurrentWeapon.getProjectiles.add(projectile.getSprite);
-                // projectile.shootProjectile(this);
-
-                let bullet = this.getPlayerCurrentWeapon.getProjectiles.getFirstExists(false);
-
-                if(bullet){
-                    
-                }
-
-                this.getPlayerCurrentWeapon.playSoundEffect();
+                this.getPlayerCurrentWeapon.shootProjectile(this, this.getPlayerCurrentWeapon.getBulletVelocity); 
 
                 this.getSprite.lastShotTimer = time;
-
-                this.addRoundShot();
             }
         }
     }
-
-
 }

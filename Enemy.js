@@ -257,7 +257,11 @@ class Enemy extends Living{
      * @param {Number} currentDistance 
      */
     __checkDamage(shooter, projectile, bulletProperties, distanceLimits, currentDistance){
-        projectile.destroy();
+        projectile.body.reset(-32, -32); 
+
+        projectile.setActive(false);
+        projectile.setVisible(false);
+
         let damage = bulletProperties.damage;
         let critical = false;
 
@@ -367,7 +371,7 @@ class Enemy extends Living{
             this.inSight = false;
         }
         
-        this.setAngle = this.angleToElement(playerPosition) - this.getAngleOffset;
+        this.setAngle = this.angleToElement(playerPosition) - this.getOriginInfo.angleOffset;
         this.setRotation = this.getAngle;
     }
 

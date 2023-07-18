@@ -125,12 +125,14 @@ class WallsBuilder{
     evalCollision(projectiles2D, projectiles3D = undefined){
         this.scene.physics.collide(this.walls, projectiles2D,
             function(sprite, projectile){
+                projectile.body.reset(-32, -32);
+                projectile.setActive(false);
+                projectile.setVisible(false);
                 if(projectiles3D){
                     let index = projectiles2D.getChildren().indexOf(projectile);
                     let projectile3D = projectiles3D.getChildren()[index];
                     projectile3D.destroy();
                 }
-                projectile.destroy();
             }
         );
     }

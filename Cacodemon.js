@@ -46,7 +46,7 @@ class Cacodemon{
             if(!this.wallMatrix[i][j]){
                 enemyPosition.x = (j*32 + 32);
                 enemyPosition.y = (i*32 + 32);
-                enemyPosition.ang = 0;
+                enemyPosition.angleOffset = enemyAngleOffset;
 
                 //Here we create an enemy.
                 this.enemies[enemiesPlaced] =  new Enemy(this.scene, this.scene3D, enemyPosition, "small_cacodemon", this.blockSize*2, 1, this.defaultVelocity, this.chaseDistance, this.allowChase);
@@ -56,7 +56,6 @@ class Cacodemon{
                 this.enemies[enemiesPlaced].setDistanceLimits = this.distanceLimits;
                 
                 //Here we stablish the raycaster of the enemy, we pass it as well the matrix of walls.
-                this.enemies[enemiesPlaced].setAngleOffset = enemyAngleOffset;
                 this.enemies[enemiesPlaced].setRaycaster(this.wallMatrix, 1, enemyAngleOffset);
                 this.enemies[enemiesPlaced].getRaycaster.setAngleStep();
                 

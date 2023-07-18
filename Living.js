@@ -154,22 +154,6 @@ class Living extends Sprite{
     }
 
     /**
-     * Sets the angle offset of the Living sprite.
-     * @param {number} value
-     */
-    set setAngleOffset(value){
-        this.sprite.angleOffset = value;
-    }
-
-    /**
-     * Gets the angle of the Living sprite.
-     * @return {number}
-     */
-    get getAngleOffset(){
-        return this.sprite.angleOffset;
-    }
-
-    /**
      * Sets the X component of the velocity according to the rotation stablished of the living sprite.
      * @param {Number} movementAdjustment
      */
