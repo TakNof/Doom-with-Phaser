@@ -78,14 +78,14 @@ class WallsBuilder{
                 }
 
                 //These loops frame the map section of the canvas to not let the player getting out.
-                for(let k = 0; k < this.wallNumberRatio.x; k++){
-                    this.wallMatrix[0][k] = true;
-                    this.wallMatrix[this.wallNumberRatio.y - 1][k] = true;
-                }
-                for(let j = 0; j < this.wallNumberRatio.y; j++){
-                    this.wallMatrix[j][0] = true;
-                    this.wallMatrix[j][this.wallNumberRatio.x - 1] = true;
-                }
+                // for(let k = 0; k < this.wallNumberRatio.x; k++){
+                //     this.wallMatrix[0][k] = true;
+                //     this.wallMatrix[this.wallNumberRatio.y - 1][k] = true;
+                // }
+                // for(let j = 0; j < this.wallNumberRatio.y; j++){
+                //     this.wallMatrix[j][0] = true;
+                //     this.wallMatrix[j][this.wallNumberRatio.x - 1] = true;
+                // }
 
                 //Now with the wall positions being true in the matrix the only thing that lefts to do is to
                 //traverse the matrix looking for the true values, if found, a wall object will be generated.
@@ -131,7 +131,7 @@ class WallsBuilder{
                 if(projectiles3D){
                     let index = projectiles2D.getChildren().indexOf(projectile);
                     let projectile3D = projectiles3D.getChildren()[index];
-                    projectile3D.destroy();
+                    // projectile3D.destroy();
                 }
             }
         );

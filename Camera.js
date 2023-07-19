@@ -228,7 +228,7 @@ class Camera{
         // this.player.getGraphicator.ableRectanglesVisibility(false);
 
         if(this.enemies2D[0] instanceof Enemy){
-            this.drawEnemy();
+            // this.drawEnemy();
         }
     }
 

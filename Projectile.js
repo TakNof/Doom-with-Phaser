@@ -11,8 +11,16 @@ class Projectile extends Phaser.Physics.Arcade.Sprite{
     shoot(livingSprite, velocity){
         this.setActive(true);
         this.setVisible(true);
+        this.setCollideWorldBounds(true);
 
-        this.body.reset(livingSprite.getPositionX, livingSprite.getPositionY);        
+        this.body.reset(livingSprite.getPositionX, livingSprite.getPositionY);
+        
+        this.body.onWorldBounds = true;
+        this.body.world.on('worldbounds', function(body) {
+            if (body.gameObject === this) {
+                this.destroy();
+            }
+        }, this);
         
         this.setXcomponent(livingSprite, velocity);
         this.setYcomponent(livingSprite, velocity);

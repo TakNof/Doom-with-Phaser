@@ -9,7 +9,7 @@ class Player extends Living{
     * @constructor
     * @param {Scene} scene The scene to place the 2D sprites in the game.
     * @param {Scene} scene3D The scene to place the 3D sprites in the game.
-    * @param {Object} playerOriginInfo  A list with the initial positioning information for the sprite.
+    * @param {{x: Number, y: Number, angleOffset: Number}} playerOriginInfo  A list with the initial positioning information for the sprite.
     * @param {String} playerImgStr An str of the image name given in the preload method of the main class.
     * @param {Number} size The size of the sprite in pixels.
     * @param {Number} depth The depth of rendering of the sprite.
@@ -115,10 +115,10 @@ class Player extends Living{
      * @param {Array<Object>} weapons
      */
     setWeapons(weapons){
-        this.weapons = new Array(weapons.length);
+        this.getSprite.weapons = new Array(weapons.length);
 
         for(let [i, weapon] of weapons.entries()){
-            this.weapons[i] = new Weapon(
+            this.getSprite.weapons[i] = new Weapon(
                 this.getScene3D,
                 {x: canvasSize.width/2, y: canvasSize.height*0.9},
                 weapon.name,
@@ -129,32 +129,32 @@ class Player extends Living{
                 weapon.animationParams
                 );
 
-            this.weapons[i].setProjectiles(this.getScene);
-            this.weapons[i].setVisible = false;
+            this.getSprite.weapons[i].setProjectiles(this.getScene);
+            this.getSprite.weapons[i].setVisible = false;
         }
 
-        this.currentWeapon = this.weapons[0];
-        this.currentWeapon.setVisible = true;
+        this.getSprite.currentWeapon = this.getSprite.weapons[0];
+        this.getSprite.currentWeapon.setVisible = true;
         
     }
 
     switchWeapons(){
         if(this.getSprite.keyShift.isDown){
             let time = this.getScene.time.now;
-            if (time - this.getSprite.lastSwitchWeaponTimer  > this.currentWeapon.switchWeaponDelay) {
-                this.currentWeapon.playSwitchWeaponSound();
+            if (time - this.getSprite.lastSwitchWeaponTimer  > this.getSprite.currentWeapon.switchWeaponDelay) {
+                this.getSprite.currentWeapon.playSwitchWeaponSound();
 
-                this.currentWeapon.setVisible = false;
+                this.getSprite.currentWeapon.setVisible = false;
 
-                let index = this.weapons.indexOf(this.currentWeapon);
+                let index = this.getSprite.weapons.indexOf(this.getSprite.currentWeapon);
 
-                if(index == this.weapons.length - 1){
-                    this.currentWeapon = this.weapons[0];
+                if(index == this.getSprite.weapons.length - 1){
+                    this.getSprite.currentWeapon = this.getSprite.weapons[0];
                 }else{
-                    this.currentWeapon = this.weapons[index + 1];
+                    this.getSprite.currentWeapon = this.getSprite.weapons[index + 1];
                 }
 
-                this.currentWeapon.setVisible = true;
+                this.getSprite.currentWeapon.setVisible = true;
 
                 this.getSprite.lastShotTimer = 0;
                 this.getSprite.lastSwitchWeaponTimer = time;
@@ -162,8 +162,17 @@ class Player extends Living{
         }
     }
 
-    reloadWeapons(){
-        
+    reload(){
+        if(this.getSprite.cursors["R"].isDown){
+            this.getPlayerCurrentWeapon.getProjectiles.createMultiple({
+                key: "bullet",
+                quantity: 10,
+                active: false,
+                visible: false
+            });
+
+            Phaser.Actions.SetXY(this.getPlayerCurrentWeapon.getProjectiles.getChildren(), -32, -32);
+        }
     }
 
     /**
@@ -171,7 +180,7 @@ class Player extends Living{
      * @returns {Array<Weapon>}
      */
     get getWeapons(){
-        return this.weapons;
+        return this.getSprite.weapons;
     }
 
     /**
@@ -179,9 +188,9 @@ class Player extends Living{
      * @param {Number} index
      */
     set setPlayerCurrentWeapon(index){
-        this.currentWeapon.setVisible = false;
+        this.getSprite.currentWeapon.setVisible = false;
 
-        this.currentWeapon = this.weapons[index].setVisible = true;
+        this.getSprite.currentWeapon = this.getSprite.weapons[index].setVisible = true;
     }
 
     /**
@@ -189,7 +198,7 @@ class Player extends Living{
      * @return {Weapon}
      */
     get getPlayerCurrentWeapon(){
-        return this.currentWeapon;
+        return this.getSprite.currentWeapon;
     }
 
     /**
@@ -218,8 +227,12 @@ class Player extends Living{
      * @returns 
      */
     __checkDamage(projectile, projectile3D, bulletProperties, distanceLimits, currentDistance){
-        projectile.destroy();
-        projectile3D.destroy();
+        projectile.body.reset(-32, -32); 
+
+        projectile.setActive(false);
+        projectile.setVisible(false);
+
+        // projectile3D.destroy();
 
         let damage = bulletProperties.damage;
 
@@ -382,8 +395,10 @@ class Player extends Living{
     shoot(){
         if(this.getSprite.keySpace.isDown){
             let time = this.getScene.time.now;
-            if (time - this.getSprite.lastShotTimer > this.currentWeapon.getDelayBetweenShots) {
+            if (time - this.getSprite.lastShotTimer > this.getSprite.currentWeapon.getDelayBetweenShots) {
                 this.getPlayerCurrentWeapon.shootProjectile(this, this.getPlayerCurrentWeapon.getBulletVelocity); 
+
+                console.log(this.getPlayerCurrentWeapon.getProjectiles.getChildren().length);
 
                 this.getSprite.lastShotTimer = time;
             }

@@ -27,7 +27,7 @@ class Game2D extends Phaser.Scene{
         this.enemyAngleOffset = 3*Math.PI/2;
         this.chaseDistance = 400;
         this.allowChase = true;
-        this.allowShoot = false;
+        this.allowShoot = true;
         this.playerHealth = Infinity;
 
 
@@ -64,7 +64,7 @@ class Game2D extends Phaser.Scene{
         this.load.audio("at_dooms_gate", "assets/music/at_dooms_gate.wav");
 
         
-        this.scene.setVisible(false);
+        // this.scene.setVisible(false);
         // this.game.canvas.style.display = 'none';
     }
 
@@ -95,7 +95,8 @@ class Game2D extends Phaser.Scene{
             this.defaultVelocity,
             this.angleOperator,
             this.playerHealth,
-            this.playerAngleOffset);
+            this.playerAngleOffset
+        );
 
         //Here we create the raycaster of the player and we pass it the position of the walls to make the calculations.
         this.player.setRaycaster(this.walls.getWallMatrix, this.raysAmount,  this.playerFOVangleOffset);
@@ -144,6 +145,7 @@ class Game2D extends Phaser.Scene{
         if(this.player.isAlive){
             this.player.move();
             this.player.shoot();
+            this.player.reload();
             this.player.switchWeapons();
 
             //The basic movement of the enemy according to the player's position.

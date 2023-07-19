@@ -22,13 +22,9 @@ class Enemy extends Living{
 
         this.setEnemy3D(canvasSize.width/2, canvasSize.height/2, "cacodemon");
 
-        this.setRotation = this.getOriginInfo.ang;
-        this.setAngle = this.getOriginInfo.ang;
-
         this.setXcomponent();
         this.setYcomponent();
 
-        this.setProjectiles2D();
         this.setProjectiles3D();
 
         this.chaseDistance = chaseDistance;
@@ -169,7 +165,19 @@ class Enemy extends Living{
      * Sets the group of projectiles of the enemy.
      */
     setProjectiles2D(){
-        this.sprite.enemyProjectiles = this.getScene.physics.add.group();
+        let key = "small_energy_bomb";
+        this.sprite.enemyProjectiles = this.getScene.physics.add.group({
+			classType: Projectile
+		});
+
+        this.sprite.enemyProjectiles.createMultiple({
+            key: key,
+            quantity: 5,
+            active: false,
+            visible: false
+        });
+
+        Phaser.Actions.SetXY(this.sprite.enemyProjectiles.getChildren(), -100, -100);
     }
 
     /**
@@ -257,7 +265,7 @@ class Enemy extends Living{
      * @param {Number} currentDistance 
      */
     __checkDamage(shooter, projectile, bulletProperties, distanceLimits, currentDistance){
-        projectile.body.reset(-32, -32); 
+        projectile.body.reset(-100, -100); 
 
         projectile.setActive(false);
         projectile.setVisible(false);
@@ -299,7 +307,7 @@ class Enemy extends Living{
     }
 
     waitToDestroy(){
-        if(this.getProjectiles2D.getChildren().length != 0){
+        if(this.getProjectiles2D.getChildren().length != 5){
             this.setVisible = false;
             this.getEnemy3D.setVisible = false;
             this.getSprite.body.enable = false;
@@ -376,7 +384,9 @@ class Enemy extends Living{
     }
 
     shoot(properties, randNumber, player){
-        if(this.inSight && this.getAbleToShoot){
+        let projectile = this.getProjectiles2D.getFirstDead();
+
+        if(this.inSight && this.getAbleToShoot && projectile){
             this.getSpriteSounds("attack").setSoundPanning(this.getDistanceToPlayer, this.angleToElement + Math.PI, player.getAngle);
             let time = this.getScene.time.now - this.creationTime;
 
@@ -384,13 +394,7 @@ class Enemy extends Living{
                 this.getEnemy3D.getSprite.play(this.getAnimations("attack").getAnimationName);
                 this.lastShotTimer = time;
                 setTimeout(() =>{
-                    let projectile = new Projectile(this.getScene, this.getPosition, "small_energy_bomb", 16, 80, properties.velocity);
-                    this.getProjectiles2D.add(projectile.getSprite);
-
-                    projectile.setProjectile3D(this.getScene3D, canvasSize.width/2, canvasSize.width/2, "energy_bomb");            
-                    this.getProjectiles3D.add(projectile.getProjectile3D.getSprite);
-
-                    projectile.shootProjectile(this);
+                    projectile.shoot(this, properties.velocity)
 
                     this.getSpriteSounds("attack").playSound();
                 }, 300)

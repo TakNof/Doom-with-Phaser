@@ -8,7 +8,7 @@ let config = {
             debug: true
         }
     },
-    width: canvasSize.width,
+    width: canvasSize.width*2,
     height: canvasSize.height,
     scene: [MainMenuScene, Game2D, Game3D]
 }

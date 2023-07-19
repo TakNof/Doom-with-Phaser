@@ -60,7 +60,7 @@ class Weapon extends Sprite{
         let key = "bullet";
         this.weaponProjectiles = Scene2D.physics.add.group({
 			classType: Projectile,
-            maxSize: 20
+            maxSize: 10
 		});
 
         this.weaponProjectiles.createMultiple({

@@ -51,24 +51,26 @@ class Cacodemon{
                 //Here we create an enemy.
                 this.enemies[enemiesPlaced] =  new Enemy(this.scene, this.scene3D, enemyPosition, "small_cacodemon", this.blockSize*2, 1, this.defaultVelocity, this.chaseDistance, this.allowChase);
                 
+                let enemy = this.enemies[enemiesPlaced];
+
                 //Here we set the particular enemy projetcile properties based on the properties of this class.
-                this.enemies[enemiesPlaced].setBulletProperties = this.bulletProperties;
-                this.enemies[enemiesPlaced].setDistanceLimits = this.distanceLimits;
+                enemy.setBulletProperties = this.bulletProperties;
+                enemy.setDistanceLimits = this.distanceLimits;
                 
                 //Here we stablish the raycaster of the enemy, we pass it as well the matrix of walls.
-                this.enemies[enemiesPlaced].setRaycaster(this.wallMatrix, 1, enemyAngleOffset);
-                this.enemies[enemiesPlaced].getRaycaster.setAngleStep();
+                enemy.setRaycaster(this.wallMatrix, 1, enemyAngleOffset);
+                enemy.getRaycaster.setAngleStep();
                 
                 //Here we put the color of the rays of the enemy.
-                this.enemies[enemiesPlaced].setDebug = debugValue;
-                this.enemies[enemiesPlaced].setSpriteRays(colors.black);
+                enemy.setDebug = debugValue;
+                enemy.setSpriteRays(colors.black);
 
-                this.enemies[enemiesPlaced].setMaxHealth = 250;
+                enemy.setMaxHealth = 250;
 
                 //We set all the elements we need to collide with the walls.
-                this.enemies[enemiesPlaced].setColliderElements();
+                enemy.setColliderElements();
 
-                console.log(this.enemies[enemiesPlaced].getHeatlh);
+                enemy.setProjectiles2D(this.scene);
 
                 enemiesPlaced += 1;
             }
