@@ -14,41 +14,30 @@ class Weapon extends Sprite{
     * @param {number[]} delayBetweenBullets The delay in seconds between the shots the weapon sprite.
     *  
     */
-    constructor(scene, scene3D, originInfo, spriteImgStr, size, depth, bulletProperties, distanceLimits, animationParams){
+    constructor(scene, originInfo, spriteImgStr, size, depth, bulletProperties, distanceLimits, animationParams){
         super(scene, originInfo, spriteImgStr, size, depth);
-
-        this.sprite.scene3D = scene3D;
 
         this.bulletProperties = bulletProperties;
         this.distanceLimits = distanceLimits;
 
-        this.weaponShootingAnimation = new SpriteAnimation(this.getScene3D, this.getSpriteImgStr);
+        this.weaponShootingAnimation = new SpriteAnimation(this.getScene, this.getSpriteImgStr);
         this.switchWeaponDelay = 1000;
         this.setSoundEffect();
-        this.setProjectiles("bullet");
-
+        
         this.getShootingAnimation().setAnimationFrames(animationParams.end, animationParams.framerate, animationParams.repeat);
 
         this.switchWeaponSounds = Array(3);
 
         for(let i = 0; i < 3; i++){
-            this.switchWeaponSounds[i] = new Sound(this.getScene3D, `switch_weapon_sound_${i + 1}`);
+            this.switchWeaponSounds[i] = new Sound(this.getScene, `switch_weapon_sound_${i + 1}`);
         } 
     }
 
     /**
-     * Gets the scene3D of the player.
-     * @returns scene3D 
-     */
-    get getScene3D(){
-        return this.sprite.scene3D;
-    }
-    
-    /**
      * Sets the sound effect of the weapon.
      */
     setSoundEffect(){
-        this.soundEffectName = this.getScene3D.sound.add(this.getSpriteImgStr + "_sound");
+        this.soundEffectName = this.getScene.sound.add(this.getSpriteImgStr + "_sound");
     }
 
     /**
@@ -65,10 +54,11 @@ class Weapon extends Sprite{
 
     /**
      * Sets the group of projectiles of the weapon.
-     * @param {String} key The key of the sprite to make the group of projectiles.
+     * @param {Scene} Scene2D The key of the sprite to make the group of projectiles.
      */
-    setProjectiles(key){
-        this.weaponProjectiles = this.getScene.physics.add.group({
+    setProjectiles(Scene2D){
+        let key = "bullet";
+        this.weaponProjectiles = Scene2D.physics.add.group({
 			classType: Projectile,
             maxSize: 20
 		});
@@ -97,7 +87,7 @@ class Weapon extends Sprite{
      * @param {Number} velocity
      */
     shootProjectile(livingSprite, velocity){
-        let projectile = this.getProjectiles.getFirstDead(false);
+        let projectile = this.getProjectiles.getFirstDead();
 
         if(projectile){
             this.getSprite.play(this.getShootingAnimation().getAnimationName);

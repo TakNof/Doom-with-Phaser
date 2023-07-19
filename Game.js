@@ -64,7 +64,7 @@ class Game2D extends Phaser.Scene{
         this.load.audio("at_dooms_gate", "assets/music/at_dooms_gate.wav");
 
         
-        // this.scene.setVisible(false);
+        this.scene.setVisible(false);
         // this.game.canvas.style.display = 'none';
     }
 
