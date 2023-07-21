@@ -4,7 +4,7 @@ class Weapon extends Sprite{
     * @constructor
     * @param {Scene} scene The scene of the game to place bullets.
     * @param {Scene} scene3D The current scene of the game to place the weapon sprite.
-    * @param {number[]} originInfo  A list with the initial positioning information for the weapon sprite.
+    * @param {{x: Number, y: Number, angleOffset: Number}} originInfo  A list with the initial positioning information for the weapon sprite.
     * @param {string} weapon spriteImgStr An str of the image name given in the preload method of the main class.
     * @param {number}size The size of the weapon sprite in pixels.
     * @param {number} depth The depth of rendering of the weapon sprite.
@@ -57,20 +57,7 @@ class Weapon extends Sprite{
      * @param {Scene} Scene2D The key of the sprite to make the group of projectiles.
      */
     setProjectiles(Scene2D){
-        let key = "bullet";
-        this.weaponProjectiles = Scene2D.physics.add.group({
-			classType: Projectile,
-            maxSize: 10
-		});
-
-        this.weaponProjectiles.createMultiple({
-            key: key,
-            quantity: 10,
-            active: false,
-            visible: false
-        });
-
-        Phaser.Actions.SetXY(this.weaponProjectiles.getChildren(), -32, -32);
+        this.weaponProjectiles = new ProjectileGroup(Scene2D, "bullet", 10);
     }
 
     /**
@@ -96,6 +83,7 @@ class Weapon extends Sprite{
 
             livingSprite.addRoundShot();
             projectile.shoot(livingSprite, velocity);
+
         }
     }
 

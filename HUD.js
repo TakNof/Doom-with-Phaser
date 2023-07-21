@@ -12,16 +12,22 @@ class HUD{
         this.deathStyle = {font: "bold 200px Impact", fill: colors.crimsonRed.replace("0x", "#"), backgroundColor: colors.black.replace("0x", "#")};
         this.victoryStyle = {font: "bold 200px Impact", fill: colors.DarkGreen.replace("0x", "#"), backgroundColor: colors.limeGreen.replace("0x", "#")};
 
-        this.healthValue = this.scene.add.text(canvasSize.width - 280, 0.01*canvasSize.height, "", this.style).setDepth(80);
+        let elements = ["health", "ammo"];
 
-        this.deathText = this.scene.add.text(-canvasSize.width/2, -canvasSize.height, "YOU DIED", this.deathStyle).setDepth(80);
-        this.victoryText = this.scene.add.text(-canvasSize.width/2, -canvasSize.height, "YOU WON", this.victoryStyle).setDepth(80);
+        let iterations = 0;
+        this.elements = {};
+        for(let value of elements){
+            this.elements[value] = new HUDText(this.scene, canvasSize.width - 280, 50*iterations+50, "", this.style, 80, {x: 0, y:1});
+            iterations++;
+        }
+    
+        this.healthValue = new HUDText(this.scene, canvasSize.width - 280, 0.01*canvasSize.height, "", this.style, 80, 0);
 
-        this.deathText.setOrigin(0.5);
-        this.victoryText.setOrigin(0.5);
+        this.deathText = new HUDText(this.scene, -canvasSize.width/2, -canvasSize.height, "YOU DIED", this.deathStyle, 80);
+        this.victoryText = new HUDText(this.scene,-canvasSize.width/2, -canvasSize.height, "YOU WON", this.victoryStyle, 80);
 
-        this.hurtDamageRedScreen = this.scene.add.rectangle(canvasSize.width/2, 0.5*canvasSize.height, canvasSize.width, canvasSize.height, colors.crimsonRed, 0).setDepth(80);
-        this.healDamageRedScreen = this.scene.add.rectangle(canvasSize.width/2, 0.5*canvasSize.height, canvasSize.width, canvasSize.height, colors.limeGreen, 0).setDepth(80);
+        this.hurtDamageRedScreen = this.scene.add.rectangle(canvasSize.width/2, canvasSize.height/2, canvasSize.width, canvasSize.height, colors.crimsonRed, 0).setDepth(80);
+        this.healDamageRedScreen = this.scene.add.rectangle(canvasSize.width/2, canvasSize.height/2, canvasSize.width, canvasSize.height, colors.limeGreen, 0).setDepth(80);
 
         this.setEnemiesHealthArray = enemies;
     }
@@ -31,7 +37,15 @@ class HUD{
      * @param {Number} value
      */
     set setHealthValue(value){
-        this.healthValue.setText(`Health ${value.toFixed(1)}%`);        
+        this.elements["health"].setText(`Health ${value.toFixed(1)}%`);        
+    }
+
+    /**
+     * Sets the text of the HUD ammo indicator.
+     * @param {Number} value
+     */
+    set setAmmoValue(value){
+        this.elements["ammo"].setText(`Ammo ${value}`);
     }
 
     /**
@@ -46,7 +60,7 @@ class HUD{
                 this.enemiesLength = 1;
             }
 
-            this.enemiesHealthValue = Array(this.enemiesLength);
+            this.enemieselem = Array(this.enemiesLength);
             for(let i = 0; i < this.enemiesLength; i++){
                 this.enemiesHealthValue[i] = this.scene.add.text(0, 0, "", this.style).setDepth(80);
                 this.enemiesHealthValue[i].setOrigin(0.5);
@@ -108,33 +122,57 @@ class HUD{
     }
 
     displayScoreText(type, score){
-        let currentStyle;
-        switch (type) {
-            case "Victory":
-                currentStyle = this.victoryStyle;
-                break;
-            case "Defeat":
-                currentStyle = this.deathStyle;
-                break;
-
-            default:
-                throw new Error("Invalid type: " + type);
-        }
-
         if(!this.scoreText){
+            let currentStyle;
+            switch (type) {
+                case "Victory":
+                    currentStyle = this.victoryStyle;
+                    break;
+                case "Defeat":
+                    currentStyle = this.deathStyle;
+                    break;
+
+                default:
+                    throw new Error("Invalid type: " + type);
+        }
             let iterations = 0;
             for(let typeScore in score){
                 if(typeScore === "totalScore"){
-                    this.scoreText = this.scene.add.text(canvasSize.width/2, 80*iterations+300, `YOUR SCORE: ${score[typeScore]}`, currentStyle).setDepth(80);
+                    this.scoreText = new HUDText(this.scene, canvasSize.width/2, 80*iterations+300, `YOUR SCORE: ${score[typeScore]}`, currentStyle, 80);
                     this.scoreText.setStyle({fontSize: "40px"});
-                    this.scoreText.setOrigin(0.5);
                 }else{
-                    let specifiedScore = this.scene.add.text(canvasSize.width/2, 80*iterations+300, `${score[typeScore]}`, currentStyle).setDepth(80);
+                    let specifiedScore = new HUDText(this.scene, canvasSize.width/2, 80*iterations+300, `${score[typeScore]}`, currentStyle, 80);
                     specifiedScore.setStyle({fontSize: "32px"});
-                    specifiedScore.setOrigin(0.5);
                 }
-                iterations += 1;
+                iterations ++;
             }
         }
+    }
+}
+
+class HUDText extends Phaser.GameObjects.Text{
+    /**
+     * Text generator for the HUD.
+     * @param {Phaser.Scene} scene The current scene.
+     * @param {Number} x The x position to place the text.
+     * @param {Number} y The y position to place the text.
+     * @param {String} text The string to fill the text with.
+     * @param {Phaser.Types.GameObjects.Text.TextStyle} style The style object to use for the text.
+     * @param {Number} depth The depth to place the text at.
+     * @param {{x: Number, y: Number} | {both: Number}} origin The origin anchor to place the text at.
+     */
+    constructor(scene, x, y, text, style, depth = 0, origin = {both: 0.5}){
+        super(scene, x, y, text, style);
+        
+        this.setDepth(depth);
+
+        if(origin.both){
+            this.setOrigin(origin.both);
+        }else{
+            this.originX = origin.x;
+            this.originY = origin.y;
+        }
+        
+        scene.add.existing(this);
     }
 }

@@ -126,6 +126,7 @@ class Game2D extends Phaser.Scene{
         }
 
         this.player.setHUD();
+        this.player.getHUD.setAmmoValue = this.player.getCurrentWeapon.getProjectiles.countActive(false);
         
         // player.setHUD(cacodemons.getEnemies);
 
@@ -147,7 +148,7 @@ class Game2D extends Phaser.Scene{
             this.player.shoot();
             this.player.reload();
             this.player.switchWeapons();
-
+            
             //The basic movement of the enemy according to the player's position.
             if(this.cacodemons.getEnemies.length > 0){
                 this.cacodemons.move(this.player.getPosition);
@@ -185,7 +186,7 @@ class Game2D extends Phaser.Scene{
             
             // player.getHUD.setEnemiesHealthValue = cacodemons.getEnemies;
 
-            this.walls.evalCollision(this.player.getPlayerCurrentWeapon.getProjectiles);
+            this.walls.evalCollision(this.player.getCurrentWeapon.getProjectiles);
             
         }else{
             if(!this.player.isAlive && this.player.getScore() == undefined){

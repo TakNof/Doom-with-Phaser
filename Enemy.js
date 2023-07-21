@@ -9,7 +9,7 @@ class Enemy extends Living{
     * @constructor
     * @param {Scene} scene The scene to place the 2D sprites in the game.
     * @param {Scene} scene3D The scene to place the 3D sprites in the game.
-    * @param {Object} enemyOriginInfo  A list with the initial positioning information for the sprite.
+    * @param {{x: Number, y: Number, angleOffset: Number}} enemyOriginInfo  A list with the initial positioning information for the sprite.
     * @param {string} enemyImgStr An str of the image name given in the preload method of the main class.
     * @param {number} size The size of the sprite in pixels.
     * @param {number} depth The depth of rendering of the sprite.
@@ -25,7 +25,7 @@ class Enemy extends Living{
         this.setXcomponent();
         this.setYcomponent();
 
-        this.setProjectiles3D();
+        this.setProjectiles();
 
         this.chaseDistance = chaseDistance;
         this.allowChase = allowChase;
@@ -164,20 +164,10 @@ class Enemy extends Living{
     /**
      * Sets the group of projectiles of the enemy.
      */
-    setProjectiles2D(){
-        let key = "small_energy_bomb";
-        this.sprite.enemyProjectiles = this.getScene.physics.add.group({
-			classType: Projectile
-		});
-
-        this.sprite.enemyProjectiles.createMultiple({
-            key: key,
-            quantity: 5,
-            active: false,
-            visible: false
-        });
-
-        Phaser.Actions.SetXY(this.sprite.enemyProjectiles.getChildren(), -100, -100);
+    setProjectiles(){
+        let amount = 5;
+        this.sprite.enemyProjectiles = new ProjectileGroup(this.getScene, "small_energy_bomb", amount);
+        this.sprite.enemyProjectiles3D = new ProjectileGroup(this.getScene, "energy_bomb", amount);
     }
 
     /**
@@ -241,13 +231,13 @@ class Enemy extends Living{
     evalProjectileCollision(shooter){
         let thisObject = this;
 
-        this.getScene.physics.collide(this.getSprite, shooter.getPlayerCurrentWeapon.getProjectiles,
+        this.getScene.physics.collide(this.getSprite, shooter.getCurrentWeapon.getProjectiles,
             function(sprite, projectile){
                 thisObject.__checkDamage(
                     shooter,
                     projectile,
-                    shooter.getPlayerCurrentWeapon.getBulletProperties,
-                    shooter.getPlayerCurrentWeapon.getDistanceLimits,
+                    shooter.getCurrentWeapon.getBulletProperties,
+                    shooter.getCurrentWeapon.getDistanceLimits,
                     thisObject.getDistanceToPlayer
                 );
             }
@@ -350,17 +340,15 @@ class Enemy extends Living{
         }   
 
         this.getRaycaster.setSpritePosition = this.getPosition;
-
-        this.setRotation = this.angleToElement(playerPosition);
-
+        
         this.getRaycaster.setRayAngle = this.adjustAngleValue(this.angleToElement(playerPosition));
         this.setDistanceToPlayer = playerPosition;
 
         //We want the enemy to follow us if we are in range of sight and if the distance with the player is less than the distance
         //with the wall.
         if (this.allowChase && this.getDistanceToPlayer <= this.chaseDistance &&  this.getDistanceToPlayer > 200 && (this.getDistanceToPlayer <this.getRayData.distance[0] || this.getRayData.distance[0] == undefined)) {           
-            this.setXcomponent();
-            this.setYcomponent();
+            this.setXcomponent(this.getOriginInfo.angleOffset);
+            this.setYcomponent(this.getOriginInfo.angleOffset);
 
             this.setVelocityX = this.getXcomponent;
             this.setVelocityY = this.getYcomponent;
@@ -371,16 +359,15 @@ class Enemy extends Living{
                     ray.body.setVelocityY(this.getVelocityY);
                 }
             }
+            
         }
 
         if(this.getDistanceToPlayer <= this.chaseDistance && this.getDistanceToPlayer <this.getRayData.distance[0] || this.getRayData.distance[0] == undefined){
             this.inSight = true;
+            this.setRotation = this.adjustAngleValue(this.angleToElement(playerPosition) - this.getOriginInfo.angleOffset);
         }else{
             this.inSight = false;
         }
-        
-        this.setAngle = this.angleToElement(playerPosition) - this.getOriginInfo.angleOffset;
-        this.setRotation = this.getAngle;
     }
 
     shoot(properties, randNumber, player){

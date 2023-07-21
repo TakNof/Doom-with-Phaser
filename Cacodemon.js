@@ -69,9 +69,6 @@ class Cacodemon{
 
                 //We set all the elements we need to collide with the walls.
                 enemy.setColliderElements();
-
-                enemy.setProjectiles2D(this.scene);
-
                 enemiesPlaced += 1;
             }
         }

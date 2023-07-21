@@ -131,7 +131,7 @@ class WallsBuilder{
                 if(projectiles3D){
                     let index = projectiles2D.getChildren().indexOf(projectile);
                     let projectile3D = projectiles3D.getChildren()[index];
-                    // projectile3D.destroy();
+                    projectile3D.destroy();
                 }
             }
         );

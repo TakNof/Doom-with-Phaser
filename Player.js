@@ -158,20 +158,22 @@ class Player extends Living{
 
                 this.getSprite.lastShotTimer = 0;
                 this.getSprite.lastSwitchWeaponTimer = time;
+
+                this.getHUD.setAmmoValue = this.getCurrentWeapon.getProjectiles.countActive(false);
             }
         }
     }
 
     reload(){
         if(this.getSprite.cursors["R"].isDown){
-            this.getPlayerCurrentWeapon.getProjectiles.createMultiple({
-                key: "bullet",
-                quantity: 10,
-                active: false,
-                visible: false
+            this.getCurrentWeapon.getProjectiles.createMultiple({
+                    key: "bullet",
+                    max: 10,
+                    quantity: 10,
+                    active: false,
+                    visible: false
             });
-
-            Phaser.Actions.SetXY(this.getPlayerCurrentWeapon.getProjectiles.getChildren(), -32, -32);
+            this.getHUD.setAmmoValue = this.getCurrentWeapon.getProjectiles.countActive(false);
         }
     }
 
@@ -197,7 +199,7 @@ class Player extends Living{
      * Gets the current weapon of the player.
      * @return {Weapon}
      */
-    get getPlayerCurrentWeapon(){
+    get getCurrentWeapon(){
         return this.getSprite.currentWeapon;
     }
 
@@ -227,12 +229,12 @@ class Player extends Living{
      * @returns 
      */
     __checkDamage(projectile, projectile3D, bulletProperties, distanceLimits, currentDistance){
-        projectile.body.reset(-32, -32); 
+        projectile.body.reset(-100, -100); 
 
         projectile.setActive(false);
         projectile.setVisible(false);
 
-        // projectile3D.destroy();
+        projectile3D.body.reset(-100, -100); 
 
         let damage = bulletProperties.damage;
 
@@ -396,9 +398,8 @@ class Player extends Living{
         if(this.getSprite.keySpace.isDown){
             let time = this.getScene.time.now;
             if (time - this.getSprite.lastShotTimer > this.getSprite.currentWeapon.getDelayBetweenShots) {
-                this.getPlayerCurrentWeapon.shootProjectile(this, this.getPlayerCurrentWeapon.getBulletVelocity); 
-
-                console.log(this.getPlayerCurrentWeapon.getProjectiles.getChildren().length);
+                this.getCurrentWeapon.shootProjectile(this, this.getCurrentWeapon.getBulletVelocity);
+                this.getHUD.setAmmoValue = this.getCurrentWeapon.getProjectiles.countActive(false);
 
                 this.getSprite.lastShotTimer = time;
             }

@@ -62,3 +62,21 @@ class Projectile extends Phaser.Physics.Arcade.Sprite{
         return this.Ycomponent;
     }
 }
+
+class ProjectileGroup extends Phaser.Physics.Arcade.Group{
+    constructor(scene, key, maxAmount){
+        super(scene.physics.world, scene);
+
+        this.maxSize = maxAmount;
+
+        this.createMultiple({
+            classType: Projectile,
+            key: key,
+            quantity: maxAmount,
+            active: false,
+            visible: false
+        });
+
+        Phaser.Actions.SetXY(this.getChildren(), -100, -100);
+    }
+}

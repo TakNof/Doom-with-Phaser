@@ -15,7 +15,6 @@ class Camera{
         this.fov = fov;
         this.player = player;
         this.setPlayerGlobalAngle();
-        this.setArcAngles();
 
         this.fovArcLenght = canvasSize.width;
 
@@ -225,10 +224,10 @@ class Camera{
      */
     draw3DWorld(){
         this.player.getGraphicator.redraw3DScaling(this.player.getRayData.distance, this.player.getRayData.typeOfHit);
-        // this.player.getGraphicator.ableRectanglesVisibility(false);
+        this.player.getGraphicator.ableRectanglesVisibility(false); 
 
         if(this.enemies2D[0] instanceof Enemy){
-            // this.drawEnemy();
+            this.drawEnemy();
         }
     }
 
@@ -305,9 +304,7 @@ class Camera{
         let amountObjectsToDraw = 0
         for(let enemy of this.enemies2D){
             amountObjectsToDraw += 1;
-            for(let projectile of enemy.getProjectiles2D.getChildren()){
-                amountObjectsToDraw += 1;
-            }
+            amountObjectsToDraw += enemy.getProjectiles2D.getChildren().length;
         }
 
         let enemiesWithAttributes = Array(this.amountEnemies2D);
