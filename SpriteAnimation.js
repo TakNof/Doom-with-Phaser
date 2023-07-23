@@ -19,7 +19,7 @@ class SpriteAnimation{
      */
     setAnimationFrames(end, framerate, repeat = 0){
         this.scene.anims.create({
-            key: this.getAnimationName,
+            key: this.getAnimationName(),
             frames: this.scene.anims.generateFrameNames(this.spriteName, {
                 start: 0,
                 end: end,
@@ -42,7 +42,7 @@ class SpriteAnimation{
      * Gets the animation name.
      * @returns {String}
      */
-    get getAnimationName(){
+    getAnimationName(){
         return this.animationName;
     }
 }

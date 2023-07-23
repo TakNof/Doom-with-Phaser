@@ -216,18 +216,16 @@ class Camera{
         return this.projectilesDistances;
     }
     
-
-
     
     /**
      * This method draws the whole 3D world graphication.
      */
     draw3DWorld(){
-        this.player.getGraphicator.redraw3DScaling(this.player.getRayData.distance, this.player.getRayData.typeOfHit);
-        this.player.getGraphicator.ableRectanglesVisibility(false); 
+        this.player.getGraphicator().redraw3DScaling(this.player.getRayData().distance, this.player.getRayData().typeOfHit);
+        this.player.getGraphicator().ableRectanglesVisibility(false); 
 
         if(this.enemies2D[0] instanceof Enemy){
-            this.drawEnemy();
+            // this.drawEnemy();
         }
     }
 

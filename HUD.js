@@ -34,25 +34,25 @@ class HUD{
 
     /**
      * Sets the text of the HUD health indicator.
-     * @param {Number} value
+     * @param {String} element The name of the HUD element to set the value.
+     * @param {Number} value The value of the element indicator.
+     * @param {Boolean} isFixed If the value needs to be fixed.
+     * @param {String} extraFormat The string with extra formatting.
      */
-    set setHealthValue(value){
-        this.elements["health"].setText(`Health ${value.toFixed(1)}%`);        
-    }
+    setHUDElementValue(element, value, isFixed, extraFormat = ""){
+        element = element.toLowerCase();
+        if(isFixed){
+            value = value.toFixed(1);
+        }
 
-    /**
-     * Sets the text of the HUD ammo indicator.
-     * @param {Number} value
-     */
-    set setAmmoValue(value){
-        this.elements["ammo"].setText(`Ammo ${value}`);
+        this.elements[element].setText(`${element.charAt(0).toUpperCase() + element.slice(1)} ${value}${extraFormat}`);        
     }
 
     /**
      * Sets the text of the HUD enemy health indicator. 
      * @param {Enemy[]} enemies 
      */
-    set setEnemiesHealthArray(enemies){
+    setEnemiesHealthArray(enemies){
         if(enemies !== undefined){
             if(Array.isArray(enemies)){
                 this.enemiesLength = enemies.length;
@@ -72,7 +72,7 @@ class HUD{
      * Sets array of text of the HUD enemy health indicator. 
      * @param {Enemy[]} enemies 
      */
-    set setEnemiesHealthValue(enemies){
+    setEnemiesHealthValue(enemies){
         for(let i = 0; i < this.enemiesLength; i++){
             if(enemies[i].getEnemy3D.getPositionX >= 0  && enemies[i].getEnemy3D.getPositionX <= canvasSize.width){
                 this.enemiesHealthValue[i].setVisible(true);
@@ -89,7 +89,7 @@ class HUD{
      * Gets array of text of the hHUD enemy health indicator.
      * @returns {Enemy[]}
      */
-    get getEnemiesHealthValue(){
+    getEnemiesHealthValue(){
         return this.enemiesHealthValue;
     }
 

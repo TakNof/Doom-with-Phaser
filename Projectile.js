@@ -13,19 +13,19 @@ class Projectile extends Phaser.Physics.Arcade.Sprite{
         this.setVisible(true);
         this.setCollideWorldBounds(true);
 
-        this.body.reset(livingSprite.getPositionX, livingSprite.getPositionY);
+        this.body.reset(livingSprite.getPositionX(), livingSprite.getPositionY());
         
-        this.body.onWorldBounds = true;
-        this.body.world.on('worldbounds', function(body) {
-            if (body.gameObject === this) {
-                this.destroy();
-            }
-        }, this);
+        // this.body.onWorldBounds = true;
+        // this.body.world.on('worldbounds', function(body) {
+        //     if (body.gameObject === this) {
+        //         this.destroy();
+        //     }
+        // }, this);
         
         this.setXcomponent(livingSprite, velocity);
         this.setYcomponent(livingSprite, velocity);
-        this.body.setVelocityX(this.getXcomponent);
-        this.body.setVelocityY(this.getYcomponent);
+        this.body.setVelocityX(this.getXcomponent());
+        this.body.setVelocityY(this.getYcomponent());
     }
 
     /**
@@ -34,14 +34,14 @@ class Projectile extends Phaser.Physics.Arcade.Sprite{
      * @param {Number} velocity
      */
     setXcomponent(livingSprite, velocity){
-        this.Xcomponent = Math.cos(livingSprite.getRotation + livingSprite.getOriginInfo.angleOffset) * velocity;
+        this.Xcomponent = Math.cos(livingSprite.getRotation() + livingSprite.getOriginInfo().angleOffset) * velocity;
     }
 
     /**
      * Gets the X component of the velocity according to the rotation stablished of the living sprite.
      * @returns {number}
      */
-    get getXcomponent(){
+    getXcomponent(){
         return this.Xcomponent;
     }
 
@@ -51,14 +51,14 @@ class Projectile extends Phaser.Physics.Arcade.Sprite{
      * @param {Number} velocity
      */
     setYcomponent(livingSprite, velocity){
-        this.Ycomponent = Math.sin(livingSprite.getRotation + livingSprite.getOriginInfo.angleOffset) * velocity;
+        this.Ycomponent = Math.sin(livingSprite.getRotation() + livingSprite.getOriginInfo().angleOffset) * velocity;
     }
 
     /**
      * Gets the Y component of the velocity according to the rotation stablished of the living sprite.
      * @returns {number}
      */
-    get getYcomponent(){
+    getYcomponent(){
         return this.Ycomponent;
     }
 }
