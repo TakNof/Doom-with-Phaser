@@ -20,7 +20,7 @@ class Living extends Sprite{
         this.defaultVelocity = defaultVelocity;
 
         scene.physics.add.existing(this, false);
-        this.body.setSize(size, size, true);
+        this.setSize(size, size, true);
         this.body.setAllowRotation(true);
         this.body.setCollideWorldBounds(true);
 
@@ -38,15 +38,7 @@ class Living extends Sprite{
     getScene3D(){
         return this.scene3D;
     }
-
-    /**
-     * Sets the size of the sprite.
-     * @param {number} size
-     */
-    setSize(size){
-        this.body.size = size;
-    }
-
+    
     /**
      * Gets the size of the sprite.
      * @return {number}

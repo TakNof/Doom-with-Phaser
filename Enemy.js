@@ -326,7 +326,7 @@ class Enemy extends Living{
         let projectile = this.getProjectiles2D().getFirstDead();
 
         if(this.inSight && this.getAbleToShoot() && projectile){
-            this.getSpriteSounds("attack").setSoundPanning(this.getDistanceToPlayer(), this.angleToElement(player.getPosition()) + Math.PI, player.getAngle());
+            this.getSpriteSounds("attack").setSoundPanning(this.getDistanceToPlayer(), player.angleToElement(this.getPosition()), player.getAngleRadians());
             let time = this.getScene().time.now - this.creationTime;
 
             if(time - this.lastShotTimer > properties.delay + randNumber*1000){

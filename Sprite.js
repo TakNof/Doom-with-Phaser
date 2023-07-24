@@ -138,5 +138,9 @@ class Sprite extends Phaser.Physics.Arcade.Sprite{
      */
     setScaleY(value){
         this.scaleY = value;
-    }  
+    }
+
+    getAngleRadians(){
+        return this.angle*Math.PI/180;
+    }
 }

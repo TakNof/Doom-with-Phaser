@@ -363,7 +363,7 @@ class Player extends Living{
             }
 
             if(this.getDebug() === true){
-                for(let ray of this.getSpriteRays.rays){
+                for(let ray of this.getSpriteRays().rays){
                     ray.body.setVelocityX(this.getVelocityX());
                     ray.body.setVelocityY(this.getVelocityY());
                 }

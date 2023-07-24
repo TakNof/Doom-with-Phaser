@@ -5,7 +5,7 @@ class Camera{
     /**
      * The constructor of Camera Class.
      * @param {Scene} scene The scene to render.
-     * @param {number} fov The view of the camera in radians. 
+     * @param {Number} fov The view of the camera in radians. 
      * @param {Player} player A player object from the Player Class.
      * @param {[Enemy]} enemies2D An array of enemy objects from the Enemy Class.
      */
@@ -73,7 +73,7 @@ class Camera{
      * Sets the angle of the player into global degrees scale, then the method setArcAngles is called.
      */
     setPlayerGlobalAngle(){
-        this.playerGlobalAngle = this.adjustAngleValue(this.player.getAngle + 3*Math.PI/2);
+        this.playerGlobalAngle = this.adjustAngleValue(this.player.getAngle() + 3*Math.PI/2);
         this.setArcAngles();
     }
 
@@ -222,7 +222,7 @@ class Camera{
      */
     draw3DWorld(){
         this.player.getGraphicator().redraw3DScaling(this.player.getRayData().distance, this.player.getRayData().typeOfHit);
-        this.player.getGraphicator().ableRectanglesVisibility(false); 
+        // this.player.getGraphicator().ableRectanglesVisibility(false); 
 
         if(this.enemies2D[0] instanceof Enemy){
             // this.drawEnemy();

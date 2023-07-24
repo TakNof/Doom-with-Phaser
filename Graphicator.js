@@ -32,9 +32,9 @@ class Graphicator{
     redraw3DScaling(rayDistance, typeOfHit) {
         //This method allows the recalculation of the 3D ray coordinates and redraws it.
         for(let i = 0; i < this.rectanglesAmount; i++){
-            this.setRectangleHeight = rayDistance[i];
-            this.rectangles[i].setPosition(this.rectanglesWidth/2 + i*this.rectanglesWidth, (0.8*canvasSize.height) - this.getRectangleHeight/2);
-            this.rectangles[i].setSize(this.rectanglesWidth, this.getRectangleHeight);
+            this.setRectangleHeight(rayDistance[i]);
+            this.rectangles[i].setPosition(this.rectanglesWidth/2 + i*this.rectanglesWidth, (0.8*canvasSize.height) - this.getRectangleHeight()/2);
+            this.rectangles[i].setSize(this.rectanglesWidth, this.getRectangleHeight());
     
             if(typeOfHit[i] === "vertical"){
                 this.rectangles[i].setFillStyle(colors.limeGreen);
@@ -48,7 +48,7 @@ class Graphicator{
      * This method sets the height required for the rectangle to be inbounds of the canvas.
      * @param {number} distance The distance between the sprite and the wall.
      */
-    set setRectangleHeight(distance){
+    setRectangleHeight(distance){
 
         //If the distance is infinite, we wouldn't draw the rectangle.
         //else we stablish the drawing height according to the block size
@@ -74,7 +74,7 @@ class Graphicator{
      * Gets the rectangle height.
      * @return {number}
      */
-    get getRectangleHeight(){
+    getRectangleHeight(){
         return this.drawHeight;
     }
 

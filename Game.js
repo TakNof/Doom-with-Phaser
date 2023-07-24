@@ -28,7 +28,7 @@ class Game2D extends Phaser.Scene{
         this.chaseDistance = 400;
         this.allowChase = true;
         this.allowShoot = true;
-        this.playerHealth = 100;
+        this.playerHealth = Infinity;
 
 
         //Stablishing the velocity standards for the player and enemies.
@@ -103,7 +103,7 @@ class Game2D extends Phaser.Scene{
         this.player.getRaycaster().setAngleStep(this.playerFOV);
 
         //Here we put the color of the rays of the player.
-        this.player.setDebug(false);
+        this.player.setDebug(true);
         this.player.setSpriteRays(colors.limeGreen);
 
         //here we create the graphicator of the raycaster of the player.
@@ -138,7 +138,7 @@ class Game2D extends Phaser.Scene{
         this.music.loop = true;
         // this.music.play();
 
-        this.sound.volume = 0.5;
+        this.sound.volume = 1;
     }
 
     update(){
@@ -162,8 +162,8 @@ class Game2D extends Phaser.Scene{
                 this.walls.evalCollision(enemy.getProjectiles2D(), enemy.getProjectiles3D());
 
                 enemy.evalProjectileCollision(this.player);
-                enemy.getSpriteSounds("death").setSoundPanning(enemy.getDistanceToPlayer(), enemy.angleToElement(this.player)+ Math.PI, this.player.getAngle());
-                enemy.getSpriteSounds("hurt").setSoundPanning(enemy.getDistanceToPlayer(), enemy.angleToElement(this.player) + Math.PI, this.player.getAngle());
+                enemy.getSpriteSounds("death").setSoundPanning(enemy.getDistanceToPlayer(), this.player.angleToElement(enemy.getPosition()), this.player.getAngleRadians())
+                enemy.getSpriteSounds("hurt").setSoundPanning(enemy.getDistanceToPlayer(), this.player.angleToElement(enemy.getPosition()), this.player.getAngleRadians())
 
                 if(enemy.getHealth() == 0){
                     enemy.waitToDestroy();
