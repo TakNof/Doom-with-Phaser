@@ -1,6 +1,6 @@
-class Projectile extends Phaser.Physics.Arcade.Sprite{
-    constructor(scene, x, y, key){
-        super(scene, x, y, key);
+class Projectile extends Sprite{
+    constructor(scene, x, y, key, depth = 1){
+        super(scene, {x: x, y: y}, key, depth);
     }
 
     /**

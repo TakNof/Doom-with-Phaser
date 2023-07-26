@@ -127,11 +127,16 @@ class WallsBuilder{
                 projectile.body.reset(-100, -100);
                 projectile.setActive(false);
                 projectile.setVisible(false);
+
                 if(projectiles3D){
-                    let index = projectiles2D.getChildren().indexOf(projectile);
-                    let projectile3D = projectiles3D.getChildren()[index];
-                    // projectile3D.destroy();
-                }
+                    let projectile3D = projectiles3D.getFirstAlive();
+
+                    if(projectile3D){
+                        projectile3D.body.reset(-100, -100); 
+                        projectile3D.setActive(false);
+                        projectile3D.setVisible(false);
+                    }
+                }               
             }
         );
     }

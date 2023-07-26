@@ -299,7 +299,7 @@ class Camera{
         /**
          * This for loop is used to analize the distance of each enemy and estimate the depth of drawing of the enemy
          */
-        let amountObjectsToDraw = 0
+        let amountObjectsToDraw = 0;
         for(let enemy of this.enemies2D){
             amountObjectsToDraw += 1;
             amountObjectsToDraw += enemy.getProjectiles2D.getChildren().length;
@@ -356,8 +356,8 @@ class Camera{
     }
 
     /**
-     * Due we need to calculate multiple elements comming from the enemy, create this general method with
-     * the stablished procedure.
+     * Due we need to calculate multiple elements comming from the enemy,
+     * we created this general method with the stablished procedure.
      * @param {Array} elements
      * @param {Array<Number>} anglePlayerToElement
      */

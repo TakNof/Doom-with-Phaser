@@ -20,7 +20,7 @@ class Living extends Sprite{
         this.defaultVelocity = defaultVelocity;
 
         scene.physics.add.existing(this, false);
-        this.setSize(size, size, true);
+        this.setOwnSize(size);
         this.body.setAllowRotation(true);
         this.body.setCollideWorldBounds(true);
 
@@ -33,18 +33,26 @@ class Living extends Sprite{
 
     /**
      * Gets the scene3D of the player.
-     * @returns scene3D 
+     * @returns {Phaser.Scene} 
      */
     getScene3D(){
         return this.scene3D;
     }
-    
+    /**
+     * Sets the size of the sprite.
+     * @param {Number} size 
+     */
+    setOwnSize(size){
+        this.size = size;
+        this.setSize(size, size, true);
+    }
+
     /**
      * Gets the size of the sprite.
      * @return {number}
      */
     getSize(){
-        return this.body.size;
+        return this.size;
     }
 
     /**
@@ -219,7 +227,7 @@ class Living extends Sprite{
      * @param {String} colorOfRays The color of the rays.
      */
     setSpriteRays(colorOfRays){
-        if(this.getDebug){
+        if(this.getDebug()){
             this.spriteRays = new Rays(this.getScene(), this.getRaysAmount(), this.getPosition(), colorOfRays);
             this.spriteRays.setInitialRayAngleOffset = this.getAngleOffset;
         }
@@ -252,18 +260,6 @@ class Living extends Sprite{
         return this.colliderElements;
     }
     
-    /**
-     * This method stablishes the angle of the living sprite respect to an element.
-     * @param {number} elementPosition The position of an element.
-     */
-    angleToElement(elementPosition){
-        if(this.getPositionX() > elementPosition.x){
-            return adjustAngleValue(Math.atan((this.getPositionY() - elementPosition.y)/(this.getPositionX() - elementPosition.x)) + Math.PI);
-        }else{
-            return adjustAngleValue(Math.atan((this.getPositionY() - elementPosition.y)/(this.getPositionX() - elementPosition.x)));
-        }
-    }
-
     /**
      * Sets the sprite sounds to be played.
      * @param {String} name

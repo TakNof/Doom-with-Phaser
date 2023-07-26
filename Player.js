@@ -94,7 +94,7 @@ class Player extends Living{
      * @param {Array<Enemy>} enemies2D 
      */
     setCamera(fov, enemies2D){
-        this.camera = new Camera(this.scene3D, fov, this, enemies2D);
+        this.camera = new Camera2(this.scene3D, fov, this);
     }
 
     /**
@@ -231,6 +231,9 @@ class Player extends Living{
 
         projectile3D.body.reset(-100, -100); 
 
+        projectile3D.setActive(false);
+        projectile3D.setVisible(false);
+
         let damage = bulletProperties.damage;
 
         if(currentDistance > distanceLimits.min && currentDistance < distanceLimits.max){
@@ -245,8 +248,6 @@ class Player extends Living{
         }
 
         this.addDamageReceived(damage);
-
-        console.log(this.getHealth());
 
         if(this.getHealth() - damage <= 0){
             this.setHealth(0);

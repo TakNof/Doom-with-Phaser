@@ -45,7 +45,7 @@ class Sprite extends Phaser.Physics.Arcade.Sprite{
 
     /**
      * Gets the sprite origin info.
-     * @return {{x: number, y: number, angleOffset: number}}
+     * @return {{x: Number, y: Number, angleOffset: Number}}
      */
     getOriginInfo(){
         return this.originInfo;
@@ -61,7 +61,7 @@ class Sprite extends Phaser.Physics.Arcade.Sprite{
 
     /**
      * Sets the position in X axis of the sprite.
-     * @param {number} value
+     * @param {Number} value
      */
     setPositionX(value){
         this.x = value;
@@ -69,7 +69,7 @@ class Sprite extends Phaser.Physics.Arcade.Sprite{
 
     /**
      * Gets the position in X axis of the sprite.
-     * @returns {number}
+     * @returns {Number}
      */
     getPositionX(){
         return this.x;
@@ -77,7 +77,7 @@ class Sprite extends Phaser.Physics.Arcade.Sprite{
 
     /**
      * Sets the position in Y axis of the sprite.
-     * @param {number} value
+     * @param {Number} value
      */
     setPositionY(value){
         this.y = value;
@@ -85,7 +85,7 @@ class Sprite extends Phaser.Physics.Arcade.Sprite{
 
     /**
      * Gets the position in Y axis of the sprite.
-     * @returns {number}
+     * @returns {Number}
      */
     getPositionY(){
         return this.y;
@@ -103,7 +103,7 @@ class Sprite extends Phaser.Physics.Arcade.Sprite{
 
     /**
      * Gets the position in X and Y axis of the sprite.
-     * @returns {number}
+     * @returns {Number}
      */
     getPosition(){
         return {x: this.x, y: this.y};
@@ -126,7 +126,7 @@ class Sprite extends Phaser.Physics.Arcade.Sprite{
 
     /**
      * Sets the scale of the sprite along the X axis.
-     * @param {number} value
+     * @param {Number} value
      */
     setScaleX(value){
         this.scaleX = value;
@@ -134,13 +134,29 @@ class Sprite extends Phaser.Physics.Arcade.Sprite{
 
     /**
      * Sets the scale of the sprite along the Y axis.
-     * @param {number} value
+     * @param {Number} value
      */
     setScaleY(value){
         this.scaleY = value;
     }
 
+    /**
+     * Gets the angle of the sprite in Radians.
+     * @returns {Number}
+     */
     getAngleRadians(){
         return this.angle*Math.PI/180;
+    }
+
+    /**
+     * This method stablishes the angle of the living sprite respect to an element.
+     * @param {Number} elementPosition The position of an element.
+     */
+    angleToElement(elementPosition){
+        if(this.getPositionX() > elementPosition.x){
+            return adjustAngleValue(Math.atan((this.getPositionY() - elementPosition.y)/(this.getPositionX() - elementPosition.x)) + Math.PI);
+        }else{
+            return adjustAngleValue(Math.atan((this.getPositionY() - elementPosition.y)/(this.getPositionX() - elementPosition.x)));
+        }
     }
 }

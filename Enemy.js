@@ -120,7 +120,7 @@ class Enemy extends Living{
     setProjectiles(){
         let amount = 5;
         this.enemyProjectiles = new ProjectileGroup(this.getScene(), "small_energy_bomb", amount);
-        this.enemyProjectiles3D = new ProjectileGroup(this.getScene(), "energy_bomb", amount);
+        this.enemyProjectiles3D = new ProjectileGroup(this.getScene3D(), "energy_bomb", amount);
     }
 
     /**
@@ -128,13 +128,6 @@ class Enemy extends Living{
      */
     getProjectiles2D(){
         return this.enemyProjectiles;
-    }
-
-    /**
-     * Sets the projectile 3D of the enemy.
-     */
-    setProjectiles3D(){
-        this.enemyProjectiles3D = this.getScene.physics.add.group();
     }
 
     /**
@@ -250,7 +243,7 @@ class Enemy extends Living{
     }
 
     waitToDestroy(){
-        if(this.getProjectiles2D().getChildren().length != 5){
+        if(this.getProjectiles2D().getFirstAlive()){
             this.setVisible(false);
             this.getEnemy3D().setVisible(false);
             this.body.enable = false;
@@ -284,57 +277,61 @@ class Enemy extends Living{
      * This method allows the enemy to have the basic controls of movement according to the stablished parameters.
      */
     move(playerPosition){
-        this.setVelocity(0);
-        this.setRayData();
-
-        if(this.getDebug() === true){
-            this.getSpriteRays().setVelocity(0);
-            this.getSpriteRays().redrawRay2D(this.getPosition(), this.getRayData());
-        }   
-
-        this.getRaycaster().setSpritePosition = this.getPosition();
-        
-        this.getRaycaster().setRayAngle = adjustAngleValue(this.angleToElement(playerPosition));
-        this.setDistanceToPlayer(playerPosition);
-
-        //We want the enemy to follow us if we are in range of sight and if the distance with the player is less than the distance
-        //with the wall.
-        if (this.allowChase && this.getDistanceToPlayer() <= this.chaseDistance &&  this.getDistanceToPlayer() > 200 && (this.getDistanceToPlayer() <this.getRayData().distance[0] || this.getRayData().distance[0] == undefined)) {           
-            this.setXcomponent(this.getOriginInfo().angleOffset);
-            this.setYcomponent(this.getOriginInfo().angleOffset);
-
-            this.setVelocityX(this.getXcomponent());
-            this.setVelocityY(this.getYcomponent());
-
+        if(this.active){
+            this.setVelocity(0);
+            this.setRayData();
+    
             if(this.getDebug() === true){
-                for(let ray of this.getSpriteRays().rays){
-                    ray.body.setVelocityX(this.getVelocityX());
-                    ray.body.setVelocityY(this.getVelocityY());
+                this.getSpriteRays().setVelocity(0);
+                this.getSpriteRays().redrawRay2D(this.getPosition(), this.getRayData());
+            }   
+    
+            this.getRaycaster().setSpritePosition = this.getPosition();
+            
+            this.getRaycaster().setRayAngle = adjustAngleValue(this.angleToElement(playerPosition));
+            this.setDistanceToPlayer(playerPosition);
+    
+            //We want the enemy to follow us if we are in range of sight and if the distance with the player is less than the distance
+            //with the wall.
+            if (this.allowChase && this.getDistanceToPlayer() <= this.chaseDistance &&  this.getDistanceToPlayer() > 200 && (this.getDistanceToPlayer() <this.getRayData().distance[0] || this.getRayData().distance[0] == undefined)) {           
+                this.setXcomponent(this.getOriginInfo().angleOffset);
+                this.setYcomponent(this.getOriginInfo().angleOffset);
+    
+                this.setVelocityX(this.getXcomponent());
+                this.setVelocityY(this.getYcomponent());
+    
+                if(this.getDebug() === true){
+                    for(let ray of this.getSpriteRays().rays){
+                        ray.body.setVelocityX(this.getVelocityX());
+                        ray.body.setVelocityY(this.getVelocityY());
+                    }
                 }
             }
-        }
-
-        if(this.getDistanceToPlayer() <= this.getChaseDistance() && this.getDistanceToPlayer() <this.getRayData().distance[0] || this.getRayData().distance[0] == undefined){
-            this.inSight = true;
-            this.setRotation(adjustAngleValue(this.angleToElement(playerPosition) - this.getOriginInfo().angleOffset));
-        }else{
-            this.inSight = false;
+    
+            if(this.getDistanceToPlayer() <= this.getChaseDistance() && this.getDistanceToPlayer() <this.getRayData().distance[0] || this.getRayData().distance[0] == undefined){
+                this.inSight = true;
+                this.setRotation(adjustAngleValue(this.angleToElement(playerPosition) - this.getOriginInfo().angleOffset));
+            }else{
+                this.inSight = false;
+            } 
         }
     }
 
     shoot(properties, randNumber, player){
         let projectile = this.getProjectiles2D().getFirstDead();
-
+        
         if(this.inSight && this.getAbleToShoot() && projectile){
             this.getSpriteSounds("attack").setSoundPanning(this.getDistanceToPlayer(), player.angleToElement(this.getPosition()), player.getAngleRadians());
             let time = this.getScene().time.now - this.creationTime;
 
             if(time - this.lastShotTimer > properties.delay + randNumber*1000){
-                this.getEnemy3D().play(this.getAnimations("attack").getAnimationName);
+                this.getEnemy3D().play(this.getAnimations("attack").getAnimationName());
                 this.lastShotTimer = time;
                 setTimeout(() =>{
-                    projectile.shoot(this, properties.velocity);
-                    this.getSpriteSounds("attack").playSound();
+                    if(this.active){
+                        projectile.shoot(this, properties.velocity);
+                        this.getSpriteSounds("attack").playSound();
+                    }
                 }, 300)
             }
         }

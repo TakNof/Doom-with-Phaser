@@ -20,7 +20,7 @@ class Game2D extends Phaser.Scene{
         this.playerFOVangleOffset = this.playerAngleOffset - this.playerFOV/2
 
         //Stablishing the enemy and its initial position.
-        this.amountEnemies = 1;
+        this.amountEnemies = 3;
 
         this.cacodemons;
 
@@ -90,8 +90,8 @@ class Game2D extends Phaser.Scene{
             game3D,
             {x: canvasSize.width/2, y: canvasSize.height/2, angleOffset: this.playerAngleOffset},
             "player",
-            this.wallBlockSize*2,
             0,
+            this.wallBlockSize*2,
             this.defaultVelocity,
             this.angleOperator,
             this.playerHealth,
@@ -103,7 +103,7 @@ class Game2D extends Phaser.Scene{
         this.player.getRaycaster().setAngleStep(this.playerFOV);
 
         //Here we put the color of the rays of the player.
-        this.player.setDebug(true);
+        this.player.setDebug(false);
         this.player.setSpriteRays(colors.limeGreen);
 
         //here we create the graphicator of the raycaster of the player.
