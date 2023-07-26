@@ -91,10 +91,9 @@ class Player extends Living{
     /**
      * Sets the camera of the player.
      * @param {number} fov in radians.
-     * @param {Array<Enemy>} enemies2D 
      */
-    setCamera(fov, enemies2D){
-        this.camera = new Camera2(this.scene3D, fov, this);
+    setCamera(fov){
+        this.camera = new Camera(this.scene3D, fov, this);
     }
 
     /**
@@ -117,7 +116,7 @@ class Player extends Living{
                 this.getScene3D(),
                 {x: canvasSize.width/2, y: canvasSize.height*0.9},
                 weapon.name,
-                80,
+                1000,
                 weapon.bulletProperties,
                 weapon.distanceLimits,
                 weapon.animationParams
@@ -128,6 +127,9 @@ class Player extends Living{
         this.setCurrentWeapon(this.weapons[0]);        
     }
 
+    /**
+     * Allow the player to switch among the weapons.
+     */
     switchWeapons(){
         if(this.keyShift.isDown){
             let time = this.getScene().time.now;

@@ -17,17 +17,17 @@ class HUD{
         let iterations = 0;
         this.elements = {};
         for(let value of elements){
-            this.elements[value] = new HUDText(this.scene, canvasSize.width - 280, 50*iterations+50, "", this.style, 80, {x: 0, y:1});
+            this.elements[value] = new HUDText(this.scene, canvasSize.width - 280, 50*iterations+50, "", this.style, 1000, {x: 0, y:1});
             iterations++;
         }
     
-        this.healthValue = new HUDText(this.scene, canvasSize.width - 280, 0.01*canvasSize.height, "", this.style, 80, 0);
+        this.healthValue = new HUDText(this.scene, canvasSize.width - 280, 0.01*canvasSize.height, "", this.style, 1000, 0);
 
-        this.deathText = new HUDText(this.scene, -canvasSize.width/2, -canvasSize.height, "YOU DIED", this.deathStyle, 80);
-        this.victoryText = new HUDText(this.scene,-canvasSize.width/2, -canvasSize.height, "YOU WON", this.victoryStyle, 80);
+        this.deathText = new HUDText(this.scene, -canvasSize.width/2, -canvasSize.height, "YOU DIED", this.deathStyle);
+        this.victoryText = new HUDText(this.scene,-canvasSize.width/2, -canvasSize.height, "YOU WON", this.victoryStyle);
 
-        this.hurtDamageRedScreen = this.scene.add.rectangle(canvasSize.width/2, canvasSize.height/2, canvasSize.width, canvasSize.height, colors.crimsonRed, 0).setDepth(80);
-        this.healDamageRedScreen = this.scene.add.rectangle(canvasSize.width/2, canvasSize.height/2, canvasSize.width, canvasSize.height, colors.limeGreen, 0).setDepth(80);
+        this.hurtDamageRedScreen = this.scene.add.rectangle(canvasSize.width/2, canvasSize.height/2, canvasSize.width, canvasSize.height, colors.crimsonRed, 0).setDepth(1000);
+        this.healDamageRedScreen = this.scene.add.rectangle(canvasSize.width/2, canvasSize.height/2, canvasSize.width, canvasSize.height, colors.limeGreen, 0).setDepth(1000);
 
         this.setEnemiesHealthArray = enemies;
     }
@@ -62,7 +62,7 @@ class HUD{
 
             this.enemieselem = Array(this.enemiesLength);
             for(let i = 0; i < this.enemiesLength; i++){
-                this.enemiesHealthValue[i] = this.scene.add.text(0, 0, "", this.style).setDepth(80);
+                this.enemiesHealthValue[i] = this.scene.add.text(0, 0, "", this.style).setDepth(1000);
                 this.enemiesHealthValue[i].setOrigin(0.5);
             }
         }
@@ -78,7 +78,7 @@ class HUD{
                 this.enemiesHealthValue[i].setVisible(true);
                 this.enemiesHealthValue[i].x = enemies[i].getEnemy3D.getPositionX;
                 this.enemiesHealthValue[i].y = enemies[i].getEnemy3D.getPositionY;
-                this.enemiesHealthValue[i].setText(`${enemies[i].getHealth.toFixed(1)}%\n${Math.round(enemies[i].getDistanceToPlayer)}`);       
+                this.enemiesHealthValue[i].setText(`${enemies[i].getHealth.toFixed(1)}%\n${Math.round(enemies[i].getDistanceToPlayer())}`);       
             }else{
                 this.enemiesHealthValue[i].setVisible(false);
             }
@@ -138,10 +138,10 @@ class HUD{
             let iterations = 0;
             for(let typeScore in score){
                 if(typeScore === "totalScore"){
-                    this.scoreText = new HUDText(this.scene, canvasSize.width/2, 80*iterations+300, `YOUR SCORE: ${score[typeScore]}`, currentStyle, 80);
+                    this.scoreText = new HUDText(this.scene, canvasSize.width/2, 80*iterations+300, `YOUR SCORE: ${score[typeScore]}`, currentStyle);
                     this.scoreText.setStyle({fontSize: "40px"});
                 }else{
-                    let specifiedScore = new HUDText(this.scene, canvasSize.width/2, 80*iterations+300, `${score[typeScore]}`, currentStyle, 80);
+                    let specifiedScore = new HUDText(this.scene, canvasSize.width/2, 80*iterations+300, `${score[typeScore]}`, currentStyle);
                     specifiedScore.setStyle({fontSize: "32px"});
                 }
                 iterations ++;
@@ -161,7 +161,7 @@ class HUDText extends Phaser.GameObjects.Text{
      * @param {Number} depth The depth to place the text at.
      * @param {{x: Number, y: Number} | {both: Number}} origin The origin anchor to place the text at.
      */
-    constructor(scene, x, y, text, style, depth = 0, origin = {both: 0.5}){
+    constructor(scene, x, y, text, style, depth = 1000, origin = {both: 0.5}){
         super(scene, x, y, text, style);
         
         this.setDepth(depth);

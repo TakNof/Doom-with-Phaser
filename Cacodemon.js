@@ -49,7 +49,7 @@ class Cacodemon{
                 enemyPosition.angleOffset = enemyAngleOffset;
 
                 //Here we create an enemy.
-                this.enemies[enemiesPlaced] =  new Enemy(this.scene, this.scene3D, enemyPosition, "small_cacodemon", 1, this.blockSize*2, this.defaultVelocity, this.chaseDistance, this.allowChase);
+                this.enemies[enemiesPlaced] =  new Enemy(this.scene, this.scene3D, enemyPosition, "small_cacodemon", 1,     this.blockSize*2, this.defaultVelocity, this.chaseDistance, this.allowChase);
                 
                 let enemy = this.enemies[enemiesPlaced];
 

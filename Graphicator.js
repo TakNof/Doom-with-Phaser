@@ -41,6 +41,8 @@ class Graphicator{
             }else{
                 this.rectangles[i].setFillStyle(colors.DarkGreen);
             }
+
+            this.rectangles[i].setDepth(1000 - (rayDistance[i]/10).toFixed(0));
         }
     }
 

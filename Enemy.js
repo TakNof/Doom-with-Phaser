@@ -211,13 +211,13 @@ class Enemy extends Living{
 
         if(currentDistance > distanceLimits.min && currentDistance < distanceLimits.max){
             damage *= 220/currentDistance;
-            console.log(`${this} Normal damage ${damage}`);
+            // console.log(`${this} Normal damage ${damage}`);
         }else if(currentDistance >= distanceLimits.max){
             damage *= 1/distanceLimits.max;
-            console.log(`${this} Minimal damage ${damage}`);
+            // console.log(`${this} Minimal damage ${damage}`);
         }else if(currentDistance <= distanceLimits.min){
             damage *= bulletProperties.critical * 220/currentDistance;
-            console.log(`${this} Critical damage ${damage}`);
+            // console.log(`${this} Critical damage ${damage}`);
             critical = true;
         }
 
@@ -337,3 +337,19 @@ class Enemy extends Living{
         }
     }
 }
+
+// class ProjectileGroup extends Phaser.Physics.Arcade.Group{
+//     constructor(scene, key, maxAmount){
+//         super(scene.physics.world, scene);
+
+//         this.maxSize = maxAmount;
+
+//         this.createMultiple({
+//             classType: Enemy,
+//             key: key,
+//             quantity: maxAmount,
+//             active: false,
+//             visible: false
+//         });
+//     }
+// }

@@ -9,7 +9,7 @@ class Game2D extends Phaser.Scene{
         this.walls;
         this.wallOrder;
         this.wallBlockSize = 32;
-        this.amountWalls = 12;
+        this.amountWalls = 24;
         this.generateWalls = true;
         this.generateRandomWalls = true;
 
@@ -20,7 +20,7 @@ class Game2D extends Phaser.Scene{
         this.playerFOVangleOffset = this.playerAngleOffset - this.playerFOV/2
 
         //Stablishing the enemy and its initial position.
-        this.amountEnemies = 3;
+        this.amountEnemies = 12;
 
         this.cacodemons;
 
@@ -28,17 +28,17 @@ class Game2D extends Phaser.Scene{
         this.chaseDistance = 400;
         this.allowChase = true;
         this.allowShoot = true;
-        this.playerHealth = Infinity;
+        this.playerHealth = 100;
 
 
         //Stablishing the velocity standards for the player and enemies.
         this.defaultVelocity = 300;
 
         //Rotation coeficient.
-        this.angleOperator = 4;
+        this.angleOperator = 3.5;
 
         //Stablishing the raycaster elements.
-        this.raysAmount = 64;
+        this.raysAmount = 100;
 
         this.music; 
     }
@@ -64,7 +64,7 @@ class Game2D extends Phaser.Scene{
         this.load.audio("at_dooms_gate", "assets/music/at_dooms_gate.wav");
 
         
-        // this.scene.setVisible(false);
+        this.scene.setVisible(false);
         // this.game.canvas.style.display = 'none';
     }
 
@@ -136,9 +136,9 @@ class Game2D extends Phaser.Scene{
         this.music = this.sound.add('at_dooms_gate');
         this.music.setVolume(0.5);
         this.music.loop = true;
-        // this.music.play();
+        this.music.play();
 
-        this.sound.volume = 1;
+        this.sound.volume = 0.2;
     }
 
     update(){

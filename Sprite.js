@@ -44,6 +44,14 @@ class Sprite extends Phaser.Physics.Arcade.Sprite{
     }
 
     /**
+     * Gets the depth of the sprite.
+     * @returns {Number}
+     */
+    getDepth(){
+        return this.depth;
+    }
+
+    /**
      * Gets the sprite origin info.
      * @return {{x: Number, y: Number, angleOffset: Number}}
      */
