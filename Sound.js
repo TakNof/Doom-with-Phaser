@@ -12,8 +12,6 @@ class Sound{
         if(isNaN(playerToEnemyAngle)){
             x = 0;
         }else{
-            playerToEnemyAngle = adjustAngleValue(playerToEnemyAngle);
-
             let angleAdjustedFromPlayer = adjustAngleValue(playerToEnemyAngle - playerAngle);
             
             x = Math.cos(angleAdjustedFromPlayer) * distanceToPlayer;

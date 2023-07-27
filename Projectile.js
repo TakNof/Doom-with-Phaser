@@ -1,62 +1,82 @@
-class Projectile extends Living{
-    
+class Projectile extends Sprite{
+    constructor(scene, x, y, key, depth = 1){
+        super(scene, {x: x, y: y}, key, depth);
+    }
+
     /**
-    * The constructor of Projectile Class.
-    * @constructor
-    * @param {Scene} scene The current scene of the game to place the sprite.
-    * @param {Object} originInfo  A list with the initial positioning information for the sprite.
-    * @param {string} spriteImgStr An str of the image name given in the preload method of the main class.
-    * @param {number}size The size of the sprite in pixels.
-    * @param {number} depth The depth of rendering of the sprite.
-    * @param {number} defaultVelocity The default velocity for the living sprite.
-    * 
-    */
-    constructor(scene, originInfo, spriteImgStr, size, depth, defaultVelocity){
-        super(scene, originInfo, spriteImgStr, size, depth, defaultVelocity);
+     * This method allows to shoot the projectile.
+     * @param {Living} livingSprite
+     * @param {Number} velocity
+     */
+    shoot(livingSprite, velocity){
+        this.setActive(true);
+        this.setVisible(true);
+        this.setCollideWorldBounds(true);
+
+        this.body.reset(livingSprite.getPositionX(), livingSprite.getPositionY());
         
-        this.getSprite.body.onWorldBounds = true;
-        this.getSprite.body.world.on('worldbounds', function(body) {
-            if (body.gameObject === this.getSprite) {
-                this.getSprite.destroy();
-            }
-        }, this);
+        // this.body.onWorldBounds = true;
+        // this.body.world.on('worldbounds', function(body) {
+        //     if (body.gameObject === this) {
+        //         this.destroy();
+        //     }
+        // }, this);
+        
+        this.setXcomponent(livingSprite, velocity);
+        this.setYcomponent(livingSprite, velocity);
+        this.body.setVelocityX(this.getXcomponent());
+        this.body.setVelocityY(this.getYcomponent());
     }
 
     /**
-     * Sets the sprite of the projectile which will be its representation in 3D camera.
-     * @param {number} positionX 
-     * @param {number} positionY 
-     * @param {String} projectileImgStr 
-     * @param {boolean} visible 
+     * Sets the X component of the velocity according to the rotation stablished of the living sprite.
+     * @param {Living} livingSprite
+     * @param {Number} velocity
      */
-    setProjectile3D(scene3D, positionX, positionY, ProjectileImgStr, visible = false){
-        this.sprite3D = new Sprite(scene3D, {x: positionX, y: positionY}, ProjectileImgStr, this.getSize, 3)
-        this.sprite3D.setVisible = visible;
+    setXcomponent(livingSprite, velocity){
+        this.Xcomponent = Math.cos(livingSprite.getRotation() + livingSprite.getOriginInfo().angleOffset) * velocity;
     }
 
     /**
-     * Gets the sprite of the Projectile which will be its representation in 3D camera.
+     * Gets the X component of the velocity according to the rotation stablished of the living sprite.
+     * @returns {number}
      */
-    get getProjectile3D(){
-        return this.sprite3D;
+    getXcomponent(){
+        return this.Xcomponent;
     }
 
+    /**
+     * Sets the Y component of the velocity according to the rotation stablished of the living sprite.
+     * @param {Living} livingSprite
+     * @param {Number} velocity
+     */
+    setYcomponent(livingSprite, velocity){
+        this.Ycomponent = Math.sin(livingSprite.getRotation() + livingSprite.getOriginInfo().angleOffset) * velocity;
+    }
 
     /**
-     * This method allos to shoot the projectile.
-     * @param {Living} livingSprite 
+     * Gets the Y component of the velocity according to the rotation stablished of the living sprite.
+     * @returns {number}
      */
-    shootProjectile(livingSprite){
-        this.setPositionX = livingSprite.getPositionX;
-        this.setPositionY = livingSprite.getPositionY;
+    getYcomponent(){
+        return this.Ycomponent;
+    }
+}
 
-        this.getSprite.setActive(true);
-        this.getSprite.setVisible(true);
+class ProjectileGroup extends Phaser.Physics.Arcade.Group{
+    constructor(scene, key, maxAmount){
+        super(scene.physics.world, scene);
 
-        this.setRotation = livingSprite.getRotation;
-        this.setXcomponent();
-        this.setYcomponent();
-        this.setVelocityX = this.getXcomponent;
-        this.setVelocityY = this.getYcomponent;
+        this.maxSize = maxAmount;
+
+        this.createMultiple({
+            classType: Projectile,
+            key: key,
+            quantity: maxAmount,
+            active: false,
+            visible: false
+        });
+
+        Phaser.Actions.SetXY(this.getChildren(), -100, -100);
     }
 }

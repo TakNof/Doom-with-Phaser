@@ -1,154 +1,37 @@
 /**
  * The sprite class will contain everything that a sprite needs to be placed into the website.
  */
-class Sprite{
+class Sprite extends Phaser.Physics.Arcade.Sprite{
     /**
     * The constructor of Sprite Class.
-    * @constructor
-    * @param {Scene} scene The scene to place the 2D sprites in the game.
-    * @param {Scene} scene3D The scene to place the 3D sprites in the game.
-    * @param {Object} originInfo  A list with the initial positioning information for the sprite.
-    * @param {string} spriteImgStr An str of the image name given in the preload method of the main class.
-    * @param {number} size The size of the sprite in pixels.
-    * @param {number} depth The depth of rendering of the sprite.
+    * @param {Phaser.Scene} scene The scene to place the 2D sprites in the game.
+    * @param {{x: Number, y: Number, ang: Number}} originInfo A literal Object with the initial positioning information for the sprite.
+    * @param {String} spriteImgStr An str of the image name given in the preload method of the main class.
+    * @param {Number} size The size of the sprite in pixels.
+    * @param {Number} depth The depth of rendering of the sprite.
     */
-    constructor(scene, originInfo, spriteImgStr, size, depth){
-        this.scene = scene;
+    constructor(scene, originInfo, spriteImgStr, depth){
+        super(scene, originInfo.x, originInfo.y, spriteImgStr);
+        this.setDepth(depth);
+
         this.originInfo = originInfo;
-        this.spriteImgStr = spriteImgStr;
-        this.size = size;
-        this.depth = depth;
-        this.sprite = scene.add.sprite(this.originInfo.x, this.originInfo.y, spriteImgStr, 0).setDepth(this.depth);
-
         this.debug = false;
+        scene.add.existing(this);
     }
 
     /**
-     * Gets the sprite of the object.
-     * @returns {Sprite}
+     * Gets the scene of the sprite.
+     * @return {Scene} The scene of the sprite.
      */
-    get getSprite(){
-        return this.sprite;
+    getScene(){
+        return this.scene;
     }
 
-    /**
-     * Gets the sprite name.
-     * @returns {String}
-     */
-    get getSpriteImgStr(){
-        return this.spriteImgStr;
-    }
-
-    /**
-     * Sets the size of the sprite.
-     * @param {number} size
-     */
-    set setSize(size){
-        this.size = size;
-    }
-
-    /**
-     * Gets the size of the sprite.
-     * @return {number}
-     */
-    get getSize(){
-        return this.size;
-    }
-
-    /**
-     * Sets the position in X axis of the sprite.
-     * @param {number} value
-     */
-    set setPositionX(value){
-        this.sprite.x = value;
-    }
-
-    /**
-     * Gets the position in X axis of the sprite.
-     * @returns {number}
-     */
-    get getPositionX(){
-        return this.sprite.x;
-    }
-
-    /**
-     * Sets the position in Y axis of the sprite.
-     * @param {number} value
-     */
-    set setPositionY(value){
-        this.sprite.y = value;
-    }
-
-    /**
-     * Gets the position in Y axis of the sprite.
-     * @returns {number}
-     */
-    get getPositionY(){
-        return this.sprite.y;
-    }
-
-    /**
-     * Gets the position in X and Y axis of the sprite.
-     * @returns {number}
-     */
-    get getPosition(){
-        return {x: this.sprite.x, y: this.sprite.y};
-    }
-
-    /**
-     * Sets the visibility of the sprite.
-     * @param {boolean} visible Whether the sprite is visible or not.
-     */
-    set setVisible(visible = true){
-        this.sprite.visible = visible;
-    }
-
-    /**
-     * Gets the visibility of the sprite.
-     * @returns {boolean}
-     */
-    get getVisible(){
-        return this.sprite.visible;
-    }
-
-    /**
-     * Sets the depth of rendering of the sprite.
-     * @param {number} value
-     */
-    set setDepth(value){
-        this.depth = value;
-        this.sprite.setDepth(this.depth);
-    }
-
-    /**
-     * Gets the depth of rendering of the sprite.
-     * @returns {number}
-     */
-    get getDepth(){
-        return this.depth;
-    }
-
-    /**
-     * Sets the scale of the sprite along the X axis.
-     * @param {number} value
-     */
-    set setScaleX(value){
-        this.sprite.scaleX = value;
-    }
-
-    /**
-     * Sets the scale of the sprite along the Y axis.
-     * @param {number} value
-     */
-    set setScaleY(value){
-        this.sprite.scaleY = value;
-    }  
-    
     /**
      * Sets if the sprite should show the rays or not.
-     * @param {boolean} value
+     * @param {Boolean} value
      */
-    set setDebug(value){
+    setDebug(value){
         this.debug = value;
     }
 
@@ -156,7 +39,132 @@ class Sprite{
      * Gets if the sprite should show the rays or not.
      * @returns {boolean}
      */
-    get getDebug(){
+    getDebug(){
         return this.debug;
+    }
+
+    /**
+     * Gets the depth of the sprite.
+     * @returns {Number}
+     */
+    getDepth(){
+        return this.depth;
+    }
+
+    /**
+     * Gets the sprite origin info.
+     * @return {{x: Number, y: Number, angleOffset: Number}}
+     */
+    getOriginInfo(){
+        return this.originInfo;
+    }
+
+    /**
+     * Gets the sprite image string.
+     * @return {String} The image string of the sprite.
+     */
+    getSpriteImgStr(){
+        return this.texture.key;
+    }
+
+    /**
+     * Sets the position in X axis of the sprite.
+     * @param {Number} value
+     */
+    setPositionX(value){
+        this.x = value;
+    }
+
+    /**
+     * Gets the position in X axis of the sprite.
+     * @returns {Number}
+     */
+    getPositionX(){
+        return this.x;
+    }
+
+    /**
+     * Sets the position in Y axis of the sprite.
+     * @param {Number} value
+     */
+    setPositionY(value){
+        this.y = value;
+    }
+
+    /**
+     * Gets the position in Y axis of the sprite.
+     * @returns {Number}
+     */
+    getPositionY(){
+        return this.y;
+    }
+
+    /**
+     * Sets the position in X and Y axis of the sprite.
+     * @param {Number} valueX
+     * @param {Number} valueY
+     */
+    setPosition(valueX, valueY = valueX){
+        this.setPositionX(valueX);
+        this.setPositionY(valueY);
+    }
+
+    /**
+     * Gets the position in X and Y axis of the sprite.
+     * @returns {Number}
+     */
+    getPosition(){
+        return {x: this.x, y: this.y};
+    }
+    /**
+     * Sets the visibility of the sprite.
+     * @param {boolean} visible Whether the sprite is visible or not.
+     */
+    setVisible(visible = true){
+        this.visible = visible;
+    }
+
+    /**
+     * Gets the visibility of the sprite.
+     * @returns {boolean}
+     */
+    getVisible(){
+        return this.visible;
+    }
+
+    /**
+     * Sets the scale of the sprite along the X axis.
+     * @param {Number} value
+     */
+    setScaleX(value){
+        this.scaleX = value;
+    }
+
+    /**
+     * Sets the scale of the sprite along the Y axis.
+     * @param {Number} value
+     */
+    setScaleY(value){
+        this.scaleY = value;
+    }
+
+    /**
+     * Gets the angle of the sprite in Radians.
+     * @returns {Number}
+     */
+    getAngleRadians(){
+        return this.angle*Math.PI/180;
+    }
+
+    /**
+     * This method stablishes the angle of the living sprite respect to an element.
+     * @param {Number} elementPosition The position of an element.
+     */
+    angleToElement(elementPosition){
+        if(this.getPositionX() > elementPosition.x){
+            return adjustAngleValue(Math.atan((this.getPositionY() - elementPosition.y)/(this.getPositionX() - elementPosition.x)) + Math.PI);
+        }else{
+            return adjustAngleValue(Math.atan((this.getPositionY() - elementPosition.y)/(this.getPositionX() - elementPosition.x)));
+        }
     }
 }

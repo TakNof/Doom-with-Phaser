@@ -7,36 +7,34 @@ class Enemy extends Living{
     /**
     * The constructor of Enemy Class.
     * @constructor
-    * @param {Scene} scene The scene to place the 2D sprites in the game.
-    * @param {Scene} scene3D The scene to place the 3D sprites in the game.
-    * @param {Object} enemyOriginInfo  A list with the initial positioning information for the sprite.
-    * @param {string} enemyImgStr An str of the image name given in the preload method of the main class.
-    * @param {number} size The size of the sprite in pixels.
-    * @param {number} depth The depth of rendering of the sprite.
-    * @param {number} defaultVelocity The default velocity for the living sprite.
+    * @param {Phaser.Scene} scene2D The scene to place the 2D sprites in the game.
+    * @param {Phaser.Scene} scene3D The scene to place the 3D sprites in the game.
+    * @param {{x: Number, y: Number, ang: Number}} originInfo A literal Object with the initial positioning information for the sprite.
+    * @param {String} spriteImgStr An str of the image name given in the preload method of the main class.
+    * @param {Number} depth The depth of rendering of the sprite.
+    * @param {Number} size The size of the sprite in pixels.
+    * @param {Number} defaultVelocity The default velocity for the living sprite.
+    * @param {Number} chaseDistance The distance where the player can be detect the player.
+    * @param {Boolean} allowChase Whether the enemy is allowed to chase the player or not. 
     */
-    constructor(scene, scene3D, enemyOriginInfo, enemyImgStr, size, depth, defaultVelocity, chaseDistance, allowChase){
-        super(scene, enemyOriginInfo, enemyImgStr, size, depth, defaultVelocity);
+    constructor(scene, scene3D, enemyOriginInfo, enemyImgStr, depth, size, defaultVelocity, chaseDistance, allowChase){
+        super(scene, enemyOriginInfo, enemyImgStr, depth, size, defaultVelocity);
 
         this.scene3D = scene3D;
 
-        this.setEnemy3D(canvasSize.width/2, canvasSize.height/2, "cacodemon");
-
-        this.setRotation = this.originInfo.ang;
-        this.setAngle = this.originInfo.ang;
+        this.setEnemy3D(canvasSize.width/2, canvasSize.height/2, enemyImgStr.replace("small_", ""));
 
         this.setXcomponent();
         this.setYcomponent();
 
-        this.setProjectiles2D();
-        this.setProjectiles3D();
+        this.setProjectiles();
 
-        this.chaseDistance = chaseDistance;
+        this.setChaseDistance(chaseDistance);
         this.allowChase = allowChase;
 
         this.inSight = false;
 
-        this.creationTime = this.scene.time.now;
+        this.creationTime = this.getScene().time.now;
         
         let animationsToSet = [
             {
@@ -57,22 +55,38 @@ class Enemy extends Living{
 
         this.setAnimations(animationsToSet);
 
-        this.setSpriteSounds("cacodemon", ["hurt", "death", "attack"]);
+        this.setSpriteSounds(enemyImgStr.replace("small_", ""), ["hurt", "death", "attack"]);
+    }
+
+    /**
+     * Sets the chase distance of the enemy
+     * @param {Number} chaseDistance
+     */
+    setChaseDistance(chaseDistance){
+        this.chaseDistance = chaseDistance;
+    }
+
+    /**
+     * Gets the chase distance of the enemy.
+     * @return {Number} chaseDistance
+     */
+    getChaseDistance(){
+        return this.chaseDistance
     }
 
     /**
      * Sets the distance between the player and the enemy using the player's position.
-     * @param {Object} player 
+     * @param {Object} playerPosition 
      */
-    set setDistanceToPlayer(player){
-        this.distanceToPlayer = this.hypoCalc(this.getPositionX, player.x, this.getPositionY, player.y);
+    setDistanceToPlayer(playerPosition){
+        this.distanceToPlayer = hypoCalc(this.getPositionX(), playerPosition.x, this.getPositionY(), playerPosition.y);
     }
 
     /**
      * Gets the distance between the player and the enemy.
      * @return {number}
      */
-    get getDistanceToPlayer(){
+    getDistanceToPlayer(){
         return this.distanceToPlayer;
     }
 
@@ -84,48 +98,43 @@ class Enemy extends Living{
      * @param {boolean} visible 
      */
     setEnemy3D(positionX, positionY, enemyImgStr, visible = false){
-        this.sprite3D = new Sprite(this.scene3D, {x: positionX, y: positionY}, enemyImgStr, this.getSize, 3)
-        this.sprite3D.setVisible = visible;
+        this.enemy3D = new Sprite(this.getScene3D(), {x: positionX, y: positionY, angleOffset: 0}, enemyImgStr, 3);
+        this.enemy3D.setVisible(visible);
     }
 
 
-    set setNewEnemy3D(newEnemy3D){
-        this.sprite3D.sprite = newEnemy3D;
+    setNewEnemy3D(newEnemy3D){
+        this.enemy3D = newEnemy3D;
     }
 
     /**
      * Gets the sprite of the enemy which will be its representation in 3D camera.
      */
-    get getEnemy3D(){
-        return this.sprite3D;
+    getEnemy3D(){
+        return this.enemy3D;
     }
 
     /**
      * Sets the group of projectiles of the enemy.
      */
-    setProjectiles2D(){
-        this.enemyProjectiles = this.scene.physics.add.group();
+    setProjectiles(){
+        let amount = 5;
+        this.enemyProjectiles = new ProjectileGroup(this.getScene(), "small_energy_bomb", amount);
+        this.enemyProjectiles3D = new ProjectileGroup(this.getScene3D(), "energy_bomb", amount);
     }
 
     /**
      * Gets the enemy projectiles.
      */
-    get getProjectiles2D(){
+    getProjectiles2D(){
         return this.enemyProjectiles;
-    }
-
-    /**
-     * Sets the projectile 3D of the enemy.
-     */
-    setProjectiles3D(){
-        this.enemyProjectiles3D = this.scene.physics.add.group();
     }
 
     /**
      * Gets the projectile 3D of the enemy.
      * @returns {Projectile}
      */
-    get getProjectiles3D(){
+    getProjectiles3D(){
         return this.enemyProjectiles3D;
     }
 
@@ -133,7 +142,7 @@ class Enemy extends Living{
      * Sets the projectile properties of the enemy.
      * @param {{damage: Number, velocity: Number, delay: Number, critical: Number}} bulletProperties
      */
-    set setBulletProperties(bulletProperties){
+    setBulletProperties(bulletProperties){
         this.bulletProperties = bulletProperties;
     }
 
@@ -141,7 +150,7 @@ class Enemy extends Living{
      * Gets the projectile properties of the enemy.
      * @return {{damage: Number, velocity: Number, delay: Number, critical: Number}}
      */
-    get getBulletProperties(){
+    getBulletProperties(){
         return this.bulletProperties;
     }
 
@@ -149,7 +158,7 @@ class Enemy extends Living{
      * Sets the projectile effective distances of the enemy.
      * @param {{min: Number, max: Number}} distanceLimits
      */
-    set setDistanceLimits(distanceLimits){
+    setDistanceLimits(distanceLimits){
         this.distanceLimits = distanceLimits;
     }
 
@@ -157,7 +166,7 @@ class Enemy extends Living{
      * Gets the projectile effective distances of the enemy.
      * @return {{min: Number, max: Number}}
      */
-    get getDistanceLimits(){
+    getDistanceLimits(){
         return this.distanceLimits;
     }
 
@@ -168,14 +177,14 @@ class Enemy extends Living{
     evalProjectileCollision(shooter){
         let thisObject = this;
 
-        this.scene.physics.collide(this.getSprite, shooter.getPlayerCurrentWeapon.getProjectiles,
+        this.getScene().physics.collide(this, shooter.getCurrentWeapon().getProjectiles(),
             function(sprite, projectile){
                 thisObject.__checkDamage(
                     shooter,
                     projectile,
-                    shooter.getPlayerCurrentWeapon.getBulletProperties,
-                    shooter.getPlayerCurrentWeapon.getDistanceLimits,
-                    thisObject.getDistanceToPlayer
+                    shooter.getCurrentWeapon().getBulletProperties(),
+                    shooter.getCurrentWeapon().getDistanceLimits(),
+                    thisObject.getDistanceToPlayer()
                 );
             }
         );
@@ -192,7 +201,11 @@ class Enemy extends Living{
      * @param {Number} currentDistance 
      */
     __checkDamage(shooter, projectile, bulletProperties, distanceLimits, currentDistance){
-        projectile.destroy();
+        projectile.body.reset(-100, -100); 
+
+        projectile.setActive(false);
+        projectile.setVisible(false);
+
         let damage = bulletProperties.damage;
         let critical = false;
 
@@ -210,9 +223,9 @@ class Enemy extends Living{
 
         shooter.addDamageDealed(damage);
 
-        if(this.getHealth - damage <= 0){
-            this.setHealth = 0;
-            this.setAbleToShoot = false;
+        if(this.getHealth() - damage <= 0){
+            this.setHealth(0);
+            this.setAbleToShoot(false);
 
             this.getSpriteSounds("death").playSound();
 
@@ -223,22 +236,22 @@ class Enemy extends Living{
             }
 
         }else{
-            this.setHealth = this.getHealth - damage;
+            this.setHealth(this.getHealth() - damage);
             this.getSpriteSounds("hurt").playSound();
-            this.getEnemy3D.getSprite.play(this.getAnimations("hurt").getAnimationName);
+            this.getEnemy3D().play(this.getAnimations("hurt").getAnimationName());
         }
     }
 
     waitToDestroy(){
-        if(this.getProjectiles2D.getChildren().length != 0){
-            this.setVisible = false;
-            this.getEnemy3D.setVisible = false;
-            this.getSprite.body.enable = false;
+        if(this.getProjectiles2D().getFirstAlive()){
+            this.setVisible(false);
+            this.getEnemy3D().setVisible(false);
+            this.body.enable = false;
             
         }else{
-            this.getEnemy3D.getSprite.destroy();
-            this.getSprite.destroy();
-            this.setIsAlive = false;
+            this.getEnemy3D().destroy();
+            this.isAlive = false;
+            this.destroy();
         }
     }
 
@@ -250,7 +263,7 @@ class Enemy extends Living{
         this.animations = {};
 
         for(let animation of animationsArray){
-            this.animations[animation.name] = new SpriteAnimation(this.scene3D, `${this.getEnemy3D.getSpriteImgStr}_${animation.name}`);
+            this.animations[animation.name] = new SpriteAnimation(this.getScene3D(), `${this.getEnemy3D().getSpriteImgStr()}_${animation.name}`);
             this.animations[animation.name].setAnimationFrames(animation.animationParams.end, animation.animationParams.framerate, animation.animationParams.repeat);
         }
 
@@ -264,67 +277,79 @@ class Enemy extends Living{
      * This method allows the enemy to have the basic controls of movement according to the stablished parameters.
      */
     move(playerPosition){
-        this.setVelocity = 0;
-        this.setRayData();
-
-        if(this.getDebug === true){
-            this.spriteRays.setVelocity = 0;
-            this.spriteRays.redrawRay2D(this.getPosition, this.getRayData);
-        }   
-
-        this.raycaster.setSpritePosition = this.getPosition;
-
-        this.setAngleToElement = playerPosition;
-        this.getRaycaster.setRayAngle = this.getAngleToElement;
-        this.setDistanceToPlayer = playerPosition;
-
-        //We want the enemy to follow us if we are in range of sight and if the distance with the player is less than the distance
-        //with the wall.
-        if (this.allowChase && this.getDistanceToPlayer <= this.chaseDistance &&  this.getDistanceToPlayer > 200 && (this.getDistanceToPlayer <this.getRayData.distance[0] || this.getRayData.distance[0] == undefined)) {           
-            this.setXcomponent();
-            this.setYcomponent();
-
-            this.setVelocityX = this.getXcomponent;
-            this.setVelocityY = this.getYcomponent;
-
-            if(this.getDebug === true){
-                for(let ray of this.spriteRays.rays){
-                    ray.body.setVelocityX(this.getVelocityX);
-                    ray.body.setVelocityY(this.getVelocityY);
+        if(this.active){
+            this.setVelocity(0);
+            this.setRayData();
+    
+            if(this.getDebug() === true){
+                this.getSpriteRays().setVelocity(0);
+                this.getSpriteRays().redrawRay2D(this.getPosition(), this.getRayData());
+            }   
+    
+            this.getRaycaster().setSpritePosition = this.getPosition();
+            
+            this.getRaycaster().setRayAngle = adjustAngleValue(this.angleToElement(playerPosition));
+            this.setDistanceToPlayer(playerPosition);
+    
+            //We want the enemy to follow us if we are in range of sight and if the distance with the player is less than the distance
+            //with the wall.
+            if (this.allowChase && this.getDistanceToPlayer() <= this.chaseDistance &&  this.getDistanceToPlayer() > 200 && (this.getDistanceToPlayer() <this.getRayData().distance[0] || this.getRayData().distance[0] == undefined)) {           
+                this.setXcomponent(this.getOriginInfo().angleOffset);
+                this.setYcomponent(this.getOriginInfo().angleOffset);
+    
+                this.setVelocityX(this.getXcomponent());
+                this.setVelocityY(this.getYcomponent());
+    
+                if(this.getDebug() === true){
+                    for(let ray of this.getSpriteRays().rays){
+                        ray.body.setVelocityX(this.getVelocityX());
+                        ray.body.setVelocityY(this.getVelocityY());
+                    }
                 }
             }
+    
+            if(this.getDistanceToPlayer() <= this.getChaseDistance() && this.getDistanceToPlayer() <this.getRayData().distance[0] || this.getRayData().distance[0] == undefined){
+                this.inSight = true;
+                this.setRotation(adjustAngleValue(this.angleToElement(playerPosition) - this.getOriginInfo().angleOffset));
+            }else{
+                this.inSight = false;
+            } 
         }
-
-        if(this.getDistanceToPlayer <= this.chaseDistance && this.getDistanceToPlayer <this.getRayData.distance[0] || this.getRayData.distance[0] == undefined){
-            this.inSight = true;
-        }else{
-            this.inSight = false;
-        }
-        
-        this.setAngle = this.getAngleToElement + this.angleOffset
-        this.setRotation = this.getAngle;
     }
 
     shoot(properties, randNumber, player){
-        if(this.inSight && this.getAbleToShoot){
-            this.getSpriteSounds("attack").setSoundPanning(this.getDistanceToPlayer, this.angleToElement + Math.PI, player.getAngle);
-            let time = this.scene.time.now - this.creationTime;
+        let projectile = this.getProjectiles2D().getFirstDead();
+        
+        if(this.inSight && this.getAbleToShoot() && projectile){
+            this.getSpriteSounds("attack").setSoundPanning(this.getDistanceToPlayer(), player.angleToElement(this.getPosition()), player.getAngleRadians());
+            let time = this.getScene().time.now - this.creationTime;
 
-            if(time - this.lastShotTimer > properties.delay + randNumber*100){
-                this.getEnemy3D.getSprite.play(this.getAnimations("attack").getAnimationName);
+            if(time - this.lastShotTimer > properties.delay + randNumber*1000){
+                this.getEnemy3D().play(this.getAnimations("attack").getAnimationName());
                 this.lastShotTimer = time;
                 setTimeout(() =>{
-                    let projectile = new Projectile(this.scene, this.getPosition, "small_energy_bomb", 16, 80, properties.velocity);
-                    this.getProjectiles2D.add(projectile.getSprite);
-
-                    projectile.setProjectile3D(this.scene3D, canvasSize.width/2, canvasSize.width/2, "energy_bomb");            
-                    this.getProjectiles3D.add(projectile.getProjectile3D.getSprite);
-
-                    projectile.shootProjectile(this);
-
-                    this.getSpriteSounds("attack").playSound();
+                    if(this.active){
+                        projectile.shoot(this, properties.velocity);
+                        this.getSpriteSounds("attack").playSound();
+                    }
                 }, 300)
             }
         }
     }
 }
+
+// class ProjectileGroup extends Phaser.Physics.Arcade.Group{
+//     constructor(scene, key, maxAmount){
+//         super(scene.physics.world, scene);
+
+//         this.maxSize = maxAmount;
+
+//         this.createMultiple({
+//             classType: Enemy,
+//             key: key,
+//             quantity: maxAmount,
+//             active: false,
+//             visible: false
+//         });
+//     }
+// }

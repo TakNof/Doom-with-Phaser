@@ -36,7 +36,7 @@ const shotgun = {
         max: 1000
     },
     animationParams:{
-        end: 9,
+        end: 8,
         framerate: 10,
     },
     soundDir: "./assets/weapons/shotgun/Sounds/shotgun_sound.wav",
@@ -86,11 +86,23 @@ function getRndInteger(min, max) {
  * @returns {Number}
  */
 function adjustAngleValue(angle){
-        if(angle < 0){
-            angle += 2*Math.PI;
-        }else if(angle > 2*Math.PI){
-            angle -= 2*Math.PI;
-        }
-
-        return angle;
+    if(angle < 0){
+        angle += 2*Math.PI;
+    }else if(angle > 2*Math.PI){
+        angle -= 2*Math.PI;
     }
+
+    return angle;
+}
+
+/**
+ * This method calculates the distance between 2 coordinates.
+ * @param {number} x1 The x coordinate of the first sprite.  
+ * @param {number} x2 The x coordinate of the second sprite. 
+ * @param {number} y1 The y coordinate of the first sprite. 
+ * @param {number} y2 The y coordinate of the second sprite. 
+ * @returns {number} The hyphypotenuse according to the specified coordinates.
+ */
+function hypoCalc(x1, x2, y1, y2){
+    return Math.sqrt(Math.pow(x1 - x2, 2) + Math.pow(y1 - y2, 2))
+}

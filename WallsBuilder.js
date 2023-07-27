@@ -38,6 +38,16 @@ class WallsBuilder{
             let blockExtension = {x: 0, y: 0};
             let wallPosition = {x: 0, y: 0};
 
+            //These loops frame the map section of the canvas to not let the player getting out.
+            for(let k = 0; k < this.wallNumberRatio.x; k++){
+                this.wallMatrix[0][k] = true;
+                this.wallMatrix[this.wallNumberRatio.y - 1][k] = true;
+            }
+            for(let j = 0; j < this.wallNumberRatio.y; j++){
+                this.wallMatrix[j][0] = true;
+                this.wallMatrix[j][this.wallNumberRatio.x - 1] = true;
+            }
+
             for(let i = 0; i < this.amountWalls; i++){
                 //within this loop we generate the walls through random positioning
                 //and scale of each wall.
@@ -76,27 +86,16 @@ class WallsBuilder{
                         this.wallMatrix[j][k] = true;
                     }
                 }
+            }
 
-                //These loops frame the map section of the canvas to not let the player getting out.
-                for(let k = 0; k < this.wallNumberRatio.x; k++){
-                    this.wallMatrix[0][k] = true;
-                    this.wallMatrix[this.wallNumberRatio.y - 1][k] = true;
-                }
-                for(let j = 0; j < this.wallNumberRatio.y; j++){
-                    this.wallMatrix[j][0] = true;
-                    this.wallMatrix[j][this.wallNumberRatio.x - 1] = true;
-                }
-
-                //Now with the wall positions being true in the matrix the only thing that lefts to do is to
-                //traverse the matrix looking for the true values, if found, a wall object will be generated.
-                for(let i = 0; i < this.wallNumberRatio.y; i++){
-                    for(let j = 0; j < this.wallNumberRatio.x; j++){
-                        if(this.wallMatrix[i][j] === true){
-                            wallPosition.x = (j*32) + 16;
-                            wallPosition.y = (i*32) + 16;
-                            this.walls.create(wallPosition.x, wallPosition.y, new Sprite(this.scene, wallPosition, this.spriteImgStr, this.blockSize, 1));
-                            // walls.create(wallPosition.x , wallPosition.y, this.add.sprite(wallPosition.x , wallPosition.y, "wall").setDepth(1));
-                        }
+            //Now with the wall positions being true in the matrix the only thing that lefts to do is to
+            //traverse the matrix looking for the true values, if found, a wall object will be generated.
+            for(let i = 0; i < this.wallNumberRatio.y; i++){
+                for(let j = 0; j < this.wallNumberRatio.x; j++){
+                    if(this.wallMatrix[i][j] === true){
+                        wallPosition.x = (j*32) + 16;
+                        wallPosition.y = (i*32) + 16;
+                        this.walls.create(wallPosition.x, wallPosition.y, new Sprite(this.scene, wallPosition, this.spriteImgStr, 1));
                     }
                 }
             }
@@ -125,12 +124,19 @@ class WallsBuilder{
     evalCollision(projectiles2D, projectiles3D = undefined){
         this.scene.physics.collide(this.walls, projectiles2D,
             function(sprite, projectile){
+                projectile.body.reset(-100, -100);
+                projectile.setActive(false);
+                projectile.setVisible(false);
+
                 if(projectiles3D){
-                    let index = projectiles2D.getChildren().indexOf(projectile);
-                    let projectile3D = projectiles3D.getChildren()[index];
-                    projectile3D.destroy();
-                }
-                projectile.destroy();
+                    let projectile3D = projectiles3D.getFirstAlive();
+
+                    if(projectile3D){
+                        projectile3D.body.reset(-100, -100); 
+                        projectile3D.setActive(false);
+                        projectile3D.setVisible(false);
+                    }
+                }               
             }
         );
     }
@@ -167,5 +173,13 @@ class WallsBuilder{
      */
     get getWallNumberRatio(){
         return this.wallNumberRatio;
+    }
+
+    /**
+     * Gets the wall block size.
+     * @return {Number}
+     */
+    get getWallBlockSize(){
+        return this.blockSize;
     }
 }

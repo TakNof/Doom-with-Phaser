@@ -27,7 +27,7 @@ class Rays{
      * Gets the list of rays created.
      * @returns {Array<rays>}
      */
-    get getRays(){
+    getRays(){
         return this.rays;
     }
 
@@ -35,14 +35,14 @@ class Rays{
      * Sets the initial angle ray offset.
      * @param {number} rayAngleOffset
      */
-    set setInitialRayAngleOffset(rayAngleOffset){
+    setInitialRayAngleOffset(rayAngleOffset){
         this.initialRayAngleOffset = rayAngleOffset;
     }
 
     /**
      * Gets the initial angle ray offset.
      */
-    get getInitialRayAngleOffset(){
+    getInitialRayAngleOffset(){
         return this.initialRayAngleOffset;
     }
 
@@ -50,7 +50,7 @@ class Rays{
      * Sets the velocity in the X component of the rays.
      * @param {number} value
      */
-    set setVelocityX(value){
+    setVelocityX(value){
         for(let ray of this.rays){
             ray.body.setVelocityX(value);
         }
@@ -60,7 +60,7 @@ class Rays{
      * Sets the velocity in the Y component of the rays.
      * @param {number} value
      */
-    set setVelocityY(value){
+    setVelocityY(value){
         for(let ray of this.rays){
             ray.body.setVelocityY(value);
         }
@@ -70,9 +70,9 @@ class Rays{
      * Sets the velocity in both axis of the rays.
      * @param {number} value
      */
-    set setVelocity(value){
-        this.setVelocityX = value;
-        this.setVelocityY = value;
+    setVelocity(value){
+        this.setVelocityX(value);
+        this.setVelocityY(value);
     }
 
     /**

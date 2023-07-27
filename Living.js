@@ -1,31 +1,30 @@
 /**
- * This class extends to @param Sprite class, due the "living" sprites count with
+ * This class extends to Sprite class, due the "living" sprites count with
  * some diferente properties then the "not-living" ones.
  */
 class Living extends Sprite{
     /**
     * The constructor of Living Class.
     * @constructor
-    * @param {Scene} scene The scene to place the 2D sprites in the game.
-    * @param {Scene} scene3D The scene to place the 3D sprites in the game.
-    * @param {Object} originInfo  A list with the initial positioning information for the sprite.
-    * @param {string} spriteImgStr An str of the image name given in the preload method of the main class.
-    * @param {number} size The size of the sprite in pixels.
-    * @param {number} depth The depth of rendering of the sprite.
-    * @param {number} defaultVelocity The default velocity for the living sprite.
+    * @param {Phaser.Scene} scene2D The scene to place the 2D sprites in the game.
+    * @param {{x: Number, y: Number, ang: Number}} originInfo A literal Object with the initial positioning information for the sprite.
+    * @param {String} spriteImgStr An str of the image name given in the preload method of the main class.
+    * @param {Number} depth The depth of rendering of the sprite.
+    * @param {Number} size The size of the sprite in pixels.
+    * @param {Number} defaultVelocity The default velocity for the living sprite.
     * 
     */
-    constructor(scene, originInfo, spriteImgStr, size, depth, defaultVelocity){
-        super(scene, originInfo, spriteImgStr, size, depth);
+    constructor(scene, originInfo, spriteImgStr, depth, size, defaultVelocity){
+        super(scene, originInfo, spriteImgStr, depth);
 
         this.defaultVelocity = defaultVelocity;
 
-        this.scene.physics.add.existing(this.sprite, false);
-        this.sprite.body.setSize(this.size, this.size, true);
-        this.sprite.body.setAllowRotation(true);
-        this.sprite.body.setCollideWorldBounds(true);
+        scene.physics.add.existing(this, false);
+        this.setOwnSize(size);
+        this.body.setAllowRotation(true);
+        this.body.setCollideWorldBounds(true);
 
-        this.lastShotTimer = 0;
+        this.setLastShotTimer(0);
 
         this.isAlive = true;
 
@@ -33,51 +32,91 @@ class Living extends Sprite{
     }
 
     /**
+     * Gets the scene3D of the player.
+     * @returns {Phaser.Scene} 
+     */
+    getScene3D(){
+        return this.scene3D;
+    }
+    /**
+     * Sets the size of the sprite.
+     * @param {Number} size 
+     */
+    setOwnSize(size){
+        this.size = size;
+        this.setSize(size, size, true);
+    }
+
+    /**
+     * Gets the size of the sprite.
+     * @return {number}
+     */
+    getSize(){
+        return this.size;
+    }
+
+    /**
+     * Sets the timer of the last shot of the living sprite.
+     * @param {Time} lastShotTimer
+     */
+    setLastShotTimer(lastShotTimer){
+        this.lastShotTimer = lastShotTimer;
+    }
+
+    /**
+     * Gets the timer of the last shot of the living sprite.
+     * @return {Time} lastShotTimer
+     */
+    getLastShotTimer(){
+        return this.lastShotTimer
+    }    
+
+    /**
      * Sets the velocity in the X component of the living sprite.
      * @param {number} value
      */
-    set setVelocityX(value){
-        this.sprite.body.setVelocityX(value);
+    setVelocityX(value){
+        this.body.setVelocityX(value);
     }
 
     /**
      * Gets the velocity in the X component of the living sprite.
      * @returns {number}
      */
-    get getVelocityX(){
-        return this.sprite.body.velocity.x;
+    getVelocityX(){
+        return this.body.velocity.x;
     }
 
     /**
      * Sets the velocity in the Y component of the living sprite.
      * @param {number} value
      */
-    set setVelocityY(value){
-        this.sprite.body.setVelocityY(value);
+    setVelocityY(value){
+        this.body.setVelocityY(value);
     }
 
     /**
      * Gets the velocity in the Y component of the living sprite.
      * @returns {number}
      */
-    get getVelocityY(){
-        return this.sprite.body.velocity.y;
+    getVelocityY(){
+        return this.body.velocity.y;
     }
 
     /**
      * Sets the velocity in both axis of the living sprite.
      * @param {number} value
      */
-    set setVelocity(value){
-        this.setVelocityX = value;
-        this.setVelocityY = value;
+    setVelocity(value){
+        this.setVelocityX(value);
+        this.setVelocityY(value);
     }
 
     /**
      * Gets the default velocity of the living sprite.
      * @returns {number}
      */
-    get getDefaultVelocity(){
+    getDefaultVelocity(){
         return this.defaultVelocity;
     }
 
@@ -85,76 +124,62 @@ class Living extends Sprite{
      * Sets the rotation of the living sprite.
      * @param {number} value
      */
-    set setRotation(value){
-        this.sprite.rotation = this.adjustAngleValue(value);
+    setRotation(value){
+        this.rotation = adjustAngleValue(value);
     }
 
     /**
      * Gets the rotation of the living sprite.
      * @returns {number}
      */
-    get getRotation(){
-        return this.sprite.rotation;
+    getRotation(){
+        return this.rotation;
     }
 
     /**
      * Sets the angle of the Living sprite.
      * @param {number} value
      */
-    set setAngle(value){
+    setAngle(value){
         this.angle = value;
     }
 
     /**
      * Gets the angle of the Living sprite.
      */
-    get getAngle(){
+    getAngle(){
         return this.angle;
     }
 
     /**
-     * Sets the angle offset of the Living sprite.
-     * @param {number} value
-     */
-    set setAngleOffset(value){
-        this.angleOffset = value;
-    }
-
-    /**
-     * Gets the angle of the Living sprite.
-     * @return {number}
-     */
-    get getAngleOffset(){
-        return this.angleOffset;
-    }
-
-    /**
      * Sets the X component of the velocity according to the rotation stablished of the living sprite.
+     * @param {Number} movementAdjustment
      */
-    setXcomponent(){
-        this.Xcomponent = Math.cos(this.sprite.rotation + Math.PI/2) * -this.defaultVelocity;
+    setXcomponent(movementAdjustment = 0){
+        this.Xcomponent = Math.cos(this.getRotation() + movementAdjustment) * this.getDefaultVelocity();
     }
 
     /**
      * Gets the X component of the velocity according to the rotation stablished of the living sprite.
      * @returns {number}
      */
-    get getXcomponent(){
+    getXcomponent(){
         return this.Xcomponent;
     }
 
     /**
      * Sets the Y component of the velocity according to the rotation stablished of the living sprite.
+     * @param {Number} movementAdjustment
      */
-    setYcomponent(){
-        this.Ycomponent = Math.sin(this.sprite.rotation + Math.PI/2) * -this.defaultVelocity;
+    setYcomponent(movementAdjustment = 0){
+        this.Ycomponent = Math.sin(this.getRotation() + movementAdjustment) * this.getDefaultVelocity();
     }
 
     /**
      * Gets the Y component of the velocity according to the rotation stablished of the living sprite.
      * @returns {number}
      */
-    get getYcomponent(){
+    getYcomponent(){
         return this.Ycomponent;
     }
 
@@ -166,7 +191,7 @@ class Living extends Sprite{
     setRaycaster(wallMatrix, raysAmount, angleOffset = 0) {
         this.raysAmount = raysAmount;
         this.setAngleOffset = angleOffset;
-        this.raycaster = new Raycaster(this.getRotation + angleOffset, this.getPositionX, this.getPositionY, raysAmount);
+        this.raycaster = new Raycaster(this.getRotation() + angleOffset, this.getPositionX(), this.getPositionY(), raysAmount);
         this.raycaster.setMatrix = wallMatrix;
     }
 
@@ -174,22 +199,26 @@ class Living extends Sprite{
      * Gets the raycaster object of the sprite.
      * @returns {Raycaster}
      */
-    get getRaycaster(){
+    getRaycaster(){
         return this.raycaster;
+    }
+
+    getRaysAmount(){
+        return this.raysAmount;
     }
 
     /**
      * Sets the raydata through the raycaster object.
      */
     setRayData(){
-        this.rayData = this.raycaster.calculateRayData();
+        this.rayData = this.getRaycaster().calculateRayData();
     }
 
     /**
      * Gets the ray data calculated through the raycaster object.
      * @returns {Array}
      */
-    get getRayData(){
+    getRayData(){
         return this.rayData;
     }
 
@@ -198,8 +227,8 @@ class Living extends Sprite{
      * @param {String} colorOfRays The color of the rays.
      */
     setSpriteRays(colorOfRays){
-        if(this.getDebug){
-            this.spriteRays = new Rays(this.scene, this.raysAmount, this.getPosition, colorOfRays);
+        if(this.getDebug()){
+            this.spriteRays = new Rays(this.getScene(), this.getRaysAmount(), this.getPosition(), colorOfRays);
             this.spriteRays.setInitialRayAngleOffset = this.getAngleOffset;
         }
     }
@@ -208,7 +237,7 @@ class Living extends Sprite{
      * Gets the graphical representation of the rays thrown by the raycaster.
      * @returns {Rays}
      */
-    get getSpriteRays(){
+    getSpriteRays(){
         return this.spriteRays;
     }
 
@@ -216,10 +245,10 @@ class Living extends Sprite{
      * Sets the elements to collide with.
      */
     setColliderElements(){
-        if(this.getSpriteRays === undefined){
-            this.colliderElements = this.getSprite;
+        if(this.getSpriteRays() === undefined){
+            this.colliderElements = this;
         }else{
-            this.colliderElements = [...[this.getSprite], ...this.getSpriteRays.rays];
+            this.colliderElements = [...[this], ...this.getSpriteRays().rays];
         }
     }
 
@@ -227,33 +256,12 @@ class Living extends Sprite{
      * Gets the elements to collide with.
      * @returns {Array}
      */
-    get getColliderElements(){
+    getColliderElements(){
         return this.colliderElements;
     }
     
     /**
-     * This method stablishes the angle of the living sprite respect to an element.
-     * @param {number} elementPosition The position of an element.
-     */
-    set setAngleToElement(elementPosition){
-        if(this.getPositionX > elementPosition.x){
-            this.angleToElement = Math.atan((this.getPositionY - elementPosition.y)/(this.getPositionX - elementPosition.x)) + Math.PI;
-        }else{
-            this.angleToElement = Math.atan((this.getPositionY - elementPosition.y)/(this.getPositionX - elementPosition.x))
-        }
-
-        this.angleToElement = this.adjustAngleValue(this.angleToElement);
-    }
-
-    /**
-     * Gets the angle of the living sprite relative to an Element.
-     * @return {number}
-     */
-    get getAngleToElement(){
-        return this.angleToElement;
-    }
-    /**
-     * 
+     * Sets the sprite sounds to be played.
      * @param {String} name
      * @param {Array<String>} soundNames
      */
@@ -261,10 +269,15 @@ class Living extends Sprite{
         this.spriteSounds = {};
 
         for(let element of soundNames){
-            this.spriteSounds[element] = new Sound(this.scene, `${name}_${element}_sound`);
+            this.spriteSounds[element] = new Sound(this.getScene(), `${name}_${element}_sound`);
         }
     }
 
+    /**
+     * Gets the sprite sound specified by the given name.
+     * @param {String} element The name of the sound to retrieve.
+     * @returns {Sound}
+     */
     getSpriteSounds(element){
         return this.spriteSounds[element];
     }
@@ -273,16 +286,16 @@ class Living extends Sprite{
      * Sets the max health of the living sprite.
      * @param {Number} maxHealth
      */
-    set setMaxHealth(maxHealth){
+    setMaxHealth(maxHealth){
         this.maxHealth = maxHealth;
-        this.setHealth = maxHealth;
+        this.setHealth(maxHealth);
     }
 
     /**
      * Gets the max health of the living sprite.
      * @returns {Number}
      */
-    get getMaxHealth(){
+    getMaxHealth(){
         return this.maxHealth;
     }
 
@@ -290,14 +303,15 @@ class Living extends Sprite{
      * Sets the current health of the living sprite.
      * @param {Number} health
      */
-    set setHealth(health){
+    setHealth(health){
         this.health = health;
     }
 
     /**
      * Gets the current health of the living sprite.
+     * @return {Number}
      */
-    get getHealth(){
+    getHealth(){
         return this.health;
     }
 
@@ -306,40 +320,24 @@ class Living extends Sprite{
      * @param {Number} healValue 
      */
     heal(healValue){
-        if(this.getHealth != this.maxHealth){
-            if(this.getHealth + healValue > this.maxHealth){
-                this.setHealth = this.maxHealth;
+        if(this.getHealth() != this.getMaxHealth()){
+            if(this.getHealth() + healValue > this.getMaxHealth()){
+                this.setHealth(this.getMaxHealth());
             }else{
-                this.setHealth = this.getHealth + healValue;
+                this.setHealth(this.getHealth() + healValue);
                 this.getSpriteSounds("heal").playSound();
                 
-                this.getHUD.setHealthValue = this.getHealth;
-                this.getHUD.displayHealRedScreen();
+                this.getHUD().setHUDElementValue("health", this.getHealth(), true, "%");
+                this.getHUD().displayHealRedScreen();
             }
         }
-    }
-
-    /**
-     * Sets the alive state of the Living Sprite.
-     * @param {boolean} state
-     */
-    set setIsAlive(state){
-        this.isAlive = state;
-    }
-
-    /**
-     * Gets the alive state of the Living Sprite.
-     * @param {boolean} 
-     */
-    get getIsAlive(){
-        return this.isAlive;
     }
 
      /**
      * Sets the alive state of the Living Sprite.
      * @param {boolean} state
      */
-     set setAbleToShoot(state){
+    setAbleToShoot(state){
         this.ableToShoot = state;
     }
 
@@ -347,34 +345,7 @@ class Living extends Sprite{
      * Gets the alive state of the Living Sprite.
      * @param {boolean} 
      */
-    get getAbleToShoot(){
+    getAbleToShoot(){
         return this.ableToShoot;
-    }
-    
-    /**
-     * Allows to adjust the angle value of the rotation to be within the range of 0 and 2PI.
-     * @param {Number} angle The angle to be within the range of 0 and 2PI.
-     * @returns {Number}
-     */
-    adjustAngleValue(angle){
-        if(angle < 0){
-            angle += 2*Math.PI;
-        }else if(angle > 2*Math.PI){
-            angle -= 2*Math.PI;
-        }
-
-        return angle;
-    }
-
-    /**
-     * This method calculates the distance between 2 coordinates.
-     * @param {number} x1 The x coordinate of the first sprite.  
-     * @param {number} x2 The x coordinate of the second sprite. 
-     * @param {number} y1 The y coordinate of the first sprite. 
-     * @param {number} y2 The y coordinate of the second sprite. 
-     * @returns {number} The hyphypotenuse according to the specified coordinates.
-     */
-    hypoCalc(x1, x2, y1, y2){
-        return Math.sqrt(Math.pow(x1 - x2, 2) + Math.pow(y1 - y2, 2))
     }
 }

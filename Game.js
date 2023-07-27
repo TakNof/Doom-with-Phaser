@@ -9,7 +9,7 @@ class Game2D extends Phaser.Scene{
         this.walls;
         this.wallOrder;
         this.wallBlockSize = 32;
-        this.amountWalls = 12;
+        this.amountWalls = 24;
         this.generateWalls = true;
         this.generateRandomWalls = true;
 
@@ -24,7 +24,7 @@ class Game2D extends Phaser.Scene{
 
         this.cacodemons;
 
-        this.enemyAngleOffset = Math.PI/2;
+        this.enemyAngleOffset = 3*Math.PI/2;
         this.chaseDistance = 400;
         this.allowChase = true;
         this.allowShoot = true;
@@ -35,7 +35,7 @@ class Game2D extends Phaser.Scene{
         this.defaultVelocity = 300;
 
         //Rotation coeficient.
-        this.angleOperator = 0.05;
+        this.angleOperator = 3.5;
 
         //Stablishing the raycaster elements.
         this.raysAmount = 100;
@@ -85,14 +85,25 @@ class Game2D extends Phaser.Scene{
         this.walls.createWalls();
         
         //Here we create the player.
-        this.player = new Player(this, game3D, {x: canvasSize.width/2, y: canvasSize.height/2}, "player", this.wallBlockSize*2, 0, this.defaultVelocity, this.angleOperator, this.playerHealth);
+        this.player = new Player(
+            this,
+            game3D,
+            {x: canvasSize.width/2, y: canvasSize.height/2, angleOffset: this.playerAngleOffset},
+            "player",
+            0,
+            this.wallBlockSize*2,
+            this.defaultVelocity,
+            this.angleOperator,
+            this.playerHealth,
+            this.playerAngleOffset
+        );
 
         //Here we create the raycaster of the player and we pass it the position of the walls to make the calculations.
         this.player.setRaycaster(this.walls.getWallMatrix, this.raysAmount,  this.playerFOVangleOffset);
-        this.player.getRaycaster.setAngleStep(this.playerFOV);
+        this.player.getRaycaster().setAngleStep(this.playerFOV);
 
         //Here we put the color of the rays of the player.
-        this.player.setDebug = true;
+        this.player.setDebug(false);
         this.player.setSpriteRays(colors.limeGreen);
 
         //here we create the graphicator of the raycaster of the player.
@@ -104,59 +115,63 @@ class Game2D extends Phaser.Scene{
         this.player.setWeapons(weapons);
 
         //We load those elements to the walls object.
-        this.walls.setColliders(this.player.getColliderElements);
+        this.walls.setColliders(this.player.getColliderElements());
 
         //We create a certain amount of cacodemons.
-        this.cacodemons = new Cacodemon(this, game3D, this.amountEnemies, this.walls.getWallMatrix, this.walls.getWallNumberRatio, this.wallBlockSize, this.defaultVelocity/2, this.chaseDistance, this.allowChase);
-        this.cacodemons.create(this.player.getPosition, this.enemyAngleOffset);
+        this.cacodemons = new Cacodemon(this, game3D, this.amountEnemies, this.walls, this.defaultVelocity/2, this.chaseDistance, this.allowChase);
+        this.cacodemons.create(this.enemyAngleOffset);
 
-        for(let enemy of this.cacodemons.getEnemies){
-            this.walls.setColliders(enemy.getColliderElements);
+        for(let enemy of this.cacodemons.getEnemies()){
+            this.walls.setColliders(enemy.getColliderElements());
         }
 
         this.player.setHUD();
+        this.player.getHUD().setHUDElementValue("ammo", this.player.getCurrentWeapon().getProjectiles().countActive(false), false);
         
         // player.setHUD(cacodemons.getEnemies);
 
         //Here we stablish the camera of the player with the raycaster, graphicator and the enemies positions.
-        this.player.setCamera(this.playerFOV, this.cacodemons.getEnemies); 
+        this.player.setCamera(this.playerFOV, this.cacodemons.getEnemies()); 
         
         this.music = this.sound.add('at_dooms_gate');
         this.music.setVolume(0.5);
         this.music.loop = true;
-        // this.music.play();
+        this.music.play();
 
-        this.sound.volume = 1;
+        this.sound.volume = 0.2;
     }
 
     update(){
         //The basic movement of the player.
-        if(this.player.getIsAlive){
+        if(this.player.isAlive){
             this.player.move();
             this.player.shoot();
+            this.player.reload();
             this.player.switchWeapons();
-
+            
             //The basic movement of the enemy according to the player's position.
-            this.cacodemons.move(this.player.getPosition);
+            if(this.cacodemons.getEnemies().length > 0){
+                this.cacodemons.move(this.player.getPosition());
+            }
             
             if(this.allowShoot){
                 this.cacodemons.shoot(this.player);
             }   
             
-            for(let enemy of this.cacodemons.getEnemies){
-                this.walls.evalCollision(enemy.getProjectiles2D, enemy.getProjectiles3D);
+            for(let enemy of this.cacodemons.getEnemies()){
+                this.walls.evalCollision(enemy.getProjectiles2D(), enemy.getProjectiles3D());
 
                 enemy.evalProjectileCollision(this.player);
-                enemy.getSpriteSounds("death").setSoundPanning(enemy.getDistanceToPlayer, enemy.angleToElement + Math.PI, this.player.getAngle);
-                enemy.getSpriteSounds("hurt").setSoundPanning(enemy.getDistanceToPlayer, enemy.angleToElement + Math.PI, this.player.getAngle);
+                enemy.getSpriteSounds("death").setSoundPanning(enemy.getDistanceToPlayer(), this.player.angleToElement(enemy.getPosition()), this.player.getAngleRadians())
+                enemy.getSpriteSounds("hurt").setSoundPanning(enemy.getDistanceToPlayer(), this.player.angleToElement(enemy.getPosition()), this.player.getAngleRadians())
 
-                if(enemy.getHealth == 0){
+                if(enemy.getHealth() == 0){
                     enemy.waitToDestroy();
                 }
                 
-                if(!enemy.getIsAlive){
+                if(!enemy.isAlive){
         
-                    this.cacodemons.getEnemies.splice(this.cacodemons.getEnemies.indexOf(enemy), 1);
+                    this.cacodemons.getEnemies().splice(this.cacodemons.getEnemies().indexOf(enemy), 1);
                     this.cacodemons.amount -= 1;
                     
                     // player.getHUD.getEnemiesHealthValue[i].destroy();
@@ -171,36 +186,32 @@ class Game2D extends Phaser.Scene{
             
             // player.getHUD.setEnemiesHealthValue = cacodemons.getEnemies;
 
-            this.walls.evalCollision(this.player.getPlayerCurrentWeapon.getProjectiles);
+            this.walls.evalCollision(this.player.getCurrentWeapon().getProjectiles());
             
         }else{
-            if(!this.player.getIsAlive && this.player.getScore() == undefined){
+            if(!this.player.isAlive && this.player.getScore() == undefined){
                 this.player.setTimeAlive();
                 this.player.setScore("Defeat", this.amountEnemies);
-                this.player.getHUD.displayDeathText();
+                this.player.getHUD().displayDeathText();
 
-                this.player.getHUD.displayScoreText("Defeat", this.player.getScore());
+                this.player.getHUD().displayScoreText("Defeat", this.player.getScore());
             }
-            
-            // setTimeout(() => {
-            //     this.scene.pause();
-            // }, 1000);
         }
 
-        if((this.cacodemons.getEnemies.length == 0 || (this.cacodemons.getEnemies[0].getHealth == 0 && this.cacodemons.getEnemies.length == 1)) && this.player.getScore() == undefined){
+        if((this.cacodemons.getEnemies().length == 0 || (this.cacodemons.getEnemies()[0].getHealth() == 0 && this.cacodemons.getEnemies().length == 1)) && this.player.getScore() == undefined){
             this.player.setTimeAlive();
             this.player.setScore("Victory", this.amountEnemies);
-            this.player.getHUD.displayVictoryText();
+            this.player.getHUD().displayVictoryText();
 
-            this.player.getHUD.displayScoreText("Victory", this.player.getScore());          
-    }
+            this.player.getHUD().displayScoreText("Victory", this.player.getScore());          
+        }
         
         // this.player.getHUD.setEnemiesHealthValue = cacodemons.getEnemies;
 
-        this.player.getCamera.setEnemies(this.cacodemons.getEnemies);
+        this.player.getCamera().setEnemies(this.cacodemons.getEnemies());
 
         //Here we draw the 3D representation of the map.
-        this.player.getCamera.draw3DWorld();
+        this.player.getCamera().draw3DWorld();
 
         if(this.keyCtrl.isDown){
             this.music.stop();
@@ -209,6 +220,7 @@ class Game2D extends Phaser.Scene{
             
             this.scene.launch("Game3D");
             this.scene.start("Game2D");
+            
         }
     }
 }
