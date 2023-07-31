@@ -20,7 +20,7 @@ class Game2D extends Phaser.Scene{
         this.playerFOVangleOffset = this.playerAngleOffset - this.playerFOV/2
 
         //Stablishing the enemy and its initial position.
-        this.amountEnemies = 12;
+        this.amountEnemies = 1;
 
         this.cacodemons;
 
@@ -132,7 +132,7 @@ class Game2D extends Phaser.Scene{
         this.music = this.sound.add('at_dooms_gate');
         this.music.setVolume(0.5);
         this.music.loop = true;
-        // this.music.play();
+        this.music.play();
 
         this.sound.volume = 1;
     }

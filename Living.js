@@ -284,7 +284,11 @@ class Living extends Sprite{
      * @returns {Sound}
      */
     getSpriteSounds(element){
-        return this.spriteSounds[element];
+        if(!element){
+            return this.spriteSounds;
+        }else{
+            return this.spriteSounds[element];
+        }
     }
 
     /**

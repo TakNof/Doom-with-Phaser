@@ -345,7 +345,7 @@ class EnemyGroup extends Phaser.Physics.Arcade.Group{
         this.callAll("setBulletProperties", config.bulletProperties);
         this.callAll("setDistanceLimits", config.distanceLimits);
         this.callAll("setAnimations", config.animationsToSet);
-        this.callAll("setSpriteSounds", config.name.replace("small_", ""), config.spriteSounds)
+        this.callAll("setSpriteSounds", config.name.replace("small_", ""), config.spriteSounds);
         this.callAll("setRaycaster", this.wallMatrix, 1, config.angleOffset);
         this.callAll("setDebug", false);
         this.callAll("setSpriteRays", colors.black);
@@ -357,7 +357,7 @@ class EnemyGroup extends Phaser.Physics.Arcade.Group{
     callAllSoundPanning(player) {
         this.getChildren().forEach(function (enemy) {
             for(let sound in enemy.getSpriteSounds()){
-                sound.setSoundPanning(enemy.getDistanceToPlayer(), player.angleToElement(enemy.getPosition()), player.getAngleRadians())
+                enemy.getSpriteSounds(sound).setSoundPanning(enemy.getDistanceToPlayer(), player.angleToElement(enemy.getPosition()), player.getAngleRadians());
             }              
         });
     };
