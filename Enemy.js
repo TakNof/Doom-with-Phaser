@@ -33,27 +33,6 @@ class Enemy extends Living{
         this.inSight = false;
 
         this.creationTime = this.getScene().time.now;
-        
-        let animationsToSet = [
-            {
-                name: "attack",
-                animationParams:{
-                    end: 9,
-                    framerate: 15,
-                }
-            },
-            {
-                name: "hurt",
-                animationParams:{
-                    end: 7,
-                    framerate: 15
-                }
-            }
-        ];   
-
-        this.setAnimations(animationsToSet);
-
-        this.setSpriteSounds(this.getSpriteImgStr().replace("small_", ""), ["hurt", "death", "attack"]);
     }
 
     /**
@@ -320,7 +299,7 @@ class Enemy extends Living{
             this.getSpriteSounds("attack").setSoundPanning(this.getDistanceToPlayer(), player.angleToElement(this.getPosition()), player.getAngleRadians());
             let time = this.getScene().time.now - this.creationTime;
 
-            if(time - this.lastShotTimer > this.getBulletProperties().delay + getRndInteger(3, 9)*1000){
+            if(time - this.lastShotTimer > this.getBulletProperties().delay + getRndInteger(0, 10)*100){
                 this.getEnemy3D().play(this.getAnimations("attack").getAnimationName());
                 this.lastShotTimer = time;
                 setTimeout(() =>{
@@ -365,6 +344,8 @@ class EnemyGroup extends Phaser.Physics.Arcade.Group{
 
         this.callAll("setBulletProperties", config.bulletProperties);
         this.callAll("setDistanceLimits", config.distanceLimits);
+        this.callAll("setAnimations", config.animationsToSet);
+        this.callAll("setSpriteSounds", config.name.replace("small_", ""), config.spriteSounds)
         this.callAll("setRaycaster", this.wallMatrix, 1, config.angleOffset);
         this.callAll("setDebug", false);
         this.callAll("setSpriteRays", colors.black);
@@ -381,6 +362,12 @@ class EnemyGroup extends Phaser.Physics.Arcade.Group{
         });
     };
     
+
+    /**
+     * Custom method to call the same method to all children in the group.
+     * @param {String} methodName the name of the method to call.
+     * @param  {...any} args the arguments to pass to the method.
+     */
     callAll(methodName, ...args) {
         this.getChildren().forEach(function (enemy) {
             if(args === null){

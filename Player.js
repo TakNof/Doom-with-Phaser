@@ -39,7 +39,7 @@ class Player extends Living{
 
         this.setMaxHealth(maxHealth);
 
-        this.setSpriteSounds("player", ["hurt", "death", "heal"]);
+        this.setSpriteSounds("player", "hurt", "death", "heal");
 
         this.roundsShot = 0;
         this.damageDealed = 0;

@@ -76,7 +76,7 @@ const cacodemon = {
     bulletProperties:{
         damage: 12,
         velocity: 200,
-        delay: 3500,
+        delay: 3000,
         critical: 1.5
     },
     distanceLimits:{

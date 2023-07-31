@@ -20,7 +20,7 @@ class Game2D extends Phaser.Scene{
         this.playerFOVangleOffset = this.playerAngleOffset - this.playerFOV/2
 
         //Stablishing the enemy and its initial position.
-        this.amountEnemies = 1;
+        this.amountEnemies = 12;
 
         this.cacodemons;
 
@@ -118,7 +118,7 @@ class Game2D extends Phaser.Scene{
         this.walls.setColliders(this.player.getColliderElements());
 
         //We create a certain amount of cacodemons.
-        this.cacodemons = new EnemyGroup(this, game3D, 3, this.walls, cacodemon);
+        this.cacodemons = new EnemyGroup(this, game3D, this.amountEnemies, this.walls, cacodemon);
 
         this.walls.setColliders(this.cacodemons);
 
@@ -185,8 +185,6 @@ class Game2D extends Phaser.Scene{
             this.player.getHUD().displayScoreText("Victory", this.player.getScore());          
         }
         
-        // this.player.getHUD.setEnemiesHealthValue = cacodemons.getEnemies;
-
         //Here we draw the 3D representation of the map.
         this.player.getCamera().draw3DWorld();
 

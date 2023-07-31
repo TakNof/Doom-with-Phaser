@@ -266,8 +266,12 @@ class Living extends Sprite{
      * @param {String} name
      * @param {Array<String>} soundNames
      */
-    setSpriteSounds(name, soundNames){
+    setSpriteSounds(name, ...soundNames){
         this.spriteSounds = {};
+        
+        if(Array.isArray(soundNames[0])){
+            soundNames = soundNames[0];
+        }
 
         for(let element of soundNames){
             this.spriteSounds[element] = new Sound(this.getScene(), `${name}_${element}_sound`);

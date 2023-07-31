@@ -107,7 +107,7 @@ class Camera{
                                 projectile2D.getPositionY(),
                                 this.player.getPositionY()
                             ),
-                            800,
+                            1000,
                             1.65
                         );
                     }
