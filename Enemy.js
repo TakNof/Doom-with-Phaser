@@ -15,14 +15,13 @@ class Enemy extends Living{
     * @param {Number} size The size of the sprite in pixels.
     * @param {Number} defaultVelocity The default velocity for the living sprite.
     * @param {Number} chaseDistance The distance where the player can be detect the player.
-    * @param {Boolean} allowChase Whether the enemy is allowed to chase the player or not. 
     */
-    constructor(scene, scene3D, enemyOriginInfo, enemyImgStr, depth, size, defaultVelocity, chaseDistance, allowChase){
-        super(scene, enemyOriginInfo, enemyImgStr, depth, size, defaultVelocity);
+    constructor(scene, scene3D, enemyOriginInfo, spriteImgStr, depth, size, defaultVelocity, chaseDistance){
+        super(scene, enemyOriginInfo, spriteImgStr, depth, size, defaultVelocity);
 
         this.scene3D = scene3D;
 
-        this.setEnemy3D(canvasSize.width/2, canvasSize.height/2, enemyImgStr.replace("small_", ""));
+        this.setEnemy3D(this.getSpriteImgStr().replace("small_", ""));
 
         this.setXcomponent();
         this.setYcomponent();
@@ -30,7 +29,6 @@ class Enemy extends Living{
         this.setProjectiles();
 
         this.setChaseDistance(chaseDistance);
-        this.allowChase = allowChase;
 
         this.inSight = false;
 
@@ -55,7 +53,7 @@ class Enemy extends Living{
 
         this.setAnimations(animationsToSet);
 
-        this.setSpriteSounds(enemyImgStr.replace("small_", ""), ["hurt", "death", "attack"]);
+        this.setSpriteSounds(this.getSpriteImgStr().replace("small_", ""), ["hurt", "death", "attack"]);
     }
 
     /**
@@ -92,13 +90,11 @@ class Enemy extends Living{
 
     /**
      * Sets the sprite of the enemy which will be its representation in 3D camera.
-     * @param {number} positionX 
-     * @param {number} positionY 
-     * @param {String} enemyImgStr 
+     * @param {String} spriteImgStr 
      * @param {boolean} visible 
      */
-    setEnemy3D(positionX, positionY, enemyImgStr, visible = false){
-        this.enemy3D = new Sprite(this.getScene3D(), {x: positionX, y: positionY, angleOffset: 0}, enemyImgStr, 3);
+    setEnemy3D(spriteImgStr, visible = false){
+        this.enemy3D = new Sprite(this.getScene3D(), {x: canvasSize.width/2, y: canvasSize.height/2, angleOffset: 0}, spriteImgStr, 3);
         this.enemy3D.setVisible(visible);
     }
 
@@ -286,14 +282,14 @@ class Enemy extends Living{
                 this.getSpriteRays().redrawRay2D(this.getPosition(), this.getRayData());
             }   
     
-            this.getRaycaster().setSpritePosition = this.getPosition();
+            this.getRaycaster().setSpritePosition(this.getPosition());
             
-            this.getRaycaster().setRayAngle = adjustAngleValue(this.angleToElement(playerPosition));
+            this.getRaycaster().setRayAngle(adjustAngleValue(this.angleToElement(playerPosition)));
             this.setDistanceToPlayer(playerPosition);
     
             //We want the enemy to follow us if we are in range of sight and if the distance with the player is less than the distance
             //with the wall.
-            if (this.allowChase && this.getDistanceToPlayer() <= this.chaseDistance &&  this.getDistanceToPlayer() > 200 && (this.getDistanceToPlayer() <this.getRayData().distance[0] || this.getRayData().distance[0] == undefined)) {           
+            if (this.getDistanceToPlayer() <= this.chaseDistance && this.getDistanceToPlayer() > 200 && (this.getDistanceToPlayer() < this.getRayData().distance[0] || this.getRayData().distance[0] == undefined)) {           
                 this.setXcomponent(this.getOriginInfo().angleOffset);
                 this.setYcomponent(this.getOriginInfo().angleOffset);
     
@@ -308,7 +304,7 @@ class Enemy extends Living{
                 }
             }
     
-            if(this.getDistanceToPlayer() <= this.getChaseDistance() && this.getDistanceToPlayer() <this.getRayData().distance[0] || this.getRayData().distance[0] == undefined){
+            if(this.getDistanceToPlayer() <= this.getChaseDistance() && this.getDistanceToPlayer() < this.getRayData().distance[0] || this.getRayData().distance[0] == undefined){
                 this.inSight = true;
                 this.setRotation(adjustAngleValue(this.angleToElement(playerPosition) - this.getOriginInfo().angleOffset));
             }else{
@@ -317,19 +313,19 @@ class Enemy extends Living{
         }
     }
 
-    shoot(properties, randNumber, player){
+    shoot(player){
         let projectile = this.getProjectiles2D().getFirstDead();
         
         if(this.inSight && this.getAbleToShoot() && projectile){
             this.getSpriteSounds("attack").setSoundPanning(this.getDistanceToPlayer(), player.angleToElement(this.getPosition()), player.getAngleRadians());
             let time = this.getScene().time.now - this.creationTime;
 
-            if(time - this.lastShotTimer > properties.delay + randNumber*1000){
+            if(time - this.lastShotTimer > this.getBulletProperties().delay + getRndInteger(3, 9)*1000){
                 this.getEnemy3D().play(this.getAnimations("attack").getAnimationName());
                 this.lastShotTimer = time;
                 setTimeout(() =>{
                     if(this.active){
-                        projectile.shoot(this, properties.velocity);
+                        projectile.shoot(this, this.getBulletProperties().velocity);
                         this.getSpriteSounds("attack").playSound();
                     }
                 }, 300)
@@ -338,18 +334,85 @@ class Enemy extends Living{
     }
 }
 
-// class ProjectileGroup extends Phaser.Physics.Arcade.Group{
-//     constructor(scene, key, maxAmount){
-//         super(scene.physics.world, scene);
+class EnemyGroup extends Phaser.Physics.Arcade.Group{
+    /**
+     * The constructor for the Cacodemon class.
+     * @constructor
+     * @param {Phaser.Scene} scene2D The scene to place the 2D sprites in the game.
+     * @param {Phaser.Scene} scene3D The scene to place the 3D sprites in the game.
+     * @param {Number} amount The amount of enemies to place.
+     * @param {{name: string,
+     * name3D: String, defaultVelocity: Number, 
+     * angleOffset: Number, chaseDistance: Number,
+     * maxHealth: Number, bulletProperties: {
+     * damage: Number, velocity: Number, delay: Number, critical: Number},
+     * distanceLimits: {min: Number, max: Number},
+     * animationsToSet: [...{name: String, animationParams:{end: Number, framerate: Number}}],
+     * spriteSounds: [String]}} config
+     */
+    constructor(scene, scene3D, amount, wallObject, config){
+        super(scene.physics.world, scene);
 
-//         this.maxSize = maxAmount;
+        this.maxSize = amount;
 
-//         this.createMultiple({
-//             classType: Enemy,
-//             key: key,
-//             quantity: maxAmount,
-//             active: false,
-//             visible: false
-//         });
-//     }
-// }
+        this.wallMatrix = wallObject.getWallMatrix().slice();
+        let wallNumberRatio = wallObject.getWallNumberRatio();
+        let blockSize = wallObject.getWallBlockSize();
+
+        for(let i = 0; i < amount; i++){
+            this.add(new Enemy(scene, scene3D, this.setInitialPosition(wallNumberRatio, config.angleOffset), config.name, 0, blockSize*2, config.defaultVelocity, config.chaseDistance));
+        }
+
+        this.callAll("setBulletProperties", config.bulletProperties);
+        this.callAll("setDistanceLimits", config.distanceLimits);
+        this.callAll("setRaycaster", this.wallMatrix, 1, config.angleOffset);
+        this.callAll("setDebug", false);
+        this.callAll("setSpriteRays", colors.black);
+        this.callAll("setMaxHealth", config.maxHealth);
+
+        scene.physics.add.collider(this,this);
+    }
+
+    callAllSoundPanning(player) {
+        this.getChildren().forEach(function (enemy) {
+            for(let sound in enemy.getSpriteSounds()){
+                sound.setSoundPanning(enemy.getDistanceToPlayer(), player.angleToElement(enemy.getPosition()), player.getAngleRadians())
+            }              
+        });
+    };
+    
+    callAll(methodName, ...args) {
+        this.getChildren().forEach(function (enemy) {
+            if(args === null){
+                enemy[methodName]();
+            }else{
+                enemy[methodName](...args);
+            }
+        });
+    };
+
+    /**
+     * Sets the position of the enemy acording to the available spaces in the map.
+     * @param {Number} wallNumberRatio
+     * @param {Number} enemyAngleOffset
+     * @returns {{x: Number, y: Number, angleOffset: Number}}
+     */
+    setInitialPosition(wallNumberRatio, enemyAngleOffset) {
+        let enemyPosition = {x: 0, y: 0, angleOffset: 0};
+
+        let i = getRndInteger(0, wallNumberRatio.y);
+        let j = getRndInteger(0, wallNumberRatio.x);
+
+        while(this.wallMatrix[i][j]){
+            i = getRndInteger(0, wallNumberRatio.y);
+            j = getRndInteger(0, wallNumberRatio.x);
+        }
+
+        // this.wallMatrix[i][j] = true;
+        enemyPosition.x = (j*32 + 32);
+        enemyPosition.y = (i*32 + 32);
+        enemyPosition.angleOffset = enemyAngleOffset;
+
+        return enemyPosition;
+    }
+}

@@ -12,24 +12,24 @@ class Raycaster{
         this.angleStep = fov/this.rayAmount;
     }
 
-    get getAngleStep(){
+    getAngleStep(){
         return this.angleStep;
     }
 
-    set setRayAngle(spriteAngle){
+    setRayAngle(spriteAngle){
         this.rayAngle = this.adjustAngleValue(spriteAngle);    
     }
 
-    get getRayAngle(){
+    getRayAngle(){
         return this.rayAngle;
     }
 
-    set setMatrix(matrix){
+    setMatrix(matrix){
         this.matrix = matrix;
         this.setMatrixDimensions();
     }
 
-    get getMatrix(){
+    getMatrix(){
         return this.matrix;
     }
 
@@ -37,15 +37,15 @@ class Raycaster{
         this.matrixDimensions = {xdim: this.matrix[0].length, ydim: this.matrix.length};
     }
 
-    get getMatrixDimensions(){
+    getMatrixDimensions(){
         return this.matrixDimensions;
     }
 
-    set setSpritePosition(spritePosition){
+    setSpritePosition(spritePosition){
         this.spritePosition = spritePosition;
     }
 
-    get getSpritePosition(){
+    getSpritePosition(){
         return this.spritePosition;
     }
 
@@ -120,7 +120,7 @@ class Raycaster{
                 }
             }          
             
-            currentAngle = currentAngle + this.getAngleStep;
+            currentAngle = currentAngle + this.getAngleStep();
 
             currentAngle = this.adjustAngleValue(currentAngle);
             

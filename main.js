@@ -67,6 +67,41 @@ const pistol = {
 
 const weapons = [pistol, shotgun];
 
+const cacodemon = {
+    name: "small_cacodemon",
+    defaultVelocity: 150,
+    angleOffset: 3*Math.PI/2,
+    chaseDistance: 400,
+    maxHealth: 250,
+    bulletProperties:{
+        damage: 12,
+        velocity: 200,
+        delay: 3500,
+        critical: 1.5
+    },
+    distanceLimits:{
+        min: 250,
+        max: 1000
+    },    
+    animationsToSet: [
+        {
+            name: "attack",
+            animationParams:{
+                end: 9,
+                framerate: 15,
+            }
+        },
+        {
+            name: "hurt",
+            animationParams:{
+                end: 7,
+                framerate: 15
+            }
+        },
+    ],
+    spriteSounds: ["hurt", "death", "attack"]
+}
+
 const game = new Phaser.Game(config);
 
 /**

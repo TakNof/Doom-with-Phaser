@@ -163,7 +163,7 @@ class WallsBuilder{
      * This method returns the wall matrix.
      * @return {Array<Array<Boolean>>}
      */
-    get getWallMatrix(){
+    getWallMatrix(){
         return this.wallMatrix;
     }
 
@@ -171,7 +171,7 @@ class WallsBuilder{
      * Gets the wall number ratio.
      * @return {Object}
      */
-    get getWallNumberRatio(){
+    getWallNumberRatio(){
         return this.wallNumberRatio;
     }
 
@@ -179,7 +179,7 @@ class WallsBuilder{
      * Gets the wall block size.
      * @return {Number}
      */
-    get getWallBlockSize(){
+    getWallBlockSize(){
         return this.blockSize;
     }
 }

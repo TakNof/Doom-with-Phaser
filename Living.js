@@ -192,7 +192,8 @@ class Living extends Sprite{
         this.raysAmount = raysAmount;
         this.setAngleOffset = angleOffset;
         this.raycaster = new Raycaster(this.getRotation() + angleOffset, this.getPositionX(), this.getPositionY(), raysAmount);
-        this.raycaster.setMatrix = wallMatrix;
+        this.raycaster.setMatrix(wallMatrix);
+        this.getRaycaster().setAngleStep();
     }
 
     /**
@@ -229,7 +230,7 @@ class Living extends Sprite{
     setSpriteRays(colorOfRays){
         if(this.getDebug()){
             this.spriteRays = new Rays(this.getScene(), this.getRaysAmount(), this.getPosition(), colorOfRays);
-            this.spriteRays.setInitialRayAngleOffset = this.getAngleOffset;
+            this.spriteRays.setInitialRayAngleOffset(this.getOriginInfo().angleOffset);
         }
     }
 

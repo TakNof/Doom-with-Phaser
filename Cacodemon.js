@@ -1,22 +1,22 @@
 class Cacodemon{
     /**
      * The constructor for the Cacodemon class.
-     * @param {Scene} scene The current scene of the game to place the sprite.
+     * @constructor
+     * @param {Phaser.Scene} scene2D The scene to place the 2D sprites in the game.
+     * @param {Phaser.Scene} scene3D The scene to place the 3D sprites in the game.
      * @param {Number} amount The amount of enemies to place.
-     * @param {[[Sprite]]} wallMatrix The matrix used to placer the walls.
-     * @param {{x: Number, y: Number}} wallNumberRatio The ratio of walls that can be placed on the canvas.
-     * @param {Number} wallBlockSize The size of the wall blocks
+     * @param {WallsBuilder} wallObject The wall object to place the walls.
      * @param {Number} defaultVelocity The default velocity to set on the enemies.
      * @param {Number} chaseDistance The distance (in pixels) the enemies will be allowed to chase the player.
      * @param {Boolean} allowChase If the enemies will be allowed to chase the player. 
      */
-    constructor(scene, scene3D, amount, wallsObject, defaultVelocity, chaseDistance, allowChase){
+    constructor(scene, scene3D, amount, wallObject, defaultVelocity, chaseDistance, allowChase){
         this.scene = scene;
         this.scene3D = scene3D;
         this.amount = amount;
-        this.wallMatrix = wallsObject.getWallMatrix;
-        this.wallNumberRatio = wallsObject.getWallNumberRatio;
-        this.blockSize = wallsObject.getWallBlockSize;
+        this.wallMatrix = wallObject.getWallMatrix();
+        this.wallNumberRatio = wallObject.getWallNumberRatio();
+        this.blockSize = wallObject.getWallBlockSize();
         this.defaultVelocity = defaultVelocity;
         this.chaseDistance = chaseDistance;
         this.allowChase = allowChase;
@@ -49,7 +49,7 @@ class Cacodemon{
                 enemyPosition.angleOffset = enemyAngleOffset;
 
                 //Here we create an enemy.
-                this.enemies[enemiesPlaced] =  new Enemy(this.scene, this.scene3D, enemyPosition, "small_cacodemon", 1,     this.blockSize*2, this.defaultVelocity, this.chaseDistance, this.allowChase);
+                this.enemies[enemiesPlaced] =  new Enemy(this.scene, this.scene3D, enemyPosition, "small_cacodemon", 1, this.blockSize*2, this.defaultVelocity, this.chaseDistance, this.allowChase);
                 
                 let enemy = this.enemies[enemiesPlaced];
 
@@ -99,7 +99,7 @@ class Cacodemon{
      */
     shoot(player){
         for(let enemy of this.getEnemies()){
-            enemy.shoot(this.bulletProperties, this.getRndInteger(0, 9), player);
+            enemy.shoot(player);
         }
     }
 
@@ -124,7 +124,7 @@ class Cacodemon{
     setColliders(){
         for(let enemy1 of this.getEnemies()){
             for(let enemy2 of this.getEnemies()){
-                this.scene.physics.add.collider(enemy1.getColliderElements, enemy2.getColliderElements);
+                this.scene.physics.add.collider(enemy1.getColliderElements(), enemy2.getColliderElements());
             }
         }
     }

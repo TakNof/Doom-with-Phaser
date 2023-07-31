@@ -351,7 +351,7 @@ class Player extends Living{
             this.getSpriteRays().redrawRay2D(this.getPosition(), this.getRayData());
         }     
         
-        this.getRaycaster().setSpritePosition = this.getPosition();
+        this.getRaycaster().setSpritePosition(this.getPosition());
 
 
         if((this.cursors.up.isDown ^ this.cursors.down.isDown) ^ (this.cursors["W"].isDown ^ this.cursors["S"].isDown)){
@@ -388,10 +388,10 @@ class Player extends Living{
         }
 
         if(this.getDebug() === true){
-            this.getSpriteRays().setInitialRayAngleOffset = this.getOriginInfo().angleOffset;
+            this.getSpriteRays().setInitialRayAngleOffset(this.getOriginInfo().angleOffset);
         }
 
-        this.getRaycaster().setRayAngle = this.getRotation() + this.getOriginInfo().angleOffset - (Math.PI/4);
+        this.getRaycaster().setRayAngle(this.getRotation() + this.getOriginInfo().angleOffset - (Math.PI/4));
     }
 
     shoot(){
