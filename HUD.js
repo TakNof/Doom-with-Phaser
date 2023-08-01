@@ -166,7 +166,7 @@ class HUDText extends Phaser.GameObjects.Text{
         
         this.setDepth(depth);
 
-        if(origin.both){
+        if(origin.both !== undefined){
             this.setOrigin(origin.both);
         }else{
             this.originX = origin.x;

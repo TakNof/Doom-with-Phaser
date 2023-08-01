@@ -20,7 +20,7 @@ class Game2D extends Phaser.Scene{
         this.playerFOVangleOffset = this.playerAngleOffset - this.playerFOV/2
 
         //Stablishing the enemy and its initial position.
-        this.amountEnemies = 1;
+        this.amountEnemies = 18;
 
         this.cacodemons;
 
@@ -124,6 +124,8 @@ class Game2D extends Phaser.Scene{
 
         this.player.setHUD();
         this.player.getHUD().setHUDElementValue("ammo", this.player.getCurrentWeapon().getProjectiles().countActive(false), false);
+
+        this.fpscounter = new HUDText(game3D, 0, 0, "", this.player.getHUD().style, 1000, {both: 0});
         
         //Here we stablish the camera of the player with the raycaster, graphicator and the enemies positions.
         this.player.setCamera(this.playerFOV);
@@ -132,12 +134,13 @@ class Game2D extends Phaser.Scene{
         this.music = this.sound.add('at_dooms_gate');
         this.music.setVolume(0.5);
         this.music.loop = true;
-        this.music.play();
+        // this.music.play();
 
-        this.sound.volume = 1;
+        this.sound.volume = 0.2;
     }
 
-    update(){
+    update(time, delta){
+        this.fpscounter.setText((1000/delta).toFixed(1));
         //The basic movement of the player.
         if(this.player.isAlive){
             this.player.move();
@@ -155,7 +158,7 @@ class Game2D extends Phaser.Scene{
             }   
             
             this.cacodemons.callAll("evalProjectileCollision", this.player);
-            this.cacodemons.callAllSoundPanning(this.player);
+            // this.cacodemons.callAllSoundPanning(this.player);
             
             for(let enemy of this.cacodemons.getChildren()){
                 this.player.evalProjectileCollision(enemy);
