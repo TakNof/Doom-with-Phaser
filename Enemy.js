@@ -191,8 +191,8 @@ class Enemy extends Living{
             damage *= 1/distanceLimits.max;
             // console.log(`${this} Minimal damage ${damage}`);
         }else if(currentDistance <= distanceLimits.min){
-            damage *= bulletProperties.critical * 220/currentDistance;
-            // console.log(`${this} Critical damage ${damage}`);
+            damage *= bulletProperties.critical * 220/currentDistance
+            console.log(`${this} Critical damage ${damage}, Current Distance: ${currentDistance}`);
             critical = true;
         }
 

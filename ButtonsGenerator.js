@@ -26,9 +26,12 @@ class ButtonsGenerator{
         this.title = this.scene.add.image(this.canvasSize.width/2, 150, "title");
 
         for(let [i, option] of menuOptionsStr.entries()){
-            this.menuOptions[option] = this.scene.add.image(this.canvasSize.width/2, 350 + i*100, option);
+            this.menuOptions[option] = this.scene.add.dynamicBitmapText(this.canvasSize.width/2, 350 + i*100, "doomSFont", option);
+            this.menuOptions[option].setFontSize(100);
+            this.menuOptions[option].setOrigin(0.5, 0);
+            this.menuOptions[option].align = 'left';
         }
-
+        
         this.selector = this.scene.add.sprite(this.canvasSize.width/2 - 200, 350, selectorStr).setScale(0.2);
         this.selector.position = 0;
 

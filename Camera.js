@@ -73,7 +73,7 @@ class Camera{
      */
     draw3DWorld(){
         this.player.getGraphicator().redraw3DScaling(this.player.getRayData().distance, this.player.getRayData().typeOfHit);
-        // this.player.getGraphicator().ableRectanglesVisibility(false);
+        this.player.getGraphicator().ableRectanglesVisibility(false);
 
         this.setPlayerGlobalAngle();
 

@@ -29,7 +29,8 @@ const shotgun = {
         damage: 80,
         velocity: 2000,
         delay: 1000,
-        critical: 2.2
+        critical: 2.2,
+        maxCriticalDamage: 320
     },
     distanceLimits:{
         min: 180,
