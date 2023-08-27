@@ -73,7 +73,7 @@ class Camera{
      */
     draw3DWorld(){
         this.player.getGraphicator().redraw3DScaling(this.player.getRayData().distance, this.player.getRayData().typeOfHit);
-        this.player.getGraphicator().ableRectanglesVisibility(false);
+        // this.player.getGraphicator().ableRectanglesVisibility(false);
 
         this.setPlayerGlobalAngle();
 
@@ -134,13 +134,8 @@ class Camera{
             element.visible = true;
             let enemyHeight = this.player.getGraphicator().setEnemyHeight(distanceToPlayer);
             
-            if(enemyHeight/scaleDivisor > 2.5){
-                element.scaleY = 2.5;
-                element.scaleX = 2.5;
-            }else{
-                element.scaleY = enemyHeight/scaleDivisor;
-                element.scaleX = enemyHeight/scaleDivisor;
-            }
+            element.scaleY = enemyHeight/scaleDivisor;
+            element.scaleX = enemyHeight/scaleDivisor;
             
             element.x = this.drawElementByPlayerPov(anglePlayerToElement);
             element.y = (heightMultiplier*canvasSize.height/3 + canvasSize.height/enemyHeight);  

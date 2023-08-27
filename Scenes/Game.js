@@ -9,7 +9,7 @@ class Game2D extends Phaser.Scene{
         this.walls;
         this.wallOrder;
         this.wallBlockSize = 32;
-        this.amountWalls = 24;
+        this.amountWalls = 18;
         this.generateWalls = true;
         this.generateRandomWalls = true;
 
@@ -64,7 +64,7 @@ class Game2D extends Phaser.Scene{
         this.load.audio("at_dooms_gate", "assets/music/at_dooms_gate.wav");
 
         
-        // this.scene.setVisible(false);
+        this.scene.setVisible(false);
         // this.game.canvas.style.display = 'none';
     }
 
@@ -147,6 +147,7 @@ class Game2D extends Phaser.Scene{
             this.player.shoot();
             this.player.reload();
             this.player.switchWeapons();
+            this.player.pause();
             
             //The basic movement of the enemy according to the player's position.
             if(this.cacodemons.getChildren().length > 0 && this.allowChase){

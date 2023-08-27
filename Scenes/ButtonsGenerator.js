@@ -15,12 +15,10 @@ class ButtonsGenerator{
 
         this.menuOptions = {};
 
-        let keys = ["W", "A", "S", "D"];
-
         this.cursors = this.scene.input.keyboard.createCursorKeys();
 
-        for(let key of keys) {
-            this.cursors[key] = this.scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes[key]);
+        for(let key of ["w", "a", "s", "d"]) {
+            this.cursors[key] = this.scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes[key.toUpperCase()]);
         }
 
         this.title = this.scene.add.image(this.canvasSize.width/2, 150, "title");
@@ -47,15 +45,15 @@ class ButtonsGenerator{
     }
 
     moveCursor(){
-        if(((this.cursors.up.isDown ^ this.cursors.down.isDown) || (this.cursors["W"].isDown ^ this.cursors["S"].isDown)) && !this.keyIsPressed){
-            if (this.cursors.up.isDown || this.cursors["W"].isDown){
+        if(((this.cursors.up.isDown ^ this.cursors.down.isDown) || (this.cursors.w.isDown ^ this.cursors.s.isDown)) && !this.keyIsPressed){
+            if (this.cursors.up.isDown || this.cursors.w.isDown){
                 if(this.selector.position != 0){
                     this.selector.position -= 1;
                     this.keyIsPressed = true;
                     this.getSelectorMovingSound().playSound();
                 }
 
-            }else if(this.cursors.down.isDown || this.cursors["S"].isDown){    
+            }else if(this.cursors.down.isDown || this.cursors.s.isDown){    
                 if(this.selector.position != Object.keys(this.menuOptions).length - 1){
                     this.selector.position += 1;
                     this.keyIsPressed = true;
@@ -64,7 +62,7 @@ class ButtonsGenerator{
             }            
 
             this.selector.y = 350 + this.selector.position*100;
-        }else if (this.cursors.up.isUp && this.cursors.down.isUp && this.cursors["W"].isUp && this.cursors["S"].isUp) {
+        }else if (this.cursors.up.isUp && this.cursors.down.isUp && this.cursors.w.isUp && this.cursors.s.isUp) {
             this.keyIsPressed = false;
         }
     }

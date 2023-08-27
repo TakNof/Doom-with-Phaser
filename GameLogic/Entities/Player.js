@@ -22,20 +22,18 @@ class Player extends Living{
 
         this.scene3D = scene3D;
 
+        console.log(this.getScene3D().scene);
+
         this.angleOperator = playerAngleOperator;
 
         this.setXcomponent(this.getOriginInfo().angleOffset);
         this.setYcomponent(this.getOriginInfo().angleOffset);
 
-        this.cursors = this.getScene().input.keyboard.createCursorKeys();
+        this.controls = this.getScene().input.keyboard.createCursorKeys();
 
-       for(let key of ["W", "A", "S", "D", "R"]) {
-            this.cursors[key] = this.getScene().input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes[key]);
+       for(let key of ["w", "a", "s", "d", "r", "shift", "space", "enter", "esc"]) {
+            this.controls[key.toLowerCase()] = this.getScene().input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes[key.toUpperCase()]);
         }
-
-        this.keySpace = this.getScene().input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
-
-        this.keyShift = this.getScene().input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SHIFT);
 
         this.setMaxHealth(maxHealth);
 
@@ -128,48 +126,6 @@ class Player extends Living{
     }
 
     /**
-     * Allow the player to switch among the weapons.
-     */
-    switchWeapons(){
-        if(this.keyShift.isDown){
-            let time = this.getScene().time.now;
-            if (time - this.lastSwitchWeaponTimer  > this.getCurrentWeapon().switchWeaponDelay) {
-                this.getCurrentWeapon().playSwitchWeaponSound();
-
-                this.getCurrentWeapon().setVisible(false);
-
-                let index = this.weapons.indexOf(this.getCurrentWeapon());
-
-                if(index == this.weapons.length - 1){
-                    this.setCurrentWeapon(this.weapons[0]);
-                }else{
-                    this.setCurrentWeapon(this.weapons[index + 1]);
-                }
-
-                this.getCurrentWeapon().setVisible(true);
-
-                this.lastShotTimer = 0;
-                this.lastSwitchWeaponTimer = time;
-
-                this.getHUD().setHUDElementValue("ammo", this.getCurrentWeapon().getProjectiles().countActive(false), false);
-            }
-        }
-    }
-
-    reload(){
-        if(this.cursors["R"].isDown){
-            this.getCurrentWeapon().getProjectiles().createMultiple({
-                    key: "bullet",
-                    max: 10,
-                    quantity: 10,
-                    active: false,
-                    visible: false
-            });
-            this.getHUD().setHUDElementValue("ammo", this.getCurrentWeapon().getProjectiles().countActive(false), false);
-        }
-    }
-
-    /**
      * Gets the list of weapons of the player.
      * @returns {Array<Weapon>}
      */
@@ -222,8 +178,7 @@ class Player extends Living{
      * @param {Projectile} projectile 
      * @param {Number} damage 
      * @param {Object} distanceLimits 
-     * @param {Number} currentDistance 
-     * @returns 
+     * @param {Number} currentDistance
      */
     __checkDamage(projectile, projectile3D, bulletProperties, distanceLimits, currentDistance){
         projectile.body.reset(-100, -100); 
@@ -354,13 +309,13 @@ class Player extends Living{
         this.getRaycaster().setSpritePosition(this.getPosition());
 
 
-        if((this.cursors.up.isDown ^ this.cursors.down.isDown) ^ (this.cursors["W"].isDown ^ this.cursors["S"].isDown)){
-            if (this.cursors.up.isDown || this.cursors["W"].isDown){
+        if((this.controls.up.isDown ^ this.controls.down.isDown) ^ (this.controls.w.isDown ^ this.controls.s.isDown)){
+            if (this.controls.up.isDown || this.controls.w.isDown){
                 //Here we use the velocity calculated, and we change its sign accordingly to the direction of movement.
                 this.setVelocityX(this.getXcomponent());
                 this.setVelocityY(this.getYcomponent()); 
 
-            }else if(this.cursors.down.isDown || this.cursors["S"].isDown){    
+            }else if(this.controls.down.isDown || this.controls.s.isDown){    
                 this.setVelocityX(-this.getXcomponent());
                 this.setVelocityY(-this.getYcomponent());
             }
@@ -373,16 +328,16 @@ class Player extends Living{
             }
         } 
 
-        if((this.cursors.left.isDown ^ this.cursors.right.isDown) ^ (this.cursors["A"].isDown ^ this.cursors["D"].isDown)){
+        if((this.controls.left.isDown ^ this.controls.right.isDown) ^ (this.controls.a.isDown ^ this.controls.d.isDown)){
 
             //Here we use trigonometrics to calculate the x and y component of the velocity.
             this.setXcomponent(this.getOriginInfo().angleOffset);
             this.setYcomponent(this.getOriginInfo().angleOffset);    
     
-            if (this.cursors.left.isDown || this.cursors["A"].isDown){
+            if (this.controls.left.isDown || this.controls.a.isDown){
                 this.setAngle(this.getAngle() - this.getAngleOperator());
 
-            }else if(this.cursors.right.isDown || this.cursors["D"].isDown){
+            }else if(this.controls.right.isDown || this.controls.d.isDown){
                 this.setAngle(this.getAngle() + this.getAngleOperator());
             }
         }
@@ -395,11 +350,11 @@ class Player extends Living{
     }
 
     shoot(){
-        if(this.keySpace.isDown){
+        if(this.controls.space.isDown){
             let time = this.getScene().time.now;
 
             if (time - this.lastShotTimer > this.getCurrentWeapon().getDelayBetweenShots()) {
-                this.getCurrentWeapon().shootProjectile(this, this.getCurrentWeapon().getBulletVelocity()   );
+                this.getCurrentWeapon().shootProjectile(this, this.getCurrentWeapon().getBulletVelocity());
                 this.getHUD().setHUDElementValue("ammo", this.getCurrentWeapon().getProjectiles().countActive(false), false);
 
                 this.lastShotTimer = time;
@@ -407,5 +362,58 @@ class Player extends Living{
         }
     }
 
+    /**
+     * Allow the player to switch among the weapons.
+     */
+    switchWeapons(){
+        if(this.controls.shift.isDown){
+            let time = this.getScene().time.now;
+            if (time - this.lastSwitchWeaponTimer  > this.getCurrentWeapon().switchWeaponDelay) {
+                this.getCurrentWeapon().playSwitchWeaponSound();
 
+                this.getCurrentWeapon().setVisible(false);
+
+                let index = this.weapons.indexOf(this.getCurrentWeapon());
+
+                if(index == this.weapons.length - 1){
+                    this.setCurrentWeapon(this.weapons[0]);
+                }else{
+                    this.setCurrentWeapon(this.weapons[index + 1]);
+                }
+
+                this.getCurrentWeapon().setVisible(true);
+
+                this.lastShotTimer = 0;
+                this.lastSwitchWeaponTimer = time;
+
+                this.getHUD().setHUDElementValue("ammo", this.getCurrentWeapon().getProjectiles().countActive(false), false);
+            }
+        }
+    }
+
+    /**
+     * Allows the player to reload the current weapon.
+     */
+    reload(){
+        if(this.controls.r.isDown){
+            this.getCurrentWeapon().getProjectiles().createMultiple({
+                    key: "bullet",
+                    max: 10,
+                    quantity: 10,
+                    active: false,
+                    visible: false
+            });
+            this.getHUD().setHUDElementValue("ammo", this.getCurrentWeapon().getProjectiles().countActive(false), false);
+        }
+    }
+
+    pause(){
+        if(this.controls.esc.isDown){
+            if(this.getScene3D().scene.settings.active === true){
+                this.getScene3D().scene.pause();
+                this.getScene().scene.pause();
+                this.getScene3D().scene.launch("pauseMenu");
+            }        
+        }
+    }
 }

@@ -1,8 +1,6 @@
 class MainMenuScene extends Phaser.Scene {
     constructor() {
-        super("mainMenu");
-        this.canvasSize = {width:1024, height:768}
-
+        super({key: "mainMenu"});
         this.menuOptions = ["Start", "How to play", "Options", "Credits"];
     }
 
@@ -20,25 +18,27 @@ class MainMenuScene extends Phaser.Scene {
     }
 
     create(){
-        this.background = this.add.image(this.canvasSize.width/2, this.canvasSize.height/2, 'background').setScale(0.7);
+        this.background = this.add.image(canvasSize.width/2, canvasSize.height/2, 'background').setScale(0.7);
 
-        let keyCodes = ["SPACE", "ENTER", "SCAPE"];
+        let keyCodes = ["space", "enter", "esc"];
 
-        this.controls = this.input.keyboard.createCursorKeys()
+        this.controls = {};
 
         for(let code of keyCodes){
-            this.controls[code] = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes[code]);
+            this.controls[code] = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes[code.toUpperCase()]);
         }
         
-        this.menuButtons = new ButtonsGenerator(this, this.canvasSize, this.menuOptions);
+        this.menuButtons = new ButtonsGenerator(this, canvasSize, this.menuOptions);
     }
 
     update(){
         this.menuButtons.moveCursor();
 
-        if(this.controls.SPACE.isDown || this.controls.ENTER.isDown){
+        if(this.controls.space.isDown || this.controls.enter.isDown){
             switch (this.menuButtons.selectorPosition) {
                 case 0:
+                    console.log(this.scene);
+
                     this.scene.launch("Game3D");
                     this.scene.start("Game2D");
                 break;
@@ -53,7 +53,6 @@ class MainMenuScene extends Phaser.Scene {
                 //     break;
             }
         }
-
     }
 }
 
