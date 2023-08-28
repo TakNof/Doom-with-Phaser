@@ -186,12 +186,11 @@ class Living extends Sprite{
     /**
      * This method created the raycaster object of the sprite.
      * @param {number} raysAmount The amount of rays that the raycaster should calculate.
+     * @param {number} depthOfFieldLimit The limit to render the walls of the world.
      * @param {number} angleOffset The angle offset of the projected rays from the sprite.
      */
-    setRaycaster(wallMatrix, raysAmount, angleOffset = 0) {
-        this.raysAmount = raysAmount;
-        this.setAngleOffset = angleOffset;
-        this.raycaster = new Raycaster(this.getRotation() + angleOffset, this.getPositionX(), this.getPositionY(), raysAmount);
+    setRaycaster(wallMatrix, angleOffset = 0) {
+        this.raycaster = new Raycaster(this.getRotation() + angleOffset, this.getPosition());
         this.raycaster.setMatrix(wallMatrix);
         this.getRaycaster().setAngleStep();
     }
@@ -202,10 +201,6 @@ class Living extends Sprite{
      */
     getRaycaster(){
         return this.raycaster;
-    }
-
-    getRaysAmount(){
-        return this.raysAmount;
     }
 
     /**
@@ -229,7 +224,7 @@ class Living extends Sprite{
      */
     setSpriteRays(colorOfRays){
         if(this.getDebug()){
-            this.spriteRays = new Rays(this.getScene(), this.getRaysAmount(), this.getPosition(), colorOfRays);
+            this.spriteRays = new Rays(this.getScene(), options.quality.value, this.getPosition(), colorOfRays);
             this.spriteRays.setInitialRayAngleOffset(this.getOriginInfo().angleOffset);
         }
     }

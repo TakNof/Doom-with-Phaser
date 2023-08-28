@@ -1,4 +1,4 @@
-class MainMenuScene extends Phaser.Scene {
+class MainMenu extends Phaser.Scene {
     constructor() {
         super({key: "mainMenu"});
         this.menuOptions = ["Start", "How to play", "Options", "Credits"];
@@ -37,8 +37,6 @@ class MainMenuScene extends Phaser.Scene {
         if(this.controls.space.isDown || this.controls.enter.isDown){
             switch (this.menuButtons.selectorPosition) {
                 case 0:
-                    console.log(this.scene);
-
                     this.scene.launch("Game3D");
                     this.scene.start("Game2D");
                 break;

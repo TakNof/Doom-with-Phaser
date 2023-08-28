@@ -1,7 +1,7 @@
-class PauseMenu extends Phaser.Scene{
+class OptionsMenu extends Phaser.Scene{
     constructor() {
-        super({key: "pauseMenu"});
-        this.menuOptions = ["Restart", "Resume", "Options", "Back to menu"];
+        super({key: "optionsMenu"});
+        this.menuOptions = ["Restart", "Options", "Exit"];
     }
 
     preload(){
@@ -48,19 +48,14 @@ class PauseMenu extends Phaser.Scene{
                     this.scene.start("Game2D");
                 break;
 
-                case 1:
-                    this.scene.manager.scenes[1].scene.resume();
-                    this.scene.manager.scenes[2].scene.resume();
-                    this.scene.stop();
-                break;
+                // case 1:
+                //     break;
 
-                case 2:
-
-                break;
+                // case 2:
+                //     break;
             
-                case 3:
-                    
-                break;
+                // default:
+                //     break;
             }
         }
     }

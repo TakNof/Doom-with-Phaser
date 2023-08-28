@@ -10,7 +10,7 @@ let config = {
     },
     width: canvasSize.width,
     height: canvasSize.height,
-    scene: [MainMenuScene, Game2D, Game3D, PauseMenu]
+    scene: [MainMenu, Game2D, Game3D, PauseMenu, OptionsMenu]
 }
 
 let sharedScenes= {};
@@ -101,6 +101,20 @@ const cacodemon = {
         },
     ],
     spriteSounds: ["hurt", "death", "attack"]
+}
+
+let options = {
+    quality: {
+        setting: 1,
+        value: 64
+    },
+    renderDistance: {
+        setting: 1,
+        value: 40
+    },
+    dificulty: {
+        setting: 4
+    }
 }
 
 const game = new Phaser.Game(config);

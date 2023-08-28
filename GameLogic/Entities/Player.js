@@ -22,8 +22,6 @@ class Player extends Living{
 
         this.scene3D = scene3D;
 
-        console.log(this.getScene3D().scene);
-
         this.angleOperator = playerAngleOperator;
 
         this.setXcomponent(this.getOriginInfo().angleOffset);
@@ -58,7 +56,7 @@ class Player extends Living{
      * Sets the graphicator object of the player.
      */
     setGraphicator(){
-        this.graphicator = new Graphicator(this.getScene3D(), this.getSize(), this.getRaysAmount());
+        this.graphicator = new Graphicator(this.getScene3D(), this.getSize(), options.quality.value);
     }
 
     /**
@@ -404,16 +402,6 @@ class Player extends Living{
                     visible: false
             });
             this.getHUD().setHUDElementValue("ammo", this.getCurrentWeapon().getProjectiles().countActive(false), false);
-        }
-    }
-
-    pause(){
-        if(this.controls.esc.isDown){
-            if(this.getScene3D().scene.settings.active === true){
-                this.getScene3D().scene.pause();
-                this.getScene().scene.pause();
-                this.getScene3D().scene.launch("pauseMenu");
-            }        
         }
     }
 }

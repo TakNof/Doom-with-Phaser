@@ -1,11 +1,13 @@
 class Raycaster{
 
-    constructor(spriteAngle, spritePositionX, spritePositionY, rayAmount){
+    constructor(spriteAngle, spritePosition){
         this.rayAngle = this.adjustAngleValue(spriteAngle);
         
-        this.spritePosition = {x: spritePositionX, y: spritePositionY};
+        this.spritePosition = spritePosition;
 
-        this.rayAmount = rayAmount;
+        this.rayAmount = options.quality.value;
+
+        this.depthOfFieldLimit = options.renderDistance.value;
     }
 
     setAngleStep(fov = 1){
@@ -62,8 +64,6 @@ class Raycaster{
 
         let checks = {horizontal: true, vertical: true};
             
-        let depthOfFieldLimit = 20;
-
         let RDistance;
 
         for(let i = 0; i < this.rayAmount; i++){
@@ -78,12 +78,12 @@ class Raycaster{
 
             kindOfHit[i] = "";
     
-            horizontalCheckResults = this.generalCheck(currentAngle, depthOfFieldLimit, totalDistance, true);
+            horizontalCheckResults = this.generalCheck(currentAngle, totalDistance, true);
 
             totalDistance.y = horizontalCheckResults.totalDistance;
             horizontal = horizontalCheckResults.coordinates;
 
-            verticalCheckResults = this.generalCheck(currentAngle, depthOfFieldLimit, totalDistance);
+            verticalCheckResults = this.generalCheck(currentAngle, totalDistance);
 
             totalDistance.x = verticalCheckResults.totalDistance;
             vertical = verticalCheckResults.coordinates;
@@ -104,8 +104,8 @@ class Raycaster{
                     rayYposition = horizontal.y;
                     RDistance = totalDistance.y;
                 }else{
-                    rayXposition = Math.cos(currentAngle) * depthOfFieldLimit*32 + this.spritePosition.x;
-                    rayYposition = Math.sin(currentAngle) * depthOfFieldLimit*32 + this.spritePosition.y;
+                    rayXposition = Math.cos(currentAngle) * this.depthOfFieldLimit*32 + this.spritePosition.x;
+                    rayYposition = Math.sin(currentAngle) * this.depthOfFieldLimit*32 + this.spritePosition.y;
                     RDistance = this.hypoCalc(rayXposition, rayYposition);
                 }
             }else if(checks.horizontal ^ checks.vertical){
@@ -146,7 +146,7 @@ class Raycaster{
     }
     
 
-    generalCheck(angle, depthOfFieldLimit, totalDistance, isHorizontal = false){
+    generalCheck(angle, totalDistance, isHorizontal = false){
         let angleLimitations;
 
         let tanFuncUsed;
@@ -190,7 +190,7 @@ class Raycaster{
             rayPosition[0] = this.spritePosition.x;
             rayPosition[1] = this.spritePosition.y;
 
-            depthOfField = depthOfFieldLimit;
+            depthOfField = this.depthOfFieldLimit;
         }else if(angleLimitations.cond2){
             rayPosition[raySelector.fir] = parseInt((spritePosition.fir - 0.0001)/32)*32;
             rayPosition[raySelector.sec] = (spritePosition.fir - rayPosition[raySelector.fir]) * tanFuncUsed + spritePosition.sec;
@@ -212,7 +212,7 @@ class Raycaster{
             rayOffset[raySelector.sec] = -rayOffset[raySelector.fir]*tanFuncUsed;
         }
 
-        while(depthOfField < depthOfFieldLimit){     
+        while(depthOfField < this.depthOfFieldLimit){     
             matrixPosition = {
                 x: parseInt((rayPosition[0])/32)- 1*adjustMatrixPosition.x,
                 y: parseInt((rayPosition[1])/32) - 1*adjustMatrixPosition.y
@@ -229,7 +229,7 @@ class Raycaster{
             if(wallPlace < this.matrixDimensions.xdim * this.matrixDimensions.ydim && this.matrix[matrixPosition.y][matrixPosition.x] === true){
                 wallDetected = true;
                 totalDistanceUsed = this.hypoCalc(coordinatesUsed.x, coordinatesUsed.y);
-                depthOfField  = depthOfFieldLimit;
+                depthOfField  = this.depthOfFieldLimit;
             }else{
                 rayPosition[raySelector.fir] += rayOffset[raySelector.fir];
                 rayPosition[raySelector.sec] += rayOffset[raySelector.sec];
