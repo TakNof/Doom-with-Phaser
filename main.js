@@ -112,8 +112,8 @@ let options = {
         setting: 1,
         value: 40
     },
-    dificulty: {
-        setting: 4
+    difficulty: {
+        setting: 1
     }
 }
 

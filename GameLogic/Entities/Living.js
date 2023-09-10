@@ -189,8 +189,8 @@ class Living extends Sprite{
      * @param {number} depthOfFieldLimit The limit to render the walls of the world.
      * @param {number} angleOffset The angle offset of the projected rays from the sprite.
      */
-    setRaycaster(wallMatrix, angleOffset = 0) {
-        this.raycaster = new Raycaster(this.getRotation() + angleOffset, this.getPosition());
+    setRaycaster(wallMatrix, angleOffset = 0, rayAmount = undefined) {
+        this.raycaster = new Raycaster(this.getRotation() + angleOffset, this.getPosition(), rayAmount);
         this.raycaster.setMatrix(wallMatrix);
         this.getRaycaster().setAngleStep();
     }

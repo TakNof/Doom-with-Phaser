@@ -77,8 +77,7 @@ class Weapon extends Sprite{
             this.play(this.getShootingAnimation().getAnimationName());
 
             this.playSoundEffect();
-
-            livingSprite.addRoundShot();
+            
             projectile.shoot(livingSprite, velocity);
 
         }

@@ -39,7 +39,6 @@ class PauseMenu extends Phaser.Scene{
         if(this.controls.space.isDown || this.controls.enter.isDown){
             switch (this.menuButtons.selectorPosition) {
                 case 0:
-                    // this.scene.manager.scenes[1].scene.music.stop();
                     this.scene.manager.scenes[1].scene.scene.music.stop();
                     this.scene.stop("Game3D");
                     this.scene.stop("Game2D");
@@ -59,7 +58,11 @@ class PauseMenu extends Phaser.Scene{
                 break;
             
                 case 3:
-                    
+                    this.scene.start("mainMenu");
+                    this.scene.manager.scenes[1].scene.scene.music.stop();
+                    this.scene.stop("Game3D");
+                    this.scene.stop("Game2D");
+                    this.scene.stop();
                 break;
             }
         }

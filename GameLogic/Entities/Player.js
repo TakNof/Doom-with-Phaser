@@ -235,14 +235,6 @@ class Player extends Living{
         return this.timeAlive;
     }
 
-    addRoundShot(){
-        this.roundsShot +=1;
-    }
-
-    getRoundsShot(){
-        return this.roundsShot;
-    }
-
     addDamageDealed(damage){
         this.damageDealed += damage;
     }
@@ -259,29 +251,37 @@ class Player extends Living{
         return this.damageReceived;
     }
 
-    setScore(type, enemiesAmount){
-        let score = {timeScore: 0, shotsScore: 0, damageDealedScore: 0, damageReceivedScore: 0, totalScore: 0};
+    setScore(type){
+        let score = {timeScore: 0, difficulty: 0, damageDealedScore: 0, damageReceivedScore: 0, totalScore: 0};
+        let aux = {0: "Easy", 1: "Normal", 2: "Hard", 3: "Nightmare"};
         switch (type) {
             case "Victory":
                 score.timeScore = `TIME ALIVE = ${Math.round(this.getTimeAlive())}s + BONUS`; 
                 score.totalScore += (1000000/this.getTimeAlive());
+
+                score.difficulty = `DIFICULTY = ${aux[options.difficulty.setting].toUpperCase()}, SCORE x${options.difficulty.setting * 10}`;
                 break;
 
             case "Defeat":
                 score.timeScore = `TIME ALIVE = ${Math.round(this.getTimeAlive())}s`; 
                 score.totalScore += this.getTimeAlive()*10;
+
+                score.difficulty = `DIFICULTY = ${aux[options.difficulty.setting].toUpperCase()}`
                 break;
 
             default:
                 throw new Error("Invalid type: " + type);
         }
-        score.shotsScore = `SHOTS = ${Math.round(this.getRoundsShot())}`;
+        
         score.damageDealedScore = `DAMAGE DEALED = ${Math.round(this.getDamageDealed())}`;
         score.damageReceivedScore = `DAMAGE RECIEVED = -${Math.round(this.getDamageReceived())}`;
 
-        score.totalScore += this.getRoundsShot()/enemiesAmount*10;
         score.totalScore += this.getDamageDealed()*10;
         score.totalScore -= this.getDamageReceived()*10;
+
+        if(type == "Victory"){
+            score.totalScore *= options.difficulty.setting * 10;
+        }
         
         this.score = score;
         this.score.totalScore = Math.round(score.totalScore/10)*10;

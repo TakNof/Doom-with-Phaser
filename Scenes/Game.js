@@ -26,8 +26,8 @@ class Game2D extends Phaser.Scene{
 
         this.enemyAngleOffset = 3*Math.PI/2;
         this.allowChase = true;
-        this.allowShoot = true;
-        this.playerHealth = 100;
+        this.allowShoot = false;
+        this.playerHealth = Infinity;
 
 
         //Stablishing the velocity standards for the player and enemies.
@@ -37,8 +37,6 @@ class Game2D extends Phaser.Scene{
         this.angleOperator = 3.5;
 
         this.music; 
-
-        this.setOptions();
     }
 
     //With the preload method we preload the sprites and we generate the object from the raycaster class.
@@ -101,7 +99,7 @@ class Game2D extends Phaser.Scene{
         this.player.getRaycaster().setAngleStep(this.playerFOV);
 
         //Here we put the color of the rays of the player.
-        this.player.setDebug(false);
+        this.player.setDebug(true);
         this.player.setSpriteRays(colors.limeGreen);
 
         //here we create the graphicator of the raycaster of the player.
@@ -130,11 +128,16 @@ class Game2D extends Phaser.Scene{
         this.player.getCamera().setEnemies(this.cacodemons.getChildren());
         
         this.music = this.sound.add('at_dooms_gate');
+        // console.log(this.music);
+
         this.music.setVolume(0.5);
         this.music.loop = true;
-        this.music.play();
 
-        this.sound.volume = 0.2;
+        if(!this.music.isPlaying){
+            // this.music.play();
+        }
+        
+        // this.sound.volume = 0.2;
     }
 
     update(time, delta){
@@ -171,7 +174,7 @@ class Game2D extends Phaser.Scene{
         }else{
             if(!this.player.isAlive && this.player.getScore() == undefined){
                 this.player.setTimeAlive();
-                this.player.setScore("Defeat", this.amountEnemies);
+                this.player.setScore("Defeat");
                 this.player.getHUD().displayDeathText();
 
                 this.player.getHUD().displayScoreText("Defeat", this.player.getScore());
@@ -180,7 +183,7 @@ class Game2D extends Phaser.Scene{
 
         if((this.cacodemons.getChildren().length == 0 || (this.cacodemons.getChildren()[0].getHealth() == 0 && this.cacodemons.getChildren().length == 1)) && this.player.getScore() == undefined){
             this.player.setTimeAlive();
-            this.player.setScore("Victory", this.amountEnemies);
+            this.player.setScore("Victory");
             this.player.getHUD().displayVictoryText();
 
             this.player.getHUD().displayScoreText("Victory", this.player.getScore());          
@@ -194,69 +197,6 @@ class Game2D extends Phaser.Scene{
         
         //Here we draw the 3D representation of the map.
         this.player.getCamera().draw3DWorld();
-    }
-
-    setOptions(){
-        switch (options.quality.setting) {
-            case 0:
-                options.quality.value = 32;
-            break;
-
-            case 1:
-                options.quality.value = 64;
-            break;
-
-            case 2:
-                options.quality.value = 96;
-            break;
-
-            case 3:
-                options.quality.value = 128;
-            break;
-        }
-
-        switch (options.renderDistance.setting) {
-            case 0:
-                options.renderDistance.value = 10;
-            break;
-
-            case 1:
-                options.renderDistance.value = 15;
-            break;
-
-            case 2:
-                options.renderDistance.value = 20;
-            break;
-        }
-
-        switch (options.dificulty.setting) {
-            case 0:
-                cacodemon.chaseDistance = 200;
-                cacodemon.maxHealth = 200;
-                cacodemon.distanceLimits.min = 400;
-                cacodemon.bulletProperties.delay = 5000;
-                cacodemon.defaultVelocity = 125;
-                cacodemon.bulletProperties.damage = 6;
-            break;
-        
-            case 1:
-                cacodemon.chaseDistance = 300;
-                cacodemon.maxHealth = 225;
-                cacodemon.distanceLimits.min = 320;
-                cacodemon.bulletProperties.delay = 3800;
-                cacodemon.defaultVelocity = 135;
-                cacodemon.bulletProperties.damage = 8;
-            break;
-
-            case 3:
-                cacodemon.chaseDistance = 1000;
-                cacodemon.maxHealth = 320;
-                cacodemon.distanceLimits.min = 100;
-                cacodemon.bulletProperties.delay = 2500;
-                cacodemon.defaultVelocity = 200;
-                cacodemon.bulletProperties.damage = 20;
-            break;
-        }
     }
 }
 
@@ -291,6 +231,7 @@ class Game3D extends Phaser.Scene {
 
         this.load.image("energy_bomb", "./assets/enemies/cacodemon/Sprites/energy_bomb.png");
         this.load.audio("cacodemon_energy_bomb_sound", "./assets/enemies/cacodemon/Sounds/cacodemon_energy_bomb_sound.wav");
+        // this.scene.setVisible(false);
     }
 
     create() {

@@ -346,8 +346,8 @@ class EnemyGroup extends Phaser.Physics.Arcade.Group{
         this.callAll("setDistanceLimits", config.distanceLimits);
         this.callAll("setAnimations", config.animationsToSet);
         this.callAll("setSpriteSounds", config.name.replace("small_", ""), config.spriteSounds);
-        this.callAll("setRaycaster", this.wallMatrix, 1, config.angleOffset);
-        this.callAll("setDebug", false);
+        this.callAll("setRaycaster", this.wallMatrix, config.angleOffset, 1);
+        this.callAll("setDebug", true);
         this.callAll("setSpriteRays", colors.black);
         this.callAll("setMaxHealth", config.maxHealth);
 

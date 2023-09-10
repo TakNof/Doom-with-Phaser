@@ -125,11 +125,6 @@ class Camera{
      * @param {Array<Number>} anglePlayerToElement
      */
     drawEnemyElements(element, anglePlayerToElement, distanceToPlayer, scaleDivisor, heightMultiplier){     
-        /**
-         * According to the adjust values calculeted previously, the evaluation values of the player's fov angles will change between 0 and 1,
-         * the 1 in the adjust value will allow the angle of that fov end to substract or add a whole lap. With that, the conditional will work
-         * properly, avoiding the issue of the angle reset when reaching 360 degrees or 2PI radians.
-         */
         if(this.checkElementWithinFOV(anglePlayerToElement) && element.active){
             element.visible = true;
             let enemyHeight = this.player.getGraphicator().setEnemyHeight(distanceToPlayer);

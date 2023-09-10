@@ -1,12 +1,16 @@
 class Raycaster{
 
-    constructor(spriteAngle, spritePosition){
+    constructor(spriteAngle, spritePosition, rayAmount){
         this.rayAngle = this.adjustAngleValue(spriteAngle);
         
         this.spritePosition = spritePosition;
 
-        this.rayAmount = options.quality.value;
-
+        if(rayAmount){
+            this.rayAmount = rayAmount;
+        }else{
+            this.rayAmount = options.quality.value;
+        }
+        
         this.depthOfFieldLimit = options.renderDistance.value;
     }
 
