@@ -270,6 +270,9 @@ class Living extends Sprite{
 
         for(let element of soundNames){
             this.spriteSounds[element] = new Sound(this.getScene(), `${name}_${element}_sound`);
+            if(element == "heal"){
+                this.spriteSounds[element].sound.setVolume(10);
+            }
         }
     }
 

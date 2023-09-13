@@ -20,14 +20,14 @@ class Game2D extends Phaser.Scene{
         this.playerFOVangleOffset = this.playerAngleOffset - this.playerFOV/2
 
         //Stablishing the enemy and its initial position.
-        this.amountEnemies = 18;
+        this.amountEnemies = 3;
 
         this.cacodemons;
 
         this.enemyAngleOffset = 3*Math.PI/2;
         this.allowChase = true;
         this.allowShoot = false;
-        this.playerHealth = Infinity;
+        this.playerHealth = 100;
 
 
         //Stablishing the velocity standards for the player and enemies.
@@ -59,8 +59,16 @@ class Game2D extends Phaser.Scene{
 
         this.load.audio("at_dooms_gate", "assets/music/at_dooms_gate.wav");
 
+        this.cameras.main.setViewport(0, 0, window.innerHeight, window.innerHeight);
+        this.cameras.main.scrollX = 0;
+        this.cameras.main.scrollY = 0;
+
+        if(game.config.physics.arcade.debug){
+            this.cameras.main.setViewport(0, 0, window.innerWidth, window.innerHeight);
+        }else{
+            this.scene.setVisible(false);
+        }
         
-        this.scene.setVisible(false);
         // this.game.canvas.style.display = 'none';
     }
 
@@ -99,7 +107,7 @@ class Game2D extends Phaser.Scene{
         this.player.getRaycaster().setAngleStep(this.playerFOV);
 
         //Here we put the color of the rays of the player.
-        this.player.setDebug(true);
+        this.player.setDebug(game.config.physics.arcade.debug);
         this.player.setSpriteRays(colors.limeGreen);
 
         //here we create the graphicator of the raycaster of the player.
@@ -115,8 +123,10 @@ class Game2D extends Phaser.Scene{
 
         //We create a certain amount of cacodemons.
         this.cacodemons = new EnemyGroup(this, game3D, this.amountEnemies, this.walls, cacodemon);
-
-        this.walls.setColliders(this.cacodemons);
+        
+        for(let cacodemon of this.cacodemons.children.entries){
+            this.walls.setColliders(cacodemon.getColliderElements());
+        }
 
         this.player.setHUD();
         this.player.getHUD().setHUDElementValue("ammo", this.player.getCurrentWeapon().getProjectiles().countActive(false), false);
@@ -232,6 +242,10 @@ class Game3D extends Phaser.Scene {
         this.load.image("energy_bomb", "./assets/enemies/cacodemon/Sprites/energy_bomb.png");
         this.load.audio("cacodemon_energy_bomb_sound", "./assets/enemies/cacodemon/Sounds/cacodemon_energy_bomb_sound.wav");
         // this.scene.setVisible(false);
+
+        if(game.config.physics.arcade.debug){
+            this.cameras.main.setViewport(0, window.innerHeight/2, window.innerWidth, window.innerHeight);
+        }
     }
 
     create() {

@@ -5,7 +5,7 @@ let config = {
     physics:{
         default: "arcade",
         arcade: {
-            debug: false
+            debug: true
         }
     },
     width: canvasSize.width,
@@ -118,6 +118,12 @@ let options = {
 }
 
 const game = new Phaser.Game(config);
+
+if(game.config.physics.arcade.debug){
+    game.config.height *= 2;
+}
+
+console.dir(game.config.physics.arcade.debug);
 
 /**
  * This method allows us to get a number between the specified range.
