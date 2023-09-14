@@ -35,22 +35,16 @@ class SelectDifficulty extends Phaser.Scene {
         this.menuButtons.moveCursor();
 
         if(this.controls.space.isDown || this.controls.enter.isDown){
-            switch (this.menuButtons.selectorPosition) {
-                case 0:
-                    this.setOptions();
-                    this.scene.launch("Game3D");
-                    this.scene.start("Game2D");
-                break;
+            options.difficulty.setting = this.menuButtons.selectorPosition;
 
-                // case 1:
-                //     break;
+            this.setOptions();
+            this.scene.launch("Game3D");
+            this.scene.start("Game2D");
+        }
 
-                // case 2:
-                //     break;
-            
-                // default:
-                //     break;
-            }
+        if(this.controls.esc.isDown){
+            this.scene.launch("mainMenu");
+            this.scene.stop();
         }
     }
 

@@ -34,8 +34,6 @@ class ButtonsGenerator{
                 optionsMaxWidth = this.menuOptions[option]._bounds.lines.longest
             }
         }
-
-        console.log(optionsMaxWidth);
         
         this.selector = this.scene.add.sprite(canvasSize.width/2 - optionsMaxWidth/2 - 32, 350, selectorStr).setScale(0.2);
         this.selector.position = 0;

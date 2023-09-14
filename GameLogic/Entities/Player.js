@@ -253,13 +253,18 @@ class Player extends Living{
 
     setScore(type){
         let score = {timeScore: 0, difficulty: 0, damageDealedScore: 0, damageReceivedScore: 0, totalScore: 0};
-        let aux = {0: "Easy", 1: "Normal", 2: "Hard", 3: "Nightmare"};
+        let aux = ["I'm too young to die", "Hurt me Plenty", "Ultra-Violence", "Nightmare"];
+        console.log(options.difficulty.setting)  ; 
         switch (type) {
             case "Victory":
                 score.timeScore = `TIME ALIVE = ${Math.round(this.getTimeAlive())}s + BONUS`; 
                 score.totalScore += (1000000/this.getTimeAlive());
 
-                score.difficulty = `DIFICULTY = ${aux[options.difficulty.setting].toUpperCase()}, SCORE x${options.difficulty.setting * 10}`;
+                if(options.difficulty.setting == 0){
+                    score.difficulty = `DIFICULTY = ${aux[options.difficulty.setting].toUpperCase()}, SCORE x${1}`;
+                }else{
+                    score.difficulty = `DIFICULTY = ${aux[options.difficulty.setting].toUpperCase()}, SCORE x${options.difficulty.setting * 10}`;
+                }
                 break;
 
             case "Defeat":
@@ -280,7 +285,9 @@ class Player extends Living{
         score.totalScore -= this.getDamageReceived()*10;
 
         if(type == "Victory"){
-            score.totalScore *= options.difficulty.setting * 10;
+            if(options.difficulty.setting != 0){
+                score.totalScore *= options.difficulty.setting * 10;
+            }
         }
         
         this.score = score;

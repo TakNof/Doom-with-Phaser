@@ -37,9 +37,20 @@ class PauseMenu extends Phaser.Scene{
         }
 
         if(this.controls.space.isDown || this.controls.enter.isDown){
+            let G3D;
+            let G2D;
+
+            for(let scene of this.scene.manager.scenes){
+                if(scene.scene.key === "Game2D"){
+                    G2D = scene;
+                }else if(scene.scene.key === "Game3D"){
+                    G3D = scene;
+                }
+            }
+
             switch (this.menuButtons.selectorPosition) {
                 case 0:
-                    this.scene.manager.scenes[1].scene.scene.music.stop();
+                    G2D.music.stop();
                     this.scene.stop("Game3D");
                     this.scene.stop("Game2D");
                     
@@ -48,8 +59,8 @@ class PauseMenu extends Phaser.Scene{
                 break;
 
                 case 1:
-                    this.scene.manager.scenes[1].scene.resume();
-                    this.scene.manager.scenes[2].scene.resume();
+                    G3D.scene.resume();
+                    G2D.scene.resume();
                     this.scene.stop();
                 break;
 
@@ -59,7 +70,7 @@ class PauseMenu extends Phaser.Scene{
             
                 case 3:
                     this.scene.start("mainMenu");
-                    this.scene.manager.scenes[1].scene.scene.music.stop();
+                    G2D.music.stop();
                     this.scene.stop("Game3D");
                     this.scene.stop("Game2D");
                     this.scene.stop();
