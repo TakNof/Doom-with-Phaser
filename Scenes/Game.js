@@ -64,7 +64,7 @@ class Game2D extends Phaser.Scene{
         this.cameras.main.scrollY = 0;
 
         if(game.config.physics.arcade.debug){
-            this.cameras.main.setViewport(0, 0, window.innerWidth, window.innerHeight);
+            this.cameras.main.setViewport(0, 0, canvasSize.width, canvasSize.height);
         }else{
             this.scene.setVisible(false);
         }
@@ -244,7 +244,7 @@ class Game3D extends Phaser.Scene {
         // this.scene.setVisible(false);
 
         if(game.config.physics.arcade.debug){
-            this.cameras.main.setViewport(0, window.innerHeight/2, window.innerWidth, window.innerHeight);
+            this.cameras.main.setViewport(0, canvasSize.height, canvasSize.width, canvasSize.height);
         }
     }
 

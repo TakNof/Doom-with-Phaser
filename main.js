@@ -5,12 +5,12 @@ let config = {
     physics:{
         default: "arcade",
         arcade: {
-            debug: true
+            debug: false
         }
     },
     width: canvasSize.width,
     height: canvasSize.height,
-    scene: [MainMenu, Game2D, Game3D, PauseMenu, OptionsMenu]
+    scene: [MainMenu,SelectDifficulty, Game2D, Game3D, PauseMenu, OptionsMenu]
 }
 
 let sharedScenes= {};
