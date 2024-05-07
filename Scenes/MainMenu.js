@@ -37,7 +37,7 @@ class MainMenu extends Phaser.Scene {
         if(this.controls.space.isDown || this.controls.enter.isDown){
             switch (this.menuButtons.selectorPosition) {
                 case 0:
-                    this.scene.start("selectDifficutly");
+                    this.scene.start("selectDifficulty");
                     this.scene.stop();
                 break;
 

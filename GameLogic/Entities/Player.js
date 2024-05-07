@@ -298,12 +298,21 @@ class Player extends Living{
         return this.score;
     }
 
+    update(){
+        this.move();
+        this.shoot();
+        this.reload();
+        this.switchWeapons();
+    }
+
     /**
      * This method allows the player to have the basic controls of movement according to the stablished parameters.
      * The movement only works through the key arrows.
      */
     move(){
-        this.setVelocity(0);
+        if(this.getVelocityX() != 0 && this.getVelocityY() != 0){
+            this.setVelocity(0);
+        }
         this.setRayData();
 
         if(this.getDebug() === true){

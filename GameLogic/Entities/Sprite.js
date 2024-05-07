@@ -7,7 +7,6 @@ class Sprite extends Phaser.Physics.Arcade.Sprite{
     * @param {Phaser.Scene} scene The scene to place the 2D sprites in the game.
     * @param {{x: Number, y: Number, ang: Number}} originInfo A literal Object with the initial positioning information for the sprite.
     * @param {String} spriteImgStr An str of the image name given in the preload method of the main class.
-    * @param {Number} size The size of the sprite in pixels.
     * @param {Number} depth The depth of rendering of the sprite.
     */
     constructor(scene, originInfo, spriteImgStr, depth){

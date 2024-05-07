@@ -20,7 +20,7 @@ class Game2D extends Phaser.Scene{
         this.playerFOVangleOffset = this.playerAngleOffset - this.playerFOV/2
 
         //Stablishing the enemy and its initial position.
-        this.amountEnemies = 2;
+        this.amountEnemies = 15;
 
         this.cacodemons;
 
@@ -154,10 +154,7 @@ class Game2D extends Phaser.Scene{
         this.fpscounter.setText((1000/delta).toFixed(1));
         //The basic movement of the player.
         if(this.player.isAlive){
-            this.player.move();
-            this.player.shoot();
-            this.player.reload();
-            this.player.switchWeapons();
+            this.player.update()
             
             //The basic movement of the enemy according to the player's position.
             if(this.cacodemons.getChildren().length > 0 && this.allowChase){

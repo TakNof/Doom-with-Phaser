@@ -1,6 +1,6 @@
 class SelectDifficulty extends Phaser.Scene {
     constructor() {
-        super({key: "selectDifficutly"});
+        super({key: "selectDifficulty"});
         this.menuOptions = ["I'm too young to die", "Hurt me Plenty", "Ultra-Violence", "Nightmare"];
     }
 
@@ -40,6 +40,7 @@ class SelectDifficulty extends Phaser.Scene {
             this.setOptions();
             this.scene.launch("Game3D");
             this.scene.start("Game2D");
+            this.scene.stop();
         }
 
         if(this.controls.esc.isDown){
