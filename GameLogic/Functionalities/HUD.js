@@ -23,8 +23,11 @@ class HUD{
     
         this.healthValue = new HUDText(this.scene, canvasSize.width - 280, 0.01*canvasSize.height, "", this.style, 1000, 0);
 
-        this.deathText = new HUDText(this.scene, -canvasSize.width/2, -canvasSize.height, "YOU DIED", this.deathStyle);
-        this.victoryText = new HUDText(this.scene,-canvasSize.width/2, -canvasSize.height, "YOU WON", this.victoryStyle);
+        // this.deathText = new HUDText(this.scene, -canvasSize.width/2, -canvasSize.height, "YOU DIED", this.deathStyle);
+        // this.victoryText = new HUDText(this.scene,-canvasSize.width/2, -canvasSize.height, "YOU WON", this.victoryStyle);
+        
+        this.deathText = this.scene.add.dynamicBitmapText(canvasSize.width/2, canvasSize.height/2, "doomSFont", "YOU DIED").setFontSize(200).setDepth(1000).setVisible(false);
+        this.victoryText = this.scene.add.dynamicBitmapText(canvasSize.width/2, canvasSize.height/2, "doomSFont", "YOU WON").setFontSize(200).setDepth(1000).setVisible(false);
 
         this.hurtDamageRedScreen = this.scene.add.rectangle(canvasSize.width/2, canvasSize.height/2, canvasSize.width, canvasSize.height, colors.crimsonRed, 0).setDepth(1000);
         this.healDamageRedScreen = this.scene.add.rectangle(canvasSize.width/2, canvasSize.height/2, canvasSize.width, canvasSize.height, colors.limeGreen, 0).setDepth(1000);
@@ -97,13 +100,14 @@ class HUD{
        this.deathText.x = canvasSize.width/2;
        this.deathText.y = canvasSize.height*0.2;
        this.deathText.setOrigin(0.5);
-        
+       this.deathText.setVisible(true);
     }
 
     displayVictoryText(){
         this.victoryText.x = canvasSize.width/2;
         this.victoryText.y = canvasSize.height*0.2;
         this.victoryText.setOrigin(0.5);
+        this.victoryText.setVisible(true);
         
     }
 
@@ -123,26 +127,17 @@ class HUD{
 
     displayScoreText(type, score){
         if(!this.scoreText){
-            let currentStyle;
-            switch (type) {
-                case "Victory":
-                    currentStyle = this.victoryStyle;
-                    break;
-                case "Defeat":
-                    currentStyle = this.deathStyle;
-                    break;
-
-                default:
-                    throw new Error("Invalid type: " + type);
-        }
             let iterations = 0;
             for(let typeScore in score){
                 if(typeScore === "totalScore"){
-                    this.scoreText = new HUDText(this.scene, canvasSize.width/2, 80*iterations+300, `YOUR SCORE: ${score[typeScore]}`, currentStyle);
-                    this.scoreText.setStyle({fontSize: "40px"});
+                    // this.scoreText = new HUDText(this.scene, canvasSize.width/2, 80*iterations+300, `YOUR SCORE: ${score[typeScore]}`, currentStyle);
+                    // this.scoreText.setStyle({fontSize: "40px"});
+                    this.scoreText = this.scene.add.dynamicBitmapText(canvasSize.width/2, 350 + iterations*100, "doomSFont", `YOUR SCORE: ${score[typeScore]}`).setFontSize(110).setOrigin(0.5).setDepth(1000);
+
                 }else{
-                    let specifiedScore = new HUDText(this.scene, canvasSize.width/2, 80*iterations+300, `${score[typeScore]}`, currentStyle);
-                    specifiedScore.setStyle({fontSize: "32px"});
+                    // let specifiedScore = new HUDText(this.scene, canvasSize.width/2, 80*iterations+300, `${score[typeScore]}`, currentStyle);
+                    // specifiedScore.setStyle({fontSize: "32px"});
+                    this.scoreText = this.scene.add.dynamicBitmapText(canvasSize.width/2, 350 + iterations*100, "doomSFont", `${score[typeScore]}`).setFontSize(110).setOrigin(0.5).setDepth(1000);
                 }
                 iterations ++;
             }

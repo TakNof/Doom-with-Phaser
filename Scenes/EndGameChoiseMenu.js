@@ -1,17 +1,10 @@
-class PauseMenu extends MenuBuilder{
+class EndGameChoiseMenu extends MenuBuilder{
     constructor(){
-        super("pauseMenu", true);
+        super("endGameChoiseMenu");
     }
 
-    create(){        
-        this.uploadData(undefined, {menu: ["Restart", "Resume", "Options", "Back to menu"], config: {yOffset: 350}});
-    }
-    
-    
     handleOptionReturn(){
-        this.scenes["Game3D"].scene.resume();
-        this.scenes["Game2D"].scene.resume();
-        this.scene.stop();
+        return;
     }
 
     handleOptionSelected(position){
@@ -27,14 +20,11 @@ class PauseMenu extends MenuBuilder{
             break;
 
             case 1:
-                handleOptionReturn();
+                this.scene.start("scoreUpload");
+                this.scene.stop();
             break;
 
             case 2:
-                
-            break;
-
-            case 3:
                 this.scenes["Game2D"].music.stop();
                 this.scene.stop("Game3D");
                 this.scene.stop("Game2D");
@@ -43,5 +33,9 @@ class PauseMenu extends MenuBuilder{
                 this.scene.stop();
             break;
         }
+    }
+
+    create(data){
+        this.uploadData({menu: ["Choose your destiny:"], config: {yOffset: 150}}, {menu: ["Retry", "Save my score", "Back to menu, i'm hungry"], config: {yOffset: 300}});
     }
 }

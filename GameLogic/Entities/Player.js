@@ -254,32 +254,31 @@ class Player extends Living{
     setScore(type){
         let score = {timeScore: 0, difficulty: 0, damageDealedScore: 0, damageReceivedScore: 0, totalScore: 0};
         let aux = ["I'm too young to die", "Hurt me Plenty", "Ultra-Violence", "Nightmare"];
-        console.log(options.difficulty.setting)  ; 
         switch (type) {
             case "Victory":
-                score.timeScore = `TIME ALIVE = ${Math.round(this.getTimeAlive())}s + BONUS`; 
+                score.timeScore = `TIME ALIVE: ${Math.round(this.getTimeAlive())}s + BONUS`; 
                 score.totalScore += (1000000/this.getTimeAlive());
 
                 if(options.difficulty.setting == 0){
-                    score.difficulty = `DIFICULTY = ${aux[options.difficulty.setting].toUpperCase()}, SCORE x${1}`;
+                    score.difficulty = `DIFICULTY: ${aux[options.difficulty.setting].toUpperCase()}, SCORE x${1}`;
                 }else{
-                    score.difficulty = `DIFICULTY = ${aux[options.difficulty.setting].toUpperCase()}, SCORE x${options.difficulty.setting * 10}`;
+                    score.difficulty = `DIFICULTY: ${aux[options.difficulty.setting].toUpperCase()}, SCORE x${options.difficulty.setting * 10}`;
                 }
                 break;
 
             case "Defeat":
-                score.timeScore = `TIME ALIVE = ${Math.round(this.getTimeAlive())}s`; 
+                score.timeScore = `TIME ALIVE: ${Math.round(this.getTimeAlive())}s`; 
                 score.totalScore += this.getTimeAlive()*10;
 
-                score.difficulty = `DIFICULTY = ${aux[options.difficulty.setting].toUpperCase()}`
+                score.difficulty = `DIFICULTY: ${aux[options.difficulty.setting].toUpperCase()}`
                 break;
 
             default:
                 throw new Error("Invalid type: " + type);
         }
         
-        score.damageDealedScore = `DAMAGE DEALED = ${Math.round(this.getDamageDealed())}`;
-        score.damageReceivedScore = `DAMAGE RECIEVED = -${Math.round(this.getDamageReceived())}`;
+        score.damageDealedScore = `DAMAGE DEALED: ${Math.round(this.getDamageDealed())}`;
+        score.damageReceivedScore = `DAMAGE RECIEVED: -${Math.round(this.getDamageReceived())}`;
 
         score.totalScore += this.getDamageDealed()*10;
         score.totalScore -= this.getDamageReceived()*10;
@@ -293,13 +292,13 @@ class Player extends Living{
         this.score = score;
         this.score.totalScore = Math.round(score.totalScore/10)*10;
 
-        fetch('https://databaseapi-rxi4.onrender.com/score', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ name: `player ${getRndInteger(0, 100)}`, score: score.totalScore}),
-        });
+        // fetch('https://databaseapi-rxi4.onrender.com/score', {
+        //     method: 'POST',
+        //     headers: {
+        //         'Content-Type': 'application/json',
+        //     },
+        //     body: JSON.stringify({ name: `player ${getRndInteger(0, 100)}`, score: score.totalScore}),
+        // });
     }
 
     getScore(){

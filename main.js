@@ -10,7 +10,10 @@ let config = {
     },
     width: canvasSize.width,
     height: canvasSize.height,
-    scene: [MainMenu,SelectDifficulty, Game2D, Game3D, PauseMenu, OptionsMenu]
+    scene: [MainMenu, SelectDifficulty, Game2D, Game3D, PauseMenu, OptionsMenu, EndGameMenu, EndGameChoiseMenu, ScoreUpload, ScoreUploadSuccess]
+    // scene: [ScoreUpload, ScoreUploadSuccess, MainMenu]
+    // scene: [PauseMenu]
+    // scene: [EndGameMenu]
 }
 
 let sharedScenes= {};
@@ -122,8 +125,6 @@ const game = new Phaser.Game(config);
 if(game.config.physics.arcade.debug){
     game.config.height *= 2;
 }
-
-console.dir(game.config.physics.arcade.debug);
 
 /**
  * This method allows us to get a number between the specified range.

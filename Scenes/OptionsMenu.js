@@ -1,7 +1,6 @@
 class OptionsMenu extends Phaser.Scene{
     constructor() {
         super({key: "optionsMenu"});
-        this.menuOptions = ["Restart", "Options", "Exit"];
     }
 
     preload(){
@@ -24,7 +23,7 @@ class OptionsMenu extends Phaser.Scene{
             this.controls[code] = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes[code.toUpperCase()]);
         }
         
-        this.menuButtons = new ButtonsGenerator(this, canvasSize, this.menuOptions);
+        this.menuButtons = new ButtonsGenerator(this, this.menuOptions);
     }
 
     update(){

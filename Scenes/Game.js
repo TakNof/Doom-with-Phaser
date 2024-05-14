@@ -182,9 +182,11 @@ class Game2D extends Phaser.Scene{
             if(!this.player.isAlive && this.player.getScore() == undefined){
                 this.player.setTimeAlive();
                 this.player.setScore("Defeat");
-                this.player.getHUD().displayDeathText();
+                // this.player.getHUD().displayDeathText();
 
-                this.player.getHUD().displayScoreText("Defeat", this.player.getScore());
+                // this.player.getHUD().displayScoreText("Defeat", this.player.getScore());
+
+                this.scene.launch("endGameMenu", this.player.getScore());
             }
         }
 
@@ -199,7 +201,7 @@ class Game2D extends Phaser.Scene{
         if(this.keyEsc.isDown){
             this.scene.pause();
             sharedScenes.game3D.scene.pause();
-            this.scene.launch("pauseMenu"); 
+            this.scene.launch("pauseMenu");
         }
         
         //Here we draw the 3D representation of the map.
