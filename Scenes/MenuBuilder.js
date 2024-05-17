@@ -9,6 +9,7 @@ class MenuBuilder extends Phaser.Scene{
         super({key: key});
         this.showTitle = showTitle;
         this.showBackground = showBackground;
+        this.optionSelected = false;
         if (new.target === MenuBuilder) {
             throw new Error("Can not instanciate an abstract class.");
         }
@@ -71,16 +72,26 @@ class MenuBuilder extends Phaser.Scene{
     }
 
     update(){
-        if(this.buttons.menu.length > 1){
-            this.buttonsObject.moveCursor();
-        }
-
-        if(this.controls.esc.isDown){
-            this.handleOptionReturn();
-        }
-
-        if(this.controls.enter.isDown){
-            this.handleOptionSelected(this.buttonsObject.selectorPosition);
+        try {
+            if(this.buttons.menu.length > 1){
+                this.buttonsObject.moveCursor();
+            }
+    
+            if(this.controls.esc.isDown){
+                this.handleOptionReturn();
+            }
+    
+            if(this.controls.enter.isDown && !this.optionSelected){
+                this.optionSelected = true;
+                this.handleOptionSelected(this.buttonsObject.selectorPosition);
+                console.log("Enter was pressed");
+            }
+    
+            if(this.controls.enter.isUp){
+                this.optionSelected = false;
+            }
+        } catch (error) {
+            console.log("An error ocurred in the menu: " + error);
         }
     }
 }

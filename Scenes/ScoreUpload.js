@@ -1,6 +1,8 @@
 class ScoreUpload extends MenuBuilder{
     constructor(){
         super("scoreUpload");
+
+        this.difficultiesList = ["I'm too young to die", "Hurt me Plenty", "Ultra-Violence", "Nightmare"];
     }
 
     create(){
@@ -44,7 +46,7 @@ class ScoreUpload extends MenuBuilder{
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({name: this.playerNameInput.text, score: this.scenes["Game2D"].player.getScore().totalScore}),
+                body: JSON.stringify({name: this.playerNameInput.text, score: this.scenes["Game2D"].player.getScore().totalScore, difficulty: this.difficultiesList[options.difficulty.setting]}),
             })
             .then(response => {
                 response.json();

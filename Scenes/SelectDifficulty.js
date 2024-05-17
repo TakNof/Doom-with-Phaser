@@ -4,7 +4,7 @@ class SelectDifficulty extends MenuBuilder{
     }
 
     create(){
-        this.uploadData({menu: ["Choose how you wanna die:"], config: {yOffset: 300}}, {menu: ["I'm too young to die", "Hurt me Plenty", "Ultra-Violence", "Nightmare"], config: {yOffset: 350}});
+        this.uploadData({menu: ["Choose how you wanna die:"], config: {yOffset: 280}}, {menu: ["I'm too young to die", "Hurt me Plenty", "Ultra-Violence", "Nightmare"], config: {yOffset: 350}});
     }
 
     handleOptionReturn(){

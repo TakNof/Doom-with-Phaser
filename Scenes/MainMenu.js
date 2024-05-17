@@ -4,7 +4,7 @@ class MainMenu extends MenuBuilder{
     }
 
     create(){
-        this.uploadData(undefined, {menu: ["Start", "How to play", "Options", "Credits"], config: {yOffset: 350}});
+        this.uploadData(undefined, {menu: ["Start", "How to play", "LeaderBoards", "Options", "Credits"], config: {yOffset: 300}});
     }
 
     handleOptionReturn(){
@@ -17,6 +17,16 @@ class MainMenu extends MenuBuilder{
                 this.scene.start("selectDifficulty");
                 this.scene.stop();
             break;
+
+            case 1:
+                this.scene.start("howToPlay");
+                this.scene.stop();
+            break;
+
+            case 2:
+                this.scene.start("selectLeaderBoard");
+            break;
+            
         }
     }
 }

@@ -10,7 +10,7 @@ let config = {
     },
     width: canvasSize.width,
     height: canvasSize.height,
-    scene: [MainMenu, SelectDifficulty, Game2D, Game3D, PauseMenu, OptionsMenu, EndGameMenu, EndGameChoiseMenu, ScoreUpload, ScoreUploadSuccess]
+    scene: [MainMenu, SelectDifficulty, HowToPlay, SelectLeaderBoard, ShowLeaderBoard, Game2D, Game3D, PauseMenu, OptionsMenu, EndGameMenu, EndGameChoiseMenu, ScoreUpload, ScoreUploadSuccess]
     // scene: [ScoreUpload, ScoreUploadSuccess, MainMenu]
     // scene: [PauseMenu]
     // scene: [EndGameMenu]
