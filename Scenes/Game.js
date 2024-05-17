@@ -41,21 +41,21 @@ class Game2D extends Phaser.Scene{
 
     //With the preload method we preload the sprites and we generate the object from the raycaster class.
     preload(){
-        this.load.image("wall", "assets/wall.png", {frameWidth: 32, frameHeight: 32});
+        this.load.image("wall", "./assets/wall.png", {frameWidth: 32, frameHeight: 32});
 
-        this.load.image("player", "assets/Player/Sprites/doomguy64x64.png", {frameWidth: 64, frameHeight: 64});
+        this.load.image("player", "./assets/Player/Sprites/doomguy64x64.png", {frameWidth: 64, frameHeight: 64});
 
         for(let soundName of ["heal", "hurt", "death"]){
-            this.load.audio(`player_${soundName}_sound`, `assets/Player/Sounds/player_${soundName}_sound.wav`);
+            this.load.audio(`player_${soundName}_sound`, `./assets/Player/Sounds/player_${soundName}_sound.wav`);
         }
 
-        this.load.image("small_cacodemon", "assets/enemies/cacodemon/Sprites/small_cacodemon.jpg", {frameWidth: 64, frameHeight: 64});
+        this.load.image("small_cacodemon", "./assets/enemies/cacodemon/Sprites/small_cacodemon.jpg", {frameWidth: 64, frameHeight: 64});
 
-        this.load.audio("cacodemon_attack_sound", "assets/enemies/cacodemon/Sounds/cacodemon_attack_sound.wav");
-        this.load.audio("cacodemon_death_sound", "assets/enemies/cacodemon/Sounds/cacodemon_death_sound.wav");
+        this.load.audio("cacodemon_attack_sound", "./assets/enemies/cacodemon/Sounds/cacodemon_attack_sound.wav");
+        this.load.audio("cacodemon_death_sound", "./assets/enemies/cacodemon/Sounds/cacodemon_death_sound.wav");
 
-        this.load.image("small_energy_bomb", "assets/enemies/cacodemon/Sprites/small_energy_bomb.png", {frameWidth: 4, frameHeight: 4});
-        this.load.audio("cacodemon_energy_bomb_sound", "assets/enemies/cacodemon/Sounds/cacodemon_energy_bomb_sound.wav");
+        this.load.image("small_energy_bomb", "./assets/enemies/cacodemon/Sprites/small_energy_bomb.png", {frameWidth: 4, frameHeight: 4});
+        this.load.audio("cacodemon_energy_bomb_sound", "./assets/enemies/cacodemon/Sounds/cacodemon_energy_bomb_sound.wav");
 
         this.load.audio("at_dooms_gate", "assets/music/at_dooms_gate.wav");
 
@@ -224,22 +224,22 @@ class Game3D extends Phaser.Scene {
             this.load.audio(`switch_weapon_sound_${i + 1}`, `assets/weapons/switch_weapon_sound_${i + 1}.wav`);
         }
         
-        this.load.image("bullet", "assets/Player/Sprites/bullet.png", {frameWidth: 12, frameHeight: 12});
+        this.load.image("bullet", "./assets/Player/Sprites/bullet.png", {frameWidth: 12, frameHeight: 12});
 
         let enemyActions = ["attack", "hurt", "death"];
 
         for(let animationName of ["heal", "hurt", "death"]){
-            this.load.audio(`player_${animationName}_sound`, `assets/Player/Sounds/player_${animationName}_sound.wav`);
+            this.load.audio(`player_${animationName}_sound`, `./assets/Player/Sounds/player_${animationName}_sound.wav`);
         }
 
-        this.load.image("cacodemon", "assets/enemies/cacodemon/Sprites/cacodemon.png");
+        this.load.image("cacodemon", "./assets/enemies/cacodemon/Sprites/cacodemon.png");
         for(let action of enemyActions){
-            this.load.atlas(`cacodemon_${action}`, `assets/enemies/cacodemon/Sprites/animations/cacodemon_${action}.png`, `assets/enemies/cacodemon/Sprites/animations/cacodemon_${action}.json`);
-            this.load.audio(`cacodemon_${action}_sound`, `assets/enemies/cacodemon/sounds/cacodemon_${action}_sound.wav`)
+            this.load.atlas(`cacodemon_${action}`, `./assets/enemies/cacodemon/Sprites/animations/cacodemon_${action}.png`, `./assets/enemies/cacodemon/Sprites/animations/cacodemon_${action}.json`);
+            this.load.audio(`cacodemon_${action}_sound`, `./assets/enemies/cacodemon/sounds/cacodemon_${action}_sound.wav`)
         }
 
-        this.load.image("energy_bomb", "assets/enemies/cacodemon/Sprites/energy_bomb.png");
-        this.load.audio("cacodemon_energy_bomb_sound", "assets/enemies/cacodemon/Sounds/cacodemon_energy_bomb_sound.wav");
+        this.load.image("energy_bomb", "./assets/enemies/cacodemon/Sprites/energy_bomb.png");
+        this.load.audio("cacodemon_energy_bomb_sound", "./assets/enemies/cacodemon/Sounds/cacodemon_energy_bomb_sound.wav");
         // this.scene.setVisible(false);
 
         if(game.config.physics.arcade.debug){
