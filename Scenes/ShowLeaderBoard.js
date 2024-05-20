@@ -16,8 +16,10 @@ class SelectLeaderBoard extends MenuBuilder{
         if(position == 4){
             this.handleOptionReturn();
         }else{
-            this.scene.start("showLeaderBoard", position);
-            // console.log("option selected");
+            //In this case the convertion to String is done only because when
+            //the value is passed as 0 with number type, javascript decides that
+            //0 == undefined for no reason, messing with the menu selection. 
+            this.scene.start("showLeaderBoard", String(position));
         }
     }
 }
@@ -30,18 +32,25 @@ class ShowLeaderBoard extends MenuBuilder{
     }
 
     create(position){
-        
-        let optionsList = [`${this.difficultiesList[position]} LeaderBoard: `];
+        position = parseInt(position);
+        let difficultyName = this.difficultiesList[position].replace(/_/g, ' ').replace(/Im/g, "I'm");;
+        let optionsList = [difficultyName, "LeaderBoard:"];
 
         this.uploadData({menu:["Loading info from the database..."], config: {yOffset: canvasSize.height/2}});
 
+        console.log(this.difficultiesList[position]);
         fetch(`https://databaseapi-rxi4.onrender.com/scores/${this.difficultiesList[position]}`)
         .then(response => response.json())
         .then(data => {
             console.log(data);
-            for(let [i, value] of data.entries()){
-                optionsList.push(`${i + 1}. ${value.name}: ${value.score}`);
+            if(data.length > 0){
+                for(let [i, value] of data.entries()){
+                    optionsList.push(`${i + 1}. ${value.name}: ${value.score}`);
+                }
+            }else{
+                optionsList.push(...["No worthy scores", "have been found."]);
             }
+            
             this.uploadData({menu: optionsList, config: {yOffset: 100, lineSpace: 50}}, {menu: ["Go back"], config: {yOffset: canvasSize.height*0.9}});
         })
         .catch((error) => {
@@ -50,7 +59,7 @@ class ShowLeaderBoard extends MenuBuilder{
     }
 
     handleOptionReturn(){
-        this.scene.launch("selectLeaderBoard");
+        this.scene.start("selectLeaderBoard");
         this.scene.stop();
     }
 

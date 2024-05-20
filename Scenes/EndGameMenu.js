@@ -13,8 +13,9 @@ class EndGameMenu extends MenuBuilder{
     }
 
     create(data){
-        let score = data;
-        let scoreText = [];
+        let {score, endGameState} = data;
+
+        let scoreText = [endGameState === "Victory" ? "YOU WON" : "YOU DIED"];
 
         let iterations = 0;
         for(let typeScore in score){
@@ -27,6 +28,6 @@ class EndGameMenu extends MenuBuilder{
             }
             iterations ++;
         }
-        this.uploadData({menu: scoreText, config: {yOffset: 150}}, {menu: ["Next"], config: {yOffset: canvasSize.height*0.9}});
+        this.uploadData({menu: scoreText, config: {yOffset: 100, fontSize: 24}}, {menu: ["Next"], config: {yOffset: canvasSize.height*0.9}});
     }
 }

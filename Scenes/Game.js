@@ -51,11 +51,7 @@ class Game2D extends Phaser.Scene{
 
         this.load.image("small_cacodemon", "./assets/enemies/cacodemon/Sprites/small_cacodemon.jpg", {frameWidth: 64, frameHeight: 64});
 
-        this.load.audio("cacodemon_attack_sound", "./assets/enemies/cacodemon/Sounds/cacodemon_attack_sound.wav");
-        this.load.audio("cacodemon_death_sound", "./assets/enemies/cacodemon/Sounds/cacodemon_death_sound.wav");
-
         this.load.image("small_energy_bomb", "./assets/enemies/cacodemon/Sprites/small_energy_bomb.png", {frameWidth: 4, frameHeight: 4});
-        this.load.audio("cacodemon_energy_bomb_sound", "./assets/enemies/cacodemon/Sounds/cacodemon_energy_bomb_sound.wav");
 
         this.load.audio("at_dooms_gate", "assets/music/at_dooms_gate.wav");
 
@@ -178,25 +174,20 @@ class Game2D extends Phaser.Scene{
 
             this.walls.evalCollision(this.player.getCurrentWeapon().getProjectiles());
             
-        }else{
-            if(!this.player.isAlive && this.player.getScore() == undefined){
-                this.player.setTimeAlive();
-                this.player.setScore("Defeat");
-                // this.player.getHUD().displayDeathText();
-
-                // this.player.getHUD().displayScoreText("Defeat", this.player.getScore());
-
-                this.scene.launch("endGameMenu", this.player.getScore());
-            }
+        }else if(this.player.getScore() == undefined){
+            this.player.setTimeAlive();
+            this.player.setScore("Defeat");
+            this.scene.launch("endGameMenu", {endGameState: "Defeat", score: this.player.getScore()});
         }
 
         if((this.cacodemons.getChildren().length == 0 || (this.cacodemons.getChildren()[0].getHealth() == 0 && this.cacodemons.getChildren().length == 1)) && this.player.getScore() == undefined){
             this.player.setTimeAlive();
             this.player.setScore("Victory");
-            this.player.getHUD().displayVictoryText();
 
-            this.player.getHUD().displayScoreText("Victory", this.player.getScore());          
+            this.scene.launch("endGameMenu", {endGameState: "Victory", score: this.player.getScore()});
         }
+
+        console.log(this.scene);
 
         if(this.keyEsc.isDown){
             this.scene.pause();
