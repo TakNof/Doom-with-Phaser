@@ -18,7 +18,7 @@ class SelectLeaderBoard extends MenuBuilder{
         }else{
             //In this case the convertion to String is done only because when
             //the value is passed as 0 with number type, javascript decides that
-            //0 == undefined for no reason, messing with the menu selection. 
+            //0 == undefined for no reason, messing with the menu selection.
             this.scene.start("showLeaderBoard", String(position));
         }
     }
@@ -55,7 +55,7 @@ class ShowLeaderBoard extends MenuBuilder{
         })
         .catch((error) => {
             console.error('Error:', error);
-        });   
+        });
     }
 
     handleOptionReturn(){

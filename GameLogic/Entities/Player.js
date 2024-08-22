@@ -291,14 +291,6 @@ class Player extends Living{
         
         this.score = score;
         this.score.totalScore = Math.round(score.totalScore/10)*10;
-
-        // fetch('https://databaseapi-rxi4.onrender.com/score', {
-        //     method: 'POST',
-        //     headers: {
-        //         'Content-Type': 'application/json',
-        //     },
-        //     body: JSON.stringify({ name: `player ${getRndInteger(0, 100)}`, score: score.totalScore}),
-        // });
     }
 
     getScore(){
