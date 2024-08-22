@@ -4,9 +4,9 @@
 class Graphicator{
     /**
      * @constructor
-     * @param {Scene} scene The current scene of the game to place the 3D graphics.
-     * @param {number} blockSize The size of the blocks of the level in pixels.
-     * @param {number} raysAmount The amount of rays to draw in the canvas.
+     * @param {Phaser.Scene} scene The current scene of the game to place the 3D graphics. 
+     * @param {Number} blockSize The size of the blocks of the level in pixels.
+     * @param {Number} raysAmount The amount of rays to draw in the canvas.
      */
     constructor(scene, blockSize, raysAmount){
         this.scene = scene;
@@ -15,13 +15,16 @@ class Graphicator{
         this.rectanglesAmount = raysAmount;
 
         this.rectanglesWidth = canvasSize.width/this.rectanglesAmount;
+        
         this.rectangles = Array(raysAmount);
+        this.rectanglesWorldHeight = 1.27;
 
         for(let i = 0; i < this.rectanglesAmount; i++){
-            this.rectangles[i] = this.scene.add.rectangle(this.rectanglesWidth/2 + i*this.rectanglesWidth, 0.5*canvasSize.height, this.rectanglesWidth, canvasSize.height/3,"0x00ff00").setDepth(1);
+            let fixedXPosition = this.rectanglesWidth*(i + 1/2);
+            let fixedYPosition = canvasSize.width/2;
+            this.rectangles[i] = this.scene.add.rectangle(fixedXPosition, fixedYPosition, this.rectanglesWidth, canvasSize.height/3, "0x00ff00");
             this.scene.physics.add.existing(this.rectangles[i], false);
         }
-
     }
 
     /**
@@ -31,81 +34,30 @@ class Graphicator{
      */
     redraw3DScaling(rayDistance, typeOfHit) {
         //This method allows the recalculation of the 3D ray coordinates and redraws it.
-        for(let i = 0; i < this.rectanglesAmount; i++){
-            this.setRectangleHeight(rayDistance[i]);
-            // this.rectangles[i].setPosition(this.rectanglesWidth/2 + i*this.rectanglesWidth, (0.8*canvasSize.height) - this.getRectangleHeight()/2);
-            this.rectangles[i].setSize(this.rectanglesWidth, this.getRectangleHeight());
+        for(let [i, rectangle] of this.rectangles.entries()){
+            rectangle.setSize(this.rectanglesWidth, this.placeElementHeightProjection(rayDistance[i], this.rectanglesWorldHeight));
     
-            if(typeOfHit[i] === "vertical"){
-                this.rectangles[i].setFillStyle(colors.limeGreen);
-            }else{
-                this.rectangles[i].setFillStyle(colors.DarkGreen);
-            }
+            rectangle.setFillStyle(typeOfHit[i] === "vertical" ? colors.limeGreen : colors.DarkGreen);
 
-            this.rectangles[i].setDepth(1000 - (rayDistance[i]/10).toFixed(0));
+            rectangle.setDepth(1000 - (rayDistance[i]/10).toFixed(0));
         }
     }
 
     /**
-     * This method sets the height required for the rectangle to be inbounds of the canvas.
-     * @param {number} distance The distance between the sprite and the wall.
+     * This method sets the height required for the element to be inbounds of the canvas.
+     * @param {Number} objectDistance The distance from the player to the element.
+     * @param {Number} objectHeight The general height of the element in the world.
      */
-    setRectangleHeight(distance){
+    placeElementHeightProjection(objectDistance, objectHeight){
 
-        //If the distance is infinite, we wouldn't draw the rectangle.
+        //If the distance to the object is infinite, we wouldn't draw the element.
         //else we stablish the drawing height according to the block size
         //and the canvas size, if that measure surpasses the bounds of the
         //canvas, we stablish its height at the max height allowed by the canvas.
-        if(!isFinite(distance)){
-            this.drawHeight = 0;
+        if(!isFinite(objectDistance)){
+            return 0;
         }else{
-            this.drawHeight = this.blockSize*canvasSize.height/distance;
-            if(this.drawHeight > 1.27*canvasSize.height){
-                this.drawHeight = 1.27*canvasSize.height;
-            }
+            return Math.min(this.blockSize*canvasSize.height/objectDistance, objectHeight*canvasSize.height)
         }   
-    }
-
-    ableRectanglesVisibility(value = true){
-        for(let rectangle of this.rectangles){
-            rectangle.visible = value;
-        }
-    }
-
-    /**
-     * Gets the rectangle height.
-     * @return {number}
-     */
-    getRectangleHeight(){
-        return this.drawHeight;
-    }
-
-    /**
-     * Sets the rectangle depth.
-     * @param {Number} index 
-     * @param {Number} value 
-     */
-    setRectangleDepth(index, value){
-        this.rectangles[index].setDepth(value);
-    }
-
-    /**
-     * Calculates the enemy height according to the distance between the enemy and the player.
-     * @param {number} distance 
-     * @returns {number}
-     */
-    setEnemyHeight(distance){
-        let drawHeight;
-
-        if(!isFinite(distance)){
-            drawHeight = 0;
-        }else{
-            drawHeight = this.blockSize * canvasSize.height/distance;
-            if(drawHeight > 1.27*canvasSize.height){
-                drawHeight = 1.27*canvasSize.height;
-            }
-        }
-
-        return drawHeight;
     }
 }

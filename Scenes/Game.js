@@ -20,7 +20,7 @@ class Game2D extends Phaser.Scene{
         this.playerFOVangleOffset = this.playerAngleOffset - this.playerFOV/2
 
         //Stablishing the enemy and its initial position.
-        this.amountEnemies = 15;
+        this.amountEnemies = 1;
 
         this.cacodemons;
 
@@ -178,28 +178,25 @@ class Game2D extends Phaser.Scene{
 
             this.walls.evalCollision(this.player.getCurrentWeapon().getProjectiles());
             
-        }else{
-            if(!this.player.isAlive && this.player.getScore() == undefined){
-                this.player.setTimeAlive();
-                this.player.setScore("Defeat");
-                this.player.getHUD().displayDeathText();
-
-                this.player.getHUD().displayScoreText("Defeat", this.player.getScore());
-            }
+        }else if(this.player.getScore() == undefined){
+            this.player.setTimeAlive();
+            this.player.setScore("Defeat");
+            this.scene.launch("endGameMenu", {endGameState: "Defeat", score: this.player.getScore()});
         }
 
         if((this.cacodemons.getChildren().length == 0 || (this.cacodemons.getChildren()[0].getHealth() == 0 && this.cacodemons.getChildren().length == 1)) && this.player.getScore() == undefined){
             this.player.setTimeAlive();
             this.player.setScore("Victory");
-            this.player.getHUD().displayVictoryText();
 
-            this.player.getHUD().displayScoreText("Victory", this.player.getScore());          
+            this.scene.launch("endGameMenu", {endGameState: "Victory", score: this.player.getScore()});
         }
+
+        console.log(this.scene);
 
         if(this.keyEsc.isDown){
             this.scene.pause();
             sharedScenes.game3D.scene.pause();
-            this.scene.launch("pauseMenu"); 
+            this.scene.launch("pauseMenu");
         }
         
         //Here we draw the 3D representation of the map.

@@ -127,7 +127,7 @@ class Camera{
     drawEnemyElements(element, anglePlayerToElement, distanceToPlayer, scaleDivisor, heightMultiplier){     
         if(this.checkElementWithinFOV(anglePlayerToElement) && element.active){
             element.visible = true;
-            let enemyHeight = this.player.getGraphicator().setEnemyHeight(distanceToPlayer);
+            let enemyHeight = this.player.getGraphicator().placeElementHeightProjection(distanceToPlayer, 2);
             
             element.scaleY = enemyHeight/scaleDivisor;
             element.scaleX = enemyHeight/scaleDivisor;
