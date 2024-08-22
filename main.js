@@ -10,7 +10,7 @@ let config = {
     },
     width: canvasSize.width,
     height: canvasSize.height,
-    scene: [MainMenu,SelectDifficulty, Game2D, Game3D, PauseMenu, OptionsMenu]
+    scene: [MainMenu, SelectDifficulty, HowToPlay, Game2D, Game3D, PauseMenu, OptionsMenu, EndGameMenu, EndGameChoiseMenu]
 }
 
 let sharedScenes= {};

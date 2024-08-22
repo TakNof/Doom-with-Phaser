@@ -1,52 +1,24 @@
-class SelectDifficulty extends Phaser.Scene {
-    constructor() {
-        super({key: "selectDifficulty"});
-        this.menuOptions = ["I'm too young to die", "Hurt me Plenty", "Ultra-Violence", "Nightmare"];
-    }
-
-    preload(){
-        this.load.image('background', './assets/doom_cover_image.jpg');
-
-        this.load.image("title", "./assets/doom_bigupper_survival_doom.png");
-
-        this.load.bitmapFont('doomNMFont', './assets/fonts/doom-nightmare.png', './assets/fonts/bitmapfont_doom_nightmare.xml');
-        this.load.bitmapFont('doomSFont', "./assets/fonts/doom-small.png", "./assets/fonts/bitmapfont_doom_small.xml");
-
-        this.load.image("selector", "./assets/selector.png");
-
-        this.load.audio("selector_sound", "./assets/menuSFX/move_selector_sound.wav")
+class SelectDifficulty extends MenuBuilder{
+    constructor(){
+        super("selectDifficulty", true, true);
     }
 
     create(){
-        this.background = this.add.image(canvasSize.width/2, canvasSize.height/2, 'background').setScale(0.7);
-
-        let keyCodes = ["space", "enter", "esc"];
-
-        this.controls = {};
-
-        for(let code of keyCodes){
-            this.controls[code] = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes[code.toUpperCase()]);
-        }
-        
-        this.menuButtons = new ButtonsGenerator(this, canvasSize, this.menuOptions);
+        this.uploadData({menu: ["Choose how you wanna die:"], config: {yOffset: 280}}, {menu: ["I'm too young to die", "Hurt me Plenty", "Ultra-Violence", "Nightmare"], config: {yOffset: 350}});
     }
 
-    update(){
-        this.menuButtons.moveCursor();
+    handleOptionReturn(){
+        this.scene.launch("mainMenu");
+        this.scene.stop();
+    }
 
-        if(this.controls.space.isDown || this.controls.enter.isDown){
-            options.difficulty.setting = this.menuButtons.selectorPosition;
+    handleOptionSelected(position){
+        options.difficulty.setting = position;
 
-            this.setOptions();
-            this.scene.launch("Game3D");
-            this.scene.start("Game2D");
-            this.scene.stop();
-        }
-
-        if(this.controls.esc.isDown){
-            this.scene.launch("mainMenu");
-            this.scene.stop();
-        }
+        this.setOptions();
+        this.scene.launch("Game3D");
+        this.scene.start("Game2D");
+        this.scene.stop();
     }
 
     setOptions(){
@@ -111,4 +83,5 @@ class SelectDifficulty extends Phaser.Scene {
             break;
         }
     }
+
 }

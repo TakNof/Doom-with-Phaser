@@ -98,7 +98,7 @@ class Game2D extends Phaser.Scene{
             this.wallBlockSize*2,
             this.defaultVelocity,
             this.angleOperator,
-            this.playerHealth,
+            !game.config.physics.arcade.debug ? this.playerHealth : Infinity,
             this.playerAngleOffset
         );
 
