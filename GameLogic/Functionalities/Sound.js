@@ -21,7 +21,7 @@ class Sound{
             : -this.cuadInterpolation(angleAdjustedFromPlayer, Math.PI, 2 * Math.PI);
         
         this.sound.setPan(pan);
-        this.sound.setVolume(this.linInterpolation(playerToEmitterDistance, 0, 1000, 1, 0));
+        this.sound.setVolume(this.linInterpolation(playerToEmitterDistance, 0, 1000, 0.5, 0));
     }
     
     stopSound(){

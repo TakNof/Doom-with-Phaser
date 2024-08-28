@@ -20,8 +20,8 @@ class Living extends Entity{
         scene.physics.add.existing(this, false);
         this.setOwnSize(config.size);
         this.body.setAllowRotation(true);
-        this.setCollideWorldBounds(true);
-        this.body.onWorldBounds = true;
+        // this.setCollideWorldBounds(true);
+        // this.body.onWorldBounds = true;
         // this.setImmovable(true);
 
         this.body.mass = this.config.mass;
@@ -36,6 +36,8 @@ class Living extends Entity{
         this.setRaycaster();
         this.setStateMachine(...config.possibleStates);
         
+        this.setBounce(0);
+
         this.children = [];
         this.damagedTimeHistory = [];
         this.lastPlayedAnimation = "";
@@ -376,6 +378,7 @@ class Living extends Entity{
         }
 
         if(this.getHealth() - damageValue <= 0){
+            this.setVelocity(0);
             this.setHealth(0);
             this.isAlive = false;
             this.getStateMachine().transitionToState("Dead");

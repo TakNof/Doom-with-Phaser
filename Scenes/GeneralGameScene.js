@@ -17,7 +17,7 @@ class GeneralGameScene extends Phaser.Scene{
         this.wallsConfig = {
             name: "wall",
             size: 32,
-            amount: 18,
+            amount: 25,
             generate: true,
             random: true
         };

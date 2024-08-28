@@ -13,7 +13,7 @@ class WallsBuilder{
         this.scene = scene;
         this.config = config;
 
-        this.wallNumberRatio = {x: parseInt(canvasSize.width/this.config.size), y: parseInt(canvasSize.height/this.config.size)};
+        this.wallNumberRatio = {x: parseInt(canvasSize.width*2/this.config.size), y: parseInt(canvasSize.height*2/this.config.size)};
         this.createWalls();
     }
 

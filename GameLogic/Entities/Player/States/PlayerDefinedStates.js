@@ -121,7 +121,7 @@ class PlayerDeadState extends PlayerState{
     }
 
     updateState(){
-        this.player.setVelocityX(0)
+        this.player.setVelocity(0);
     }
 
     exitState(){}

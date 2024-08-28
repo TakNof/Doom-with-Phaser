@@ -36,7 +36,6 @@ class Projectile extends Entity{
         this.setOwnSize(12);
         let angle = Phaser.Math.RadToDeg(Math.atan(directionComponents.y/directionComponents.x));
         // this.disableBody(false);
-        this.body.onOverlap = true;
         this.setAngle(angle);
         this.setVelocityX(directionComponents.x * this.config.velocity);
         this.setVelocityY(directionComponents.y * this.config.velocity);

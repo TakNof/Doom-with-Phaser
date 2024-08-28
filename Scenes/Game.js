@@ -51,7 +51,7 @@ class Game2D extends GeneralGameScene{
             this.scene.launch("endGameMenu", {endGameState: "Defeat", score: this.player.getScore()});
         }
 
-        if((this.cacodemons.getChildren().length == 0 || (this.cacodemons.getChildren()[0].getHealth() == 0 && this.cacodemons.getChildren().length == 1)) && this.player.getScore() == undefined){
+        if(!this.cacodemons.getFirstAlive() && this.player.getScore() == undefined){
             this.player.setTimeAlive();
             this.player.setScore("Victory");
 

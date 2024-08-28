@@ -73,78 +73,6 @@
     }
 
     /**
-     * Checks if the living sprite have been impacted by a projectile or not.
-     * @param {Living} shooter The living object which has shot THIS living object.
-     */
-    evalProjectileCollision(shooter){
-        let thisObject = this;
-        this.getScene().physics.collide(this, shooter.getProjectiles2D(),
-            function(sprite, projectile){
-                let index = shooter.getProjectiles2D().getChildren().indexOf(projectile);
-                let projectile3D = shooter.getProjectiles3D().getChildren()[index];
-                thisObject.__checkDamage(
-                    projectile,
-                    projectile3D,
-                    shooter.getBulletProperties(),
-                    shooter.getDistanceLimits(),
-                    shooter.getDistanceToPlayer()
-                );
-            }
-        );
-    }
-
-    /**
-     * This method is called when a projectile has collided with a living sprite,
-     * here he health and the state of the living sprite is determined by the
-     * damage and limit distances of the projected projectiles.
-     * @param {Projectile} projectile 
-     * @param {Number} damage 
-     * @param {Object} distanceLimits 
-     * @param {Number} currentDistance
-     */
-    __checkDamage(projectile, projectile3D, bulletProperties, distanceLimits, currentDistance){
-        projectile.body.reset(-100, -100); 
-
-        projectile.setActive(false);
-        projectile.setVisible(false);
-
-        projectile3D.body.reset(-100, -100); 
-
-        projectile3D.setActive(false);
-        projectile3D.setVisible(false);
-
-        let damage = bulletProperties.damage;
-
-        if(currentDistance > distanceLimits.min && currentDistance < distanceLimits.max){
-            damage *= 220/currentDistance;
-            // console.log(`${this} Normal damage ${damage}`);
-        }else if(currentDistance >= distanceLimits.max){
-            damage *= 1/distanceLimits.max;
-            // console.log(`${this} Minimal damage ${damage}`);
-        }else if(currentDistance <= distanceLimits.min){
-            damage *= bulletProperties.critical * 220/currentDistance;
-            // console.log(`${this} Critical damage ${damage}`);
-        }
-
-        this.addDamageReceived(damage);
-
-        if(this.getHealth() - damage <= 0){
-            this.setHealth(0);
-            
-            this.getSpriteSounds("death").playSound();
-
-            this.isAlive = false;
-
-        }else{
-            this.getSpriteSounds("hurt").playSound();
-            this.getHUD().displayHurtRedScreen();
-            this.setHealth(this.getHealth() - damage);
-        }
-
-        this.getHUD().setHUDElementValue("health", this.getHealth(), true, "%");
-    }
-
-    /**
      * Sets the time the player has been alive.
      */
     setTimeAlive(){
@@ -222,11 +150,6 @@
     }
 
     update(){
-        // this.move();
-        // this.shoot();
-        // this.reload();
-        // this.switchWeapons();
-
         this.getStateMachine().update();
         this.getRaycaster().update();
         this.moveCamera();
@@ -252,63 +175,6 @@
         }
     }
 
-    /**
-     * This method allows the player to have the basic controls of movement according to the stablished parameters.
-     * The movement only works through the key arrows.
-     */
-    move(){
-        if(this.getVelocityX() != 0 && this.getVelocityY() != 0){
-            this.setVelocity(0);
-        }
-        this.setRayData();
-
-        if(this.getDebug() === true){
-            this.getSpriteRays().setVelocity(0);
-            this.getSpriteRays().redrawRay2D(this.getPosition(), this.getRayData());
-        }     
-        
-        this.getRaycaster().setSpritePosition(this.getPosition());
-
-
-        if((this.controls.up.isDown ^ this.controls.down.isDown) ^ (this.controls.w.isDown ^ this.controls.s.isDown)){
-            if (this.controls.up.isDown || this.controls.w.isDown){
-                //Here we use the velocity calculated, and we change its sign accordingly to the direction of movement.
-                this.setVelocityX(this.getXcomponent());
-                this.setVelocityY(this.getYcomponent()); 
-
-            }else if(this.controls.down.isDown || this.controls.s.isDown){    
-                this.setVelocityX(-this.getXcomponent());
-                this.setVelocityY(-this.getYcomponent());
-            }
-
-            if(this.getDebug() === true){
-                for(let ray of this.getSpriteRays().rays){
-                    ray.body.setVelocityX(this.getVelocityX());
-                    ray.body.setVelocityY(this.getVelocityY());
-                }
-            }
-        } 
-
-        if((this.controls.left.isDown ^ this.controls.right.isDown) ^ (this.controls.a.isDown ^ this.controls.d.isDown)){
-
-            //Here we use trigonometrics to calculate the x and y component of the velocity.
-            this.setXcomponent(this.config.angleOffset);
-            this.setYcomponent(this.config.angleOffset);    
-    
-            if (this.controls.left.isDown || this.controls.a.isDown){
-                this.setAngle(this.getAngle() - this.getAngleOperator());
-
-            }else if(this.controls.right.isDown || this.controls.d.isDown){
-                this.setAngle(this.getAngle() + this.getAngleOperator());
-            }
-        }
-
-        if(this.getDebug() === true){
-            this.getSpriteRays().setInitialRayAngleOffset(this.config.angleOffset);
-        }
-
-        this.getRaycaster().setRayAngle(this.getRotation() + this.config.angleOffset - (Math.PI/4));
-    }
 
     shoot(){
         if(this.config.controls.space.isDown){
@@ -321,35 +187,6 @@
             this.weaponManager.switchWeapons();
         }
     }
-
-    /**
-     * Allow the player to switch among the weapons.
-     */
-    // switchWeapons(){
-    //     if(this.controls.shift.isDown){
-    //         let time = this.getScene().time.now;
-    //         if (time - this.lastSwitchWeaponTimer  > this.getCurrentWeapon().switchWeaponDelay) {
-    //             this.getCurrentWeapon().playSwitchWeaponSound();
-
-    //             this.getCurrentWeapon().setVisible(false);
-
-    //             let index = this.weapons.indexOf(this.getCurrentWeapon());
-
-    //             if(index == this.weapons.length - 1){
-    //                 this.setCurrentWeapon(this.weapons[0]);
-    //             }else{
-    //                 this.setCurrentWeapon(this.weapons[index + 1]);
-    //             }
-
-    //             this.getCurrentWeapon().setVisible(true);
-
-    //             this.lastShotTimer = 0;
-    //             this.lastSwitchWeaponTimer = time;
-
-    //             this.getHUD().setHUDElementValue("ammo", this.getCurrentWeapon().getProjectiles().countActive(false), false);
-    //         }
-    //     }
-    // }
 
     /**
      * Allows the player to reload the current weapon.

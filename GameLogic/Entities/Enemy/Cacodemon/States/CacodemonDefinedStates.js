@@ -485,7 +485,7 @@ class CacodemonDeadState extends EnemyState{
         //     }
             
         // }
-        // enemy.disableBody(true);
+        enemy.disableBody(true);
         setTimeout(() => {
             enemy3D.getScene().tweens.add({
                 targets: enemy3D,
