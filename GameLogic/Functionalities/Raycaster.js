@@ -1,17 +1,18 @@
 class Raycaster{
 
-    constructor(spriteAngle, spritePosition, rayAmount){
-        this.rayAngle = this.adjustAngleValue(spriteAngle);
-        
-        this.spritePosition = spritePosition;
-
-        if(rayAmount){
-            this.rayAmount = rayAmount;
-        }else{
-            this.rayAmount = options.quality.value;
-        }
-        
+    // constructor(spriteAngle, spritePosition, rayAmount){
+    constructor(emitter, rayAmount){
+        this.emitter = emitter;
+        this.rayAngle = adjustAngleValue(this.emitter.getRotation() + this.emitter.config.angleOffset);
+        this.rayAmount = rayAmount;        
         this.depthOfFieldLimit = options.renderDistance.value;
+        if(game.config.physics.arcade.debug){
+            this.graphicRays = new Rays(this.emitter.scene, this.emitter);
+        }
+    }
+
+    setTarget(target){
+        this.target = target;
     }
 
     setAngleStep(fov = 1){
@@ -22,8 +23,12 @@ class Raycaster{
         return this.angleStep;
     }
 
-    setRayAngle(spriteAngle){
-        this.rayAngle = this.adjustAngleValue(spriteAngle);    
+    setRayAngle(){
+        if(this.target){
+            this.rayAngle = adjustAngleValue(Phaser.Math.Angle.BetweenPoints(this.emitter.getPosition(), this.target.getPosition()));
+        }else{
+            this.rayAngle = adjustAngleValue(this.emitter.getRotation() + this.emitter.config.angleOffset - (Math.PI/4));
+        }
     }
 
     getRayAngle(){
@@ -47,12 +52,17 @@ class Raycaster{
         return this.matrixDimensions;
     }
 
-    setSpritePosition(spritePosition){
-        this.spritePosition = spritePosition;
-    }
-
-    getSpritePosition(){
-        return this.spritePosition;
+    update(){
+        this.setRayAngle();
+        if(this.graphicRays){
+            this.graphicRays.redrawRay2D(this.calculateRayData());
+            this.graphicRays.setVelocityX(this.emitter.getVelocityX());
+            this.graphicRays.setVelocityY(this.emitter.getVelocityY());
+            // for(let ray of this.graphicRays.rays){
+            //     ray.body.setVelocityX(this.emitter.getVelocityX());
+            //     ray.body.setVelocityY(this.emitter.getVelocityY());
+            // }
+        }
     }
 
     calculateRayData(){
@@ -108,9 +118,10 @@ class Raycaster{
                     rayYposition = horizontal.y;
                     RDistance = totalDistance.y;
                 }else{
-                    rayXposition = Math.cos(currentAngle) * this.depthOfFieldLimit*32 + this.spritePosition.x;
-                    rayYposition = Math.sin(currentAngle) * this.depthOfFieldLimit*32 + this.spritePosition.y;
-                    RDistance = this.hypoCalc(rayXposition, rayYposition);
+                    rayXposition = Math.cos(currentAngle) * this.depthOfFieldLimit*32 + this.emitter.getPositionX();
+                    rayYposition = Math.sin(currentAngle) * this.depthOfFieldLimit*32 + this.emitter.getPositionY();
+                    RDistance = Phaser.Math.Distance.BetweenPoints(this.emitter.getPosition(), {x: rayXposition, y: rayYposition});
+                    // RDistance = this.hypoCalc(rayXposition, rayYposition);
                 }
             }else if(checks.horizontal ^ checks.vertical){
                 if(checks.horizontal){
@@ -126,15 +137,15 @@ class Raycaster{
             
             currentAngle = currentAngle + this.getAngleStep();
 
-            currentAngle = this.adjustAngleValue(currentAngle);
+            currentAngle = adjustAngleValue(currentAngle);
             
             coordinatesX[i] = rayXposition;
             coordinatesY[i] = rayYposition;
 
             let fixAngle = (this.rayAngle - 5*Math.PI/4) - currentAngle;
 
-            fixAngle = this.adjustAngleValue(fixAngle);
-            fixAngle = this.adjustAngleValue(fixAngle);
+            fixAngle = adjustAngleValue(fixAngle);
+            fixAngle = adjustAngleValue(fixAngle);
 
             RDistance = RDistance*Math.sin(fixAngle);
 
@@ -149,7 +160,6 @@ class Raycaster{
         return {x: coordinatesX, y: coordinatesY, distance: distances, typeOfHit: kindOfHit};
     }
     
-
     generalCheck(angle, totalDistance, isHorizontal = false){
         let angleLimitations;
 
@@ -166,7 +176,7 @@ class Raycaster{
             tanFuncUsed = -(1/Math.tan(angle));
             angleLimitations = {cond1: angle == 0 || angle == Math.PI || angle == 2*Math.PI, cond2: angle > Math.PI, cond3: angle < Math.PI};
             totalDistanceUsed = totalDistance.y;
-            spritePosition = {"fir": this.spritePosition.y, "sec": this.spritePosition.x};
+            spritePosition = {"fir": this.emitter.getPositionY(), "sec": this.emitter.getPositionX()};
 
             raySelector = {"fir": 1, "sec": 0}
 
@@ -174,7 +184,7 @@ class Raycaster{
             tanFuncUsed =-Math.tan(angle);
             angleLimitations = {cond1: angle == Math.PI/2 || angle ==  3*Math.PI/2, cond2: angle > Math.PI/2 && angle < 3*Math.PI/2, cond3: angle < Math.PI/2 || angle > 3*Math.PI/2};
             totalDistanceUsed = totalDistance.x;
-            spritePosition = {"fir": this.spritePosition.x, "sec": this.spritePosition.y};
+            spritePosition = {"fir": this.emitter.getPositionX(), "sec": this.emitter.getPositionY()};
 
             raySelector = {"fir": 0, "sec": 1}
         }
@@ -191,8 +201,8 @@ class Raycaster{
 
         if(angleLimitations.cond1){
 
-            rayPosition[0] = this.spritePosition.x;
-            rayPosition[1] = this.spritePosition.y;
+            rayPosition[0] = this.emitter.getPositionX();
+            rayPosition[1] = this.emitter.getPositionY();
 
             depthOfField = this.depthOfFieldLimit;
         }else if(angleLimitations.cond2){
@@ -230,9 +240,10 @@ class Raycaster{
             
             coordinatesUsed = {x: rayPosition[0], y: rayPosition[1]};
 
-            if(wallPlace < this.matrixDimensions.xdim * this.matrixDimensions.ydim && this.matrix[matrixPosition.y][matrixPosition.x] === true){
+            if(wallPlace < this.matrixDimensions.xdim * this.matrixDimensions.ydim && this.matrix[matrixPosition.y][matrixPosition.x] !== 0){
                 wallDetected = true;
-                totalDistanceUsed = this.hypoCalc(coordinatesUsed.x, coordinatesUsed.y);
+                totalDistanceUsed = Phaser.Math.Distance.BetweenPoints(this.emitter.getPosition(), coordinatesUsed);
+                // totalDistanceUsed = this.hypoCalc(coordinatesUsed.x, coordinatesUsed.y);
                 depthOfField  = this.depthOfFieldLimit;
             }else{
                 rayPosition[raySelector.fir] += rayOffset[raySelector.fir];
@@ -243,19 +254,5 @@ class Raycaster{
         }
         
         return {totalDistance: totalDistanceUsed, coordinates: coordinatesUsed, wallDetected: wallDetected};
-    }
-
-    hypoCalc(x, y){
-        return Math.sqrt(Math.pow(this.spritePosition.x - x, 2) + Math.pow(this.spritePosition.y - y, 2));
-    }
-
-    adjustAngleValue(angle){
-        if(angle < 0){
-            angle += 2*Math.PI;
-        }else if(angle > 2*Math.PI){
-            angle -= 2*Math.PI;
-        }
-
-        return angle;
     }
 }

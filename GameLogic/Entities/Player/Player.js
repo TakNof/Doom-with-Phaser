@@ -6,38 +6,24 @@
     /**
     * The constructor of Player Class.
     * @constructor
-    * @param {Phaser.Scene} scene2D The scene to place the 2D sprites in the game.
-    * @param {Phaser.Scene} scene3D The scene to place the 3D sprites in the game.
-    * @param {{x: Number, y: Number, ang: Number}} originInfo A literal Object with the initial positioning information for the sprite.
-    * @param {String} spriteImgStr An str of the image name given in the preload method of the main class.
-    * @param {Number} depth The depth of rendering of the sprite.
-    * @param {Number} size The size of the sprite in pixels.
-    * @param {Number} defaultVelocity The default velocity for the living sprite.
-    * @param {Number} playerAngleOperator The player angle operator in order to rotate the sprite arround.
-    * @param {Number} maxHealth The maximum health of the player.
+    * @param {Phaser.Scene} scene2D The scene to place the sprite in the game.
+    * @param {Phaser.Scene} scene3D The scene to place the 3D sprite in the game.
+    * @param {{x: Number, y: Number}} worldOriginInfo A literal Object with the initial positioning information for the sprite.
+    * @param {JSON} config The configuration object for the Player.
     * 
     */
-    constructor(scene, scene3D, originInfo, playerImgStr, depth, size, defaultVelocity, playerAngleOperator, maxHealth){
-        super(scene, originInfo, playerImgStr, depth, size, defaultVelocity);
+    constructor(scene2D, scene3D, worldOriginInfo, config){
+        super(scene2D, scene3D, worldOriginInfo, config);
 
-        this.scene3D = scene3D;
+        this.setXcomponent(this.config.angleOffset);
+        this.setYcomponent(this.config.angleOffset);
 
-        this.angleOperator = playerAngleOperator;
+        this.setDebug(game.config.physics.arcade.debug);
 
-        this.setXcomponent(this.getOriginInfo().angleOffset);
-        this.setYcomponent(this.getOriginInfo().angleOffset);
+        this.setMaxShield(config.maxShield);
+        this.getRaycaster().setAngleStep(this.config.fov);
+        this.setCamera(scene2D.cameraConfig);
 
-        this.controls = this.getScene().input.keyboard.createCursorKeys();
-
-       for(let key of ["w", "a", "s", "d", "r", "shift", "space", "enter", "esc"]) {
-            this.controls[key.toLowerCase()] = this.getScene().input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes[key.toUpperCase()]);
-        }
-
-        this.setMaxHealth(maxHealth);
-
-        this.setSpriteSounds("player", "hurt", "death", "heal");
-
-        this.roundsShot = 0;
         this.damageDealed = 0;
         this.damageReceived = 0;
         this.lastSwitchWeaponTimer = 0;
@@ -45,51 +31,11 @@
     }
 
     /**
-     * Gets the angle operator to determine the amount of rotation of the player sprite.
-     * @return {number}
-     */
-    getAngleOperator(){
-        return this.angleOperator;
-    }
-
-    /**
-     * Sets the graphicator object of the player.
-     */
-    setGraphicator(){
-        this.graphicator = new Graphicator(this.getScene3D(), this.getSize(), options.quality.value);
-    }
-
-    /**
-     * Gets the graphicator object of the player.
-     * @returns {Graphicator}
-     */
-    getGraphicator(){
-        return this.graphicator;
-    }
-
-    /**
-     * Sets the HUD object of the player.
-     * @param {Object} canvasSize
-     */
-    setHUD(enemies = undefined){
-        this.hud = new HUD(this.scene3D, enemies);
-        this.hud.setHUDElementValue("health", this.getHealth(), true, "%");
-    }
-
-    /**
-     * Gets the HUD object of the player.
-     * @returns {HUD}
-     */
-    getHUD(){
-        return this.hud;
-    }
-
-    /**
      * Sets the camera of the player.
-     * @param {number} fov in radians.
+     * @param {JSON} config JSON with the configuration of the camera.
      */
-    setCamera(fov){
-        this.camera = new Camera(this.scene3D, fov, this);
+    setCamera(config){
+        this.camera = new Camera(this.scene, this.scene3D, config, this);
     }
 
     /**
@@ -100,27 +46,22 @@
         return this.camera;
     }
 
-    /**
-     * Sets the list of weapons of the player.
-     * @param {Array<Object>} weapons
-     */
-    setWeapons(weapons){
-        this.weapons = new Array(weapons.length);
+    setWeaponManager(){
+        const {weaponsConfig} = this.config;
+        this.weapons = new Array(weaponsConfig.list.length);
 
-        for(let [i, weapon] of weapons.entries()){
+        for(let [i, weaponConfig] of weaponsConfig.list.entries()){
             this.weapons[i] = new Weapon(
-                this.getScene3D(),
+                this.scene,
+                this.scene3D,
                 {x: canvasSize.width/2, y: canvasSize.height*0.9},
-                weapon.name,
-                1000,
-                weapon.bulletProperties,
-                weapon.distanceLimits,
-                weapon.animationParams
-            )
-            this.weapons[i].setProjectiles(this.getScene());
-            this.weapons[i].setVisible(false);
+                this,
+                [this.scene.walls.walls, this.scene.children.list.filter(obj => obj instanceof Enemy)],
+                weaponConfig
+            );
         }
-        this.setCurrentWeapon(this.weapons[0]);        
+
+        this.weaponManager = new WeaponManager(this.scene, this.config.controls, this.weapons, weaponsConfig.generalWeaponSounds, this);
     }
 
     /**
@@ -129,23 +70,6 @@
      */
     getWeapons(){
         return this.weapons;
-    }
-
-    /**
-     * Sets the current weapon of the player.
-     * @param {Weapon} weapon
-     */
-    setCurrentWeapon(weapon){
-        this.currentWeapon = weapon;
-        this.currentWeapon.setVisible(true);
-    }
-
-    /**
-     * Gets the current weapon of the player.
-     * @return {Weapon}
-     */
-    getCurrentWeapon(){
-        return this.currentWeapon;
     }
 
     /**
@@ -298,10 +222,34 @@
     }
 
     update(){
-        this.move();
+        // this.move();
+        // this.shoot();
+        // this.reload();
+        // this.switchWeapons();
+
+        this.getStateMachine().update();
+        this.getRaycaster().update();
+        this.moveCamera();
         this.shoot();
-        this.reload();
         this.switchWeapons();
+    }
+
+    moveCamera(){
+        const {a, d, left, right} = this.config.controls;
+
+        if((left.isDown ^ right.isDown) ^ (a.isDown ^ d.isDown)){
+
+            //Here we use trigonometrics to calculate the x and y component of the velocity.
+            this.setXcomponent();
+            this.setYcomponent();    
+    
+            if (left.isDown || a.isDown){
+                this.setAngle(this.getAngle() - this.config.angleOperator);
+
+            }else if(right.isDown || d.isDown){
+                this.setAngle(this.getAngle() + this.config.angleOperator);
+            }
+        }
     }
 
     /**
@@ -344,8 +292,8 @@
         if((this.controls.left.isDown ^ this.controls.right.isDown) ^ (this.controls.a.isDown ^ this.controls.d.isDown)){
 
             //Here we use trigonometrics to calculate the x and y component of the velocity.
-            this.setXcomponent(this.getOriginInfo().angleOffset);
-            this.setYcomponent(this.getOriginInfo().angleOffset);    
+            this.setXcomponent(this.config.angleOffset);
+            this.setYcomponent(this.config.angleOffset);    
     
             if (this.controls.left.isDown || this.controls.a.isDown){
                 this.setAngle(this.getAngle() - this.getAngleOperator());
@@ -356,53 +304,52 @@
         }
 
         if(this.getDebug() === true){
-            this.getSpriteRays().setInitialRayAngleOffset(this.getOriginInfo().angleOffset);
+            this.getSpriteRays().setInitialRayAngleOffset(this.config.angleOffset);
         }
 
-        this.getRaycaster().setRayAngle(this.getRotation() + this.getOriginInfo().angleOffset - (Math.PI/4));
+        this.getRaycaster().setRayAngle(this.getRotation() + this.config.angleOffset - (Math.PI/4));
     }
 
     shoot(){
-        if(this.controls.space.isDown){
-            let time = this.getScene().time.now;
+        if(this.config.controls.space.isDown){
+            this.weaponManager.HandleWeapon();
+        }
+    }
 
-            if (time - this.lastShotTimer > this.getCurrentWeapon().getDelayBetweenShots()) {
-                this.getCurrentWeapon().shootProjectile(this, this.getCurrentWeapon().getBulletVelocity());
-                this.getHUD().setHUDElementValue("ammo", this.getCurrentWeapon().getProjectiles().countActive(false), false);
-
-                this.lastShotTimer = time;
-            }
+    switchWeapons(){
+        if(Phaser.Input.Keyboard.JustDown(this.config.controls.shift)){
+            this.weaponManager.switchWeapons();
         }
     }
 
     /**
      * Allow the player to switch among the weapons.
      */
-    switchWeapons(){
-        if(this.controls.shift.isDown){
-            let time = this.getScene().time.now;
-            if (time - this.lastSwitchWeaponTimer  > this.getCurrentWeapon().switchWeaponDelay) {
-                this.getCurrentWeapon().playSwitchWeaponSound();
+    // switchWeapons(){
+    //     if(this.controls.shift.isDown){
+    //         let time = this.getScene().time.now;
+    //         if (time - this.lastSwitchWeaponTimer  > this.getCurrentWeapon().switchWeaponDelay) {
+    //             this.getCurrentWeapon().playSwitchWeaponSound();
 
-                this.getCurrentWeapon().setVisible(false);
+    //             this.getCurrentWeapon().setVisible(false);
 
-                let index = this.weapons.indexOf(this.getCurrentWeapon());
+    //             let index = this.weapons.indexOf(this.getCurrentWeapon());
 
-                if(index == this.weapons.length - 1){
-                    this.setCurrentWeapon(this.weapons[0]);
-                }else{
-                    this.setCurrentWeapon(this.weapons[index + 1]);
-                }
+    //             if(index == this.weapons.length - 1){
+    //                 this.setCurrentWeapon(this.weapons[0]);
+    //             }else{
+    //                 this.setCurrentWeapon(this.weapons[index + 1]);
+    //             }
 
-                this.getCurrentWeapon().setVisible(true);
+    //             this.getCurrentWeapon().setVisible(true);
 
-                this.lastShotTimer = 0;
-                this.lastSwitchWeaponTimer = time;
+    //             this.lastShotTimer = 0;
+    //             this.lastSwitchWeaponTimer = time;
 
-                this.getHUD().setHUDElementValue("ammo", this.getCurrentWeapon().getProjectiles().countActive(false), false);
-            }
-        }
-    }
+    //             this.getHUD().setHUDElementValue("ammo", this.getCurrentWeapon().getProjectiles().countActive(false), false);
+    //         }
+    //     }
+    // }
 
     /**
      * Allows the player to reload the current weapon.

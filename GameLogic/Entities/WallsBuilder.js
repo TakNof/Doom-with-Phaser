@@ -6,28 +6,19 @@ class WallsBuilder{
      * The constructor of the walls builder class.
      * @constructor
      * @param {Scene} scene The current scene of the game to place the sprite.
-     * @param {string} spriteImgStr An str of the image name given in the preload method of the main class.
-     * @param {number} blockSize The size of the sprite in pixels.
-     * @param {boolean} generateWalls Whether to generate walls or not.
-     * @param {boolean} generateRandomWalls Whether to generate random walls or not.
+     * @param {JSON} config The configuration object for the Player.
      */
-    constructor(scene, spriteImgStr, blockSize, amountWalls, generateWalls, generateRandomWalls){
+    // constructor(scene, spriteImgStr, blockSize, amountWalls, generateWalls, generateRandomWalls){
+    constructor(scene, config){
         this.scene = scene;
+        this.config = config;
 
-        this.spriteImgStr = spriteImgStr;
-
-        this.blockSize = blockSize; 
-
-        this.amountWalls = amountWalls;
-
-        this.generateWalls = generateWalls;
-        this.generateRandomWalls = generateRandomWalls;
-
-        this.wallNumberRatio = {x: parseInt(canvasSize.width/this.blockSize), y: parseInt(canvasSize.height/this.blockSize)};
+        this.wallNumberRatio = {x: parseInt(canvasSize.width/this.config.size), y: parseInt(canvasSize.height/this.config.size)};
+        this.createWalls();
     }
 
     createWalls(){
-        if(this.generateWalls){
+        if(this.config.generate){
             //Creating the group for the walls.
             this.walls = this.scene.physics.add.staticGroup();
 
@@ -40,15 +31,15 @@ class WallsBuilder{
 
             //These loops frame the map section of the canvas to not let the player getting out.
             for(let k = 0; k < this.wallNumberRatio.x; k++){
-                this.wallMatrix[0][k] = true;
-                this.wallMatrix[this.wallNumberRatio.y - 1][k] = true;
+                this.wallMatrix[0][k] = 1;
+                this.wallMatrix[this.wallNumberRatio.y - 1][k] = 1;
             }
             for(let j = 0; j < this.wallNumberRatio.y; j++){
-                this.wallMatrix[j][0] = true;
-                this.wallMatrix[j][this.wallNumberRatio.x - 1] = true;
+                this.wallMatrix[j][0] = 1;
+                this.wallMatrix[j][this.wallNumberRatio.x - 1] = 1;
             }
 
-            for(let i = 0; i < this.amountWalls; i++){
+            for(let i = 0; i < this.config.amount; i++){
                 //within this loop we generate the walls through random positioning
                 //and scale of each wall.
 
@@ -56,7 +47,7 @@ class WallsBuilder{
                 //and the scale of the walls. So instead of asking for the coordinates of the wall we ask for its
                 //position in the grid.
 
-                if(this.generateRandomWalls){
+                if(this.config.random){
                     //Due we need to make some tests we have this conditional, so we can create a more controlled map if needed.
 
                     //We stablish the starting grid point of the wall in x,y.
@@ -74,7 +65,7 @@ class WallsBuilder{
                     
                 }else{
                     wallStart.x = 15;
-                    wallStart.y = getRndInteger(0, 8);
+                    wallStart.y = 19;
         
                     blockExtension.x = 3;
                     blockExtension.y = 3;
@@ -83,7 +74,7 @@ class WallsBuilder{
                 //Then we use two for loops to change the value in the matrix by true;
                 for(let j = wallStart.y; j < blockExtension.y + wallStart.y; j++){
                     for(let k = wallStart.x; k < blockExtension.x + wallStart.x; k++){
-                        this.wallMatrix[j][k] = true;
+                        this.wallMatrix[j][k] = 1;
                     }
                 }
             }
@@ -92,55 +83,23 @@ class WallsBuilder{
             //traverse the matrix looking for the true values, if found, a wall object will be generated.
             for(let i = 0; i < this.wallNumberRatio.y; i++){
                 for(let j = 0; j < this.wallNumberRatio.x; j++){
-                    if(this.wallMatrix[i][j] === true){
-                        wallPosition.x = (j*32) + 16;
-                        wallPosition.y = (i*32) + 16;
-                        this.walls.create(wallPosition.x, wallPosition.y, new Sprite(this.scene, wallPosition, this.spriteImgStr, 1));
+                    if(this.wallMatrix[i][j] === 1){
+                        wallPosition.x = this.config.size*(j + 0.5);
+                        wallPosition.y = this.config.size*(i + 0.5);
+                        this.walls.create(wallPosition.x, wallPosition.y, this.config.name);
                     }
                 }
             }
+
+            this.walls.name = "walls";
         }
     }
-    /**
-     * Sets the colliders of the objects given
-     * @param {?} Objects
-     */
+
     setColliders(){
         for(let element of arguments){
-            if(typeof(element) == Array){
-                for(let subelement of element){
-                    this.scene.physics.add.collider(subelement, this.walls);
-                }
-            }else{
-                this.scene.physics.add.collider(element, this.walls);
-            }
+            this.scene.physics.add.collider(element, this.walls);
         }
     }
-
-    /**
-     * Checks if the walls have been impacted by a projectile or not.
-     * @param {Projectile} projectiles
-     */
-    evalCollision(projectiles2D, projectiles3D = undefined){
-        this.scene.physics.collide(this.walls, projectiles2D,
-            function(sprite, projectile){
-                projectile.body.reset(-100, -100);
-                projectile.setActive(false);
-                projectile.setVisible(false);
-
-                if(projectiles3D){
-                    let projectile3D = projectiles3D.getFirstAlive();
-
-                    if(projectile3D){
-                        projectile3D.body.reset(-100, -100); 
-                        projectile3D.setActive(false);
-                        projectile3D.setVisible(false);
-                    }
-                }               
-            }
-        );
-    }
-
 
     /**
      * This method creates the base matrix fulled of booleans to create the wall.
@@ -151,7 +110,7 @@ class WallsBuilder{
         let row = Array(this.wallNumberRatio.x);
     
         for(let j = 0; j < this.wallNumberRatio.x; j++){
-            row[j] = false;
+            row[j] = 0;
         }
     
         for(let i = 0; i < this.wallNumberRatio.y; i++){
@@ -169,7 +128,7 @@ class WallsBuilder{
 
     /**
      * Gets the wall number ratio.
-     * @return {Object}
+     * @return {Number}
      */
     getWallNumberRatio(){
         return this.wallNumberRatio;
@@ -180,6 +139,30 @@ class WallsBuilder{
      * @return {Number}
      */
     getWallBlockSize(){
-        return this.blockSize;
+        return this.config.size;
+    }
+
+    getWallAtWorldXY(x, y, objectSize) {
+        const cellSize = this.config.size;
+        const cellsToCheck = objectSize / cellSize;
+    
+        const startX = Math.floor(x / cellSize);
+        const startY = Math.floor(y / cellSize);
+    
+        for (let i = 0; i < cellsToCheck; i++) {
+            for (let j = 0; j < cellsToCheck; j++) {
+                const checkX = startX + i;
+                const checkY = startY + j;
+    
+                if (checkX >= 0 && checkX < this.wallMatrix[0].length && checkY >= 0 && checkY < this.wallMatrix.length) {
+                    if (this.wallMatrix[checkY][checkX] != 0) {
+                        return true;
+                    }
+                } else {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 }

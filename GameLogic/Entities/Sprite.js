@@ -5,16 +5,12 @@ class Sprite extends Phaser.Physics.Arcade.Sprite{
     /**
     * The constructor of Sprite Class.
     * @param {Phaser.Scene} scene The scene to place the 2D sprites in the game.
-    * @param {{x: Number, y: Number, ang: Number}} originInfo A literal Object with the initial positioning information for the sprite.
+    * @param {{x: Number, y: Number}} worldOriginInfo A literal Object with the initial positioning information for the sprite.
     * @param {String} spriteImgStr An str of the image name given in the preload method of the main class.
-    * @param {Number} depth The depth of rendering of the sprite.
     */
-    constructor(scene, originInfo, spriteImgStr, depth){
-        super(scene, originInfo.x, originInfo.y, spriteImgStr);
-        this.setDepth(depth);
-
-        this.originInfo = originInfo;
-        this.debug = false;
+    constructor(scene, worldOriginInfo, spriteImgStr){
+        super(scene, worldOriginInfo.x, worldOriginInfo.y, spriteImgStr);
+        this.debug = game.config.physics.arcade.debug;
         scene.add.existing(this);
     }
 
@@ -24,14 +20,6 @@ class Sprite extends Phaser.Physics.Arcade.Sprite{
      */
     getScene(){
         return this.scene;
-    }
-
-    /**
-     * Sets if the sprite should show the rays or not.
-     * @param {Boolean} value
-     */
-    setDebug(value){
-        this.debug = value;
     }
 
     /**
@@ -49,15 +37,7 @@ class Sprite extends Phaser.Physics.Arcade.Sprite{
     getDepth(){
         return this.depth;
     }
-
-    /**
-     * Gets the sprite origin info.
-     * @return {{x: Number, y: Number, angleOffset: Number}}
-     */
-    getOriginInfo(){
-        return this.originInfo;
-    }
-
+    
     /**
      * Gets the sprite image string.
      * @return {String} The image string of the sprite.
@@ -115,6 +95,7 @@ class Sprite extends Phaser.Physics.Arcade.Sprite{
     getPosition(){
         return {x: this.x, y: this.y};
     }
+
     /**
      * Sets the visibility of the sprite.
      * @param {boolean} visible Whether the sprite is visible or not.
@@ -153,17 +134,5 @@ class Sprite extends Phaser.Physics.Arcade.Sprite{
      */
     getAngleRadians(){
         return this.angle*Math.PI/180;
-    }
-
-    /**
-     * This method stablishes the angle of the living sprite respect to an element.
-     * @param {Number} elementPosition The position of an element.
-     */
-    angleToElement(elementPosition){
-        if(this.getPositionX() > elementPosition.x){
-            return adjustAngleValue(Math.atan((this.getPositionY() - elementPosition.y)/(this.getPositionX() - elementPosition.x)) + Math.PI);
-        }else{
-            return adjustAngleValue(Math.atan((this.getPositionY() - elementPosition.y)/(this.getPositionX() - elementPosition.x)));
-        }
     }
 }

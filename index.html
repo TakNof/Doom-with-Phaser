@@ -9,6 +9,16 @@
 
     <body>
         <script src="phaser.min.js"></script>
+        <script src="easystar-0.4.4.js"></script>
+        <script src="GameLogic/Functionalities/PathFinder.js"></script>
+
+        <script src="GameLogic/Functionalities/StateMachine/StateMachine.js"></script>
+        <script src="GameLogic/Functionalities/StateMachine/BaseState.js"></script>
+
+        <script src="GameLogic/Entities/Player/PlayerStateMachine.js"></script>
+        <script src="GameLogic/Entities/Player/PlayerState.js"></script>
+
+        <script src="GameLogic/Entities/Player/States/PlayerDefinedStates.js"></script>
         
         <!-- <script src="//cdn.jsdelivr.net/npm/phaser@3.55.2/dist/phaser.js"></script> -->
         <!-- <script src="//cdn.jsdelivr.net/npm/phaser@3.55.2/dist/phaser.min.js"></script> -->
@@ -16,14 +26,24 @@
         <script src="GameLogic/Entities/Sprite.js"></script>
 
         <script src="GameLogic/Entities/WallsBuilder.js"></script>
+        <script src="GameLogic/Entities/Entity.js"></script>
+
         <script src="GameLogic/Entities/Projectile.js"></script>
+        <script src="GameLogic/Entities/Items/Item.js"></script>
 
         <script src="GameLogic/Entities/Living.js"></script>
 
-        <script src="GameLogic/Entities/Player.js"></script>
+        <script src="GameLogic/Entities/Player/Player.js"></script>
         <script src="GameLogic/Entities/Weapon.js"></script>
+        <script src="GameLogic/Functionalities/WeaponManager.js"></script>
 
-        <script src="GameLogic/Entities/Enemy.js"></script>
+        <script src="GameLogic/Entities/Enemy/EnemyState.js"></script>
+        <script src="GameLogic/Entities/Enemy/Enemy.js"></script>
+
+        <script src="GameLogic/Entities/Enemy/Cacodemon/States/CacodemonStateMachine.js"></script>
+        <script src="GameLogic/Entities/Enemy/Cacodemon/States/CacodemonDefinedStates.js"></script>
+
+        <script src="GameLogic/Entities/Enemy/Cacodemon/Cacodemon.js"></script>
 
         <script src="GameLogic/Functionalities/Raycaster.js"></script>
         <script src="GameLogic/Functionalities/Graphicator.js"></script>
@@ -34,8 +54,6 @@
         <script src="GameLogic/Functionalities/Rays.js"></script>
 
         <script src="GameLogic/Functionalities/Sound.js"></script>
-
-        <script src="GameLogic/Functionalities/SpriteAnimation.js"></script>
         
         <script src="Scenes/OptionsGenerator.js"></script>
         <script src="Scenes/ButtonsGenerator.js"></script>
@@ -44,11 +62,13 @@
         <script src="Scenes/MainMenu.js"></script>
         <script src="Scenes/HowToPlay.js"></script>
         <script src="Scenes/SelectDifficulty.js"></script>
-        <script src="Scenes/Game.js"></script>
         <script src="Scenes/HUDScene.js"></script>
         <script src="Scenes/PauseMenu.js"></script>
         <script src="Scenes/EndGameMenu.js"></script>
         <script src="Scenes/OptionsMenu.js"></script>
+        
+        <script src="Scenes/GeneralGameScene.js"></script>
+        <script src="Scenes/Game.js"></script>
 
         <script src="main.js"></script>
     </body>

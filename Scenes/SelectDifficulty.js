@@ -22,37 +22,9 @@ class SelectDifficulty extends MenuBuilder{
     }
 
     setOptions(){
-        switch (options.quality.setting) {
-            case 0:
-                options.quality.value = 32;
-            break;
+        options.quality.value = 32 * (options.quality.setting + 1);
 
-            case 1:
-                options.quality.value = 64;
-            break;
-
-            case 2:
-                options.quality.value = 96;
-            break;
-
-            case 3:
-                options.quality.value = 128;
-            break;
-        }
-
-        switch (options.renderDistance.setting) {
-            case 0:
-                options.renderDistance.value = 10;
-            break;
-
-            case 1:
-                options.renderDistance.value = 15;
-            break;
-
-            case 2:
-                options.renderDistance.value = 20;
-            break;
-        }
+        options.renderDistance.value = 10 + 5 * options.renderDistance.setting;
 
         switch (options.difficulty.setting) {
             case 0:

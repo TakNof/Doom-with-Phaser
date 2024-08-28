@@ -1,141 +1,65 @@
-class Weapon extends Sprite{
+class Weapon extends Entity{
     /**
-    * The constructor of Weapons Class.
+    * The constructor of Weapon Class.
     * @constructor
-    * @param {Phaser.Scene} scene The scene of the game to place bullets.
+    * @param {Phaser.Scene} scene2D The current scene of the game to place the bullets.
     * @param {Phaser.Scene} scene3D The current scene of the game to place the weapon sprite.
-    * @param {{x: Number, y: Number, angleOffset: Number}} originInfo  A list with the initial positioning information for the weapon sprite.
-    * @param {String} weapon spriteImgStr An str of the image name given in the preload method of the main class.
-    * @param {Number} depth The depth of rendering of the weapon sprite.
-    * @param {{damage: Number, velocity: Number, delay: Number, critical: Number}} bulletProperties 
-    * The damage per bullet, the projectile velocity and the delay in seconds between the shots for the weapon sprite. 
-    * @param {{min: Number, max: Number}} distanceLimits The minimum and maximum distance to deal damage concidering the distance to the object.    *  
+    * @param {{x: Number, y: Number, angleOffset: Number}} worldOriginInfo  A list with the initial positioning information for the weapon sprite.
+    * @param {Object} owner The owner of the weapons.
+    * @param {Array<Phaser.Object>} bulletDetectionElements The elements that will be detected by the bullets of the weapon.
+    * @param {Object} config The specific configuration of the weapon
     */
-    constructor(scene, originInfo, spriteImgStr, depth, bulletProperties, distanceLimits, animationParams){
-        super(scene, originInfo, spriteImgStr, depth);
+    constructor(scene2D, scene3D, worldOriginInfo, owner, bulletDetectionElements, config){
+        super(scene3D, worldOriginInfo, `${config.name}_${config.animations[0].name}`); //Loading the atlas directly instead of an sprite.
+        this.scene2D = scene2D;
+        this.owner = owner;
+        this.depth = 10000;
+        this.config = config;
+        this.config.bulletConfig.delay = 60*1000/config.fireRate;
+        this.nextFire = 0;
 
-        this.bulletProperties = bulletProperties;
-        this.distanceLimits = distanceLimits;
-
-        this.weaponShootingAnimation = new SpriteAnimation(this.getScene(), this.getSpriteImgStr());
-        this.switchWeaponDelay = 1000;
-        this.setSoundEffect();
-        
-        this.getShootingAnimation().setAnimationFrames(animationParams.end, animationParams.framerate, animationParams.repeat);
-
-        this.switchWeaponSounds = Array(3);
-
-        for(let i = 0; i < 3; i++){
-            this.switchWeaponSounds[i] = new Sound(this.getScene(), `switch_weapon_sound_${i + 1}`);
-        } 
+        this.bullets = new ProjectileGroup(scene2D, owner, bulletDetectionElements, config.ammoAmount, this.config.bulletConfig);
+        this.setSpriteSounds(config.name, config.sounds);
+        this.setSpriteAnimations(config.animations);
     }
 
-    /**
-     * Sets the sound effect of the weapon.
-     */
-    setSoundEffect(){
-        this.soundEffectName = this.getScene().sound.add(`${this.getSpriteImgStr()}_sound`);
-    }
+    actionateWeapon(){
+        let time = this.getScene().time.now;
 
-    /**
-     * Plays the sound effect of the weapon.
-     */
-    playSoundEffect(){
-        this.soundEffectName.play();
-    }
+        if (time > this.nextFire){
+            const {delay} = this.config.bulletConfig;
+            this.nextFire = time + delay;
 
-    playSwitchWeaponSound(){
-        let index = getRndInteger(0, 2);
-        this.switchWeaponSounds[index].playSound();
-    }
+            let bullet = this.bullets.getFirstDead(false);
+            if(bullet){
+                bullet.setVisible(true);
+                bullet.setPosition(this.owner.getPositionX(), this.owner.getPositionY());
+                bullet.addForce(this.owner.getUnitaryComponents(this.owner.config.angleOffset));
 
-    /**
-     * Sets the group of projectiles of the weapon.
-     * @param {Scene} Scene2D The key of the sprite to make the group of projectiles.
-     */
-    setProjectiles(Scene2D){
-        this.weaponProjectiles = new ProjectileGroup(Scene2D, "bullet", 10);
-    }
+                this.play(this.getSpriteAnimations("Shoot"));
 
-    /**
-     * Gets the weapon's projectiles.
-     * @returns {Projectile}
-     */
-    getProjectiles(){
-        return this.weaponProjectiles;
-    }
-
-    /**
-     * This method allows to shoot the projectile.
-     * @param {Living} livingSprite
-     * @param {Number} velocity
-     */
-    shootProjectile(livingSprite, velocity){
-        let projectile = this.getProjectiles().getFirstDead();
-
-        if(projectile){
-            this.play(this.getShootingAnimation().getAnimationName());
-
-            this.playSoundEffect();
-            
-            projectile.shoot(livingSprite, velocity);
-
+                this.scene.time.delayedCall(10*1000, ()=>{
+                    if(bullet.active){
+                        this.bullets.killAndHide(bullet);
+                        bullet.setVelocity(0);
+                        bullet.setPosition(-100, -100);
+                        console.log("Bullet fly time exceeded");
+                    };
+                });
+            }
+            this.scene.cameras.main.shake(100, 0.005);
+            this.getSpriteSounds("Shoot").playSound();
         }
     }
 
-    /**
-     * Gets the shooting animation object of the weapon.
-     * @returns 
-     */
-    getShootingAnimation(){
-        return this.weaponShootingAnimation;
+    disable(){
+        this.setVisible(false);
+        this.setActive(false);
+        this.nextFire = 0;
     }
 
-    /**
-     * Gets the bullet properties of the weapon's projectile.
-     * @returns {Object}
-     */
-    getBulletProperties(){
-        return this.bulletProperties;
+    enable(){
+        this.setVisible(true);
+        this.setActive(true);
     }
-
-    /**
-     * Gets the damage of the weapon's projectile.
-     * @returns {Number}
-     */
-    getDamagePerBullet(){
-        return this.bulletProperties.damage;
-    }
-    
-    /**
-     * Gets the critical damge of the weapon's projectile
-     * @returns {Number}
-     */
-    getCriticalDamage(){
-        return this.bulletProperties.critical;
-    }
-
-    /**
-     * Gets the velocity of the weapon's projectile
-     */
-    getBulletVelocity(){
-        return this.bulletProperties.velocity;
-    }
-
-    /**
-     * Gets the minimum and maximum distance to deal damage concidering the distance to the object
-     * of the weapon's projectile.
-     * @returns {Object}
-     */
-    getDistanceLimits(){
-        return this.distanceLimits;
-    }
-
-    /**
-     * Gets the delay between shots of the weapon.
-     * @returns {number}
-     */
-    getDelayBetweenShots(){
-        return this.bulletProperties.delay;
-    }   
 }

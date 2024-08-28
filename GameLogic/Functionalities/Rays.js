@@ -9,41 +9,27 @@ class Rays{
      * @param {Object} spritePosition The position of the sprite.
      * @param {String} colorOfRays The color of the rays.
      */
-    constructor(scene, raysAmount, spritePosition, colorOfRays){
+    constructor(scene, emitter){
         this.scene = scene;
-        this.raysAmount = raysAmount;
-        this.rays = Array(raysAmount);
+        this.emitter = emitter;
 
-        for(let i = 0; i < this.raysAmount; i++){
-            this.rays[i] = this.scene.add.line(spritePosition.x, spritePosition.y, 0, 0, 0, 0, colorOfRays);
+        this.rays = Array(this.emitter.config.rayAmount);
+
+        for(let i = 0; i < this.rays.length; i++){
+            this.rays[i] = this.scene.add.line(this.emitter.getPositionX(), this.emitter.getPositionY(), 0, 0, 0, 0, this.emitter.config.rayColor);
             this.scene.physics.add.existing(this.rays[i], false);
             this.rays[i].body.setAllowRotation(true);
-            this.rays[i].body.setSize(64, 64, true);
+            this.rays[i].body.setSize(emitter.config.size, emitter.config.size, true);
             this.rays[i].body.setCollideWorldBounds(true);
         }
     }
 
     /**
      * Gets the list of rays created.
-     * @returns {Array<rays>}
+     * @returns {Array<Phaser.line>}
      */
     getRays(){
         return this.rays;
-    }
-
-    /**
-     * Sets the initial angle ray offset.
-     * @param {number} rayAngleOffset
-     */
-    setInitialRayAngleOffset(rayAngleOffset){
-        this.initialRayAngleOffset = rayAngleOffset;
-    }
-
-    /**
-     * Gets the initial angle ray offset.
-     */
-    getInitialRayAngleOffset(){
-        return this.initialRayAngleOffset;
     }
 
     /**
@@ -67,25 +53,37 @@ class Rays{
     }
 
     /**
-     * Sets the velocity in both axis of the rays.
-     * @param {number} value
+     * Sets the velocity in both axis of the living sprite.
+     * @param {Number} value
      */
     setVelocity(value){
         this.setVelocityX(value);
         this.setVelocityY(value);
     }
-
+    
     /**
      * This method redraws the created rays to the new coordinates given by the raycaster and the sprite's position.
-     * @param {{x: number, y: number}} position The position of the sprite form where the rays are being generated.
      * @param {{x: coordinatesX, y: coordinatesY}} rayDataCoordinates The rayData thrown by the raycaster to graph the rays.
      */
-    redrawRay2D(position, rayDataCoordinates){
+    redrawRay2D(rayDataCoordinates){
         //This method allows the recalculation of the ray coordinates and redraws it.
-        for(let i = 0; i < this.raysAmount; i++){
-            //The XEquation and YEquation are needed due to the fact that the ray is drawn according to "local" coordinates,
-            //so we have to convert them to global coordinates.
-            this.rays[i].setTo(0, 0, - position.x + rayDataCoordinates.x[i], - position.y + rayDataCoordinates.y[i]);
+        for(let i = 0; i < this.emitter.config.rayAmount; i++){
+            this.rays[i].setTo(0, 0, -this.emitter.getPositionX() + rayDataCoordinates.x[i], -this.emitter.getPositionY() + rayDataCoordinates.y[i]);
         }
     }
+
+    /**
+     * Custom method to call the same method to all children in the group.
+     * @param {String} methodName the name of the method to call.
+     * @param  {...any} args the arguments to pass to the method.
+     */
+    callAll(methodName, ...args) {
+        this.rays.forEach(function (ray) {
+            if(args === null){
+                ray[methodName]();
+            }else{
+                ray[methodName](...args);
+            }
+        });
+    };
 }

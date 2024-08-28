@@ -1,7 +1,7 @@
 {
     "frames": [
         {
-            "filename": "pistol_0.png",
+            "filename": "pistol_Shoot_0",
             "frame": {
                 "w": 114,
                 "h": 124,
@@ -14,7 +14,7 @@
             }
         },
         {
-            "filename": "pistol_1.png",
+            "filename": "pistol_Shoot_1",
             "frame": {
                 "w": 158,
                 "h": 164,
@@ -27,7 +27,7 @@
             }
         },
         {
-            "filename": "pistol_2.png",
+            "filename": "pistol_Shoot_2",
             "frame": {
                 "w": 158,
                 "h": 210,
@@ -40,7 +40,7 @@
             }
         },
         {
-            "filename": "pistol_3.png",
+            "filename": "pistol_Shoot_3",
             "frame": {
                 "w": 132,
                 "h": 162,
@@ -53,7 +53,7 @@
             }
         },
         {
-            "filename": "pistol_4.png",
+            "filename": "pistol_Shoot_4",
             "frame": {
                 "w": 122,
                 "h": 162,
@@ -66,7 +66,7 @@
             }
         },
         {
-            "filename": "pistol_5.png",
+            "filename": "pistol_Shoot_5",
             "frame": {
                 "w": 156,
                 "h": 206,
@@ -79,7 +79,7 @@
             }
         },
         {
-            "filename": "pistol_6.png",
+            "filename": "pistol_Shoot_6",
             "frame": {
                 "w": 122,
                 "h": 162,
@@ -92,7 +92,7 @@
             }
         },
         {
-            "filename": "pistol_7.png",
+            "filename": "pistol_Shoot_7",
             "frame": {
                 "w": 114,
                 "h": 124,
