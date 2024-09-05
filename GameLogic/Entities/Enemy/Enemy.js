@@ -55,7 +55,7 @@ class Enemy extends Living{
     }
 
     checkTargetInSight(){
-        this.targetInSight = this.getDistanceToTarget() < this.getRaycaster().calculateRayData().distance[0];
+        this.targetInSight = this.getDistanceToTarget() < this.getRaycaster().calculateRayData().distances[0];
     }
     
     /**

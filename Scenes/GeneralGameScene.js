@@ -19,13 +19,15 @@ class GeneralGameScene extends Phaser.Scene{
             size: 32,
             amount: 25,
             generate: true,
-            random: true
+            random: true,
+            generalSizeMultiplier: 2
         };
 
         const shotgun = {
             name: "shotgun",
             fireRate: 60, //RPM
-            ammoAmount: 30,
+            ammoAmount: 15,
+            maxAmmoAmount: 60,
             bulletConfig:{
                 name: "bullet",
                 damage: 80,
@@ -44,7 +46,8 @@ class GeneralGameScene extends Phaser.Scene{
         const pistol = {
             name: "pistol",
             fireRate: 200, //RPM
-            ammoAmount: 60,
+            ammoAmount: 30,
+            maxAmmoAmount: 80,
             bulletConfig:{
                 name: "bullet",
                 damage: 40,
@@ -125,8 +128,8 @@ class GeneralGameScene extends Phaser.Scene{
         this.cacodemonConfig = {
             name: "cacodemon",
             size: this.wallsConfig.size*2,
-            zPosition: 3,
-            height: 2,
+            zPosition: 1,
+            height: 1,
             scaleFactor: 500,
             mass: 300,
             defaultVelocity: 150,
@@ -164,6 +167,10 @@ class GeneralGameScene extends Phaser.Scene{
 
         this.load.image("small_energy_bomb", "./assets/Enemy/Cacodemon/Projectiles/Sprites/small_energy_bomb.png");
         this.load.image("energy_bomb", "./assets/Enemy/Cacodemon/Projectiles/Sprites/energy_bomb.png");
+
+        this.load.image("PistolAmmo", "./assets/Items/PistolAmmo.png");
+        this.load.image("ShotgunAmmo", "./assets/Items/ShotgunAmmo.png");
+        this.load.image("MedPack", "./assets/Items/MedPack.png");
 
         this.loadAnimations("cacodemon", "./assets/Enemy/Cacodemon/Animations/", this.cacodemonConfig.animations);
 

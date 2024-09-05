@@ -20,7 +20,6 @@ class Rays{
             this.scene.physics.add.existing(this.rays[i], false);
             this.rays[i].body.setAllowRotation(true);
             this.rays[i].body.setSize(emitter.config.size, emitter.config.size, true);
-            this.rays[i].body.setCollideWorldBounds(true);
         }
     }
 

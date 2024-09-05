@@ -187,20 +187,4 @@
             this.weaponManager.switchWeapons();
         }
     }
-
-    /**
-     * Allows the player to reload the current weapon.
-     */
-    reload(){
-        if(this.controls.r.isDown){
-            this.getCurrentWeapon().getProjectiles().createMultiple({
-                    key: "bullet",
-                    max: 10,
-                    quantity: 10,
-                    active: false,
-                    visible: false
-            });
-            this.getHUD().setHUDElementValue("ammo", this.getCurrentWeapon().getProjectiles().countActive(false), false);
-        }
-    }
 }

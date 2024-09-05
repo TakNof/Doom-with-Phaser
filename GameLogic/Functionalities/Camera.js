@@ -13,11 +13,12 @@ class Camera{
         this.config = config;
         this.owner = owner;
 
-        this.graphicator = new Graphicator(scene3D, owner.config.size, this.config);
+        this.graphicator = new Graphicator(scene3D, scene2D.wallsConfig.size, this.config);
     }
 
     setWorldElements(){
         this.worldElements = this.scene2D.children.list.filter(obj => obj instanceof Enemy);
+        this.worldElements = [...this.worldElements, ...this.scene2D.children.list.filter(obj => obj instanceof Item)];
         this.hud = new HUD(this.scene3D, this.worldElements);
     }
 
@@ -45,7 +46,7 @@ class Camera{
      */
     draw3DWorld(){
         this.setArcAngles();
-        this.graphicator.redraw3DScaling(this.owner.getRaycaster().calculateRayData().distance, this.owner.getRaycaster().calculateRayData().typeOfHit);
+        this.graphicator.redraw3DScaling(this.owner.getRaycaster().calculateRayData());
         this.draw3DWorldElements();
     }
 
@@ -56,6 +57,10 @@ class Camera{
             if (element instanceof Enemy) {
                 this.drawEnemy(element, distance, angle);
                 this.drawActiveProjectiles(element);
+            }
+
+            if(element instanceof Item){
+                this.drawElement(element, distance, angle, element.item3D, {height: 1, zPosition: 0, scaleFactor: 100})
             }
         }
     }

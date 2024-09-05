@@ -36,19 +36,19 @@ class Weapon extends Entity{
                 bullet.setPosition(this.owner.getPositionX(), this.owner.getPositionY());
                 bullet.addForce(this.owner.getUnitaryComponents(this.owner.config.angleOffset));
 
+                this.scene.cameras.main.shake(200, 0.005);
                 this.play(this.getSpriteAnimations("Shoot"));
+                this.getSpriteSounds("Shoot").playSound();
 
                 this.scene.time.delayedCall(10*1000, ()=>{
                     if(bullet.active){
-                        this.bullets.killAndHide(bullet);
+                        bullet.setVisible(false);
                         bullet.setVelocity(0);
                         bullet.setPosition(-100, -100);
                         console.log("Bullet fly time exceeded");
                     };
                 });
             }
-            this.scene.cameras.main.shake(100, 0.005);
-            this.getSpriteSounds("Shoot").playSound();
         }
     }
 

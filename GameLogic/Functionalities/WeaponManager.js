@@ -91,4 +91,13 @@ class WeaponManager{
             this.currentWeapon.enable();
         }
     }
+
+    reloadWeapon(weapon, amount){
+        let reloadValue = Math.min(weapon.config.maxAmmoAmount, amount);
+
+        let activeBullets = weapon.bullets.getChildren().filter(projectile => projectile.active);
+        for(let i = 0; i < reloadValue && i < activeBullets.length; i++){
+            activeBullets[i].setActive(false);
+        }
+    }
 }

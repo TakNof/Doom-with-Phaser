@@ -13,16 +13,33 @@ class Game2D extends GeneralGameScene{
         this.physics.world.setBounds(0, 0, canvasSize.width, canvasSize.height);
 
         //Creating the grid.
-        this.grid = this.add.grid(0, 0, canvasSize.width*2, canvasSize.height*2, 32, 32, 0x00b9f2).setAltFillStyle(0x016fce).setOutlineStyle();
+        this.grid = this.add.grid(0, 0, canvasSize.width*this.wallsConfig.generalSizeMultiplier*2, canvasSize.height*this.wallsConfig.generalSizeMultiplier*2, 32, 32, 0x00b9f2).setAltFillStyle(0x016fce).setOutlineStyle();
+
+        this.items = {};
 
         //Here we create the walls of the map.
         this.walls = new WallsBuilder(this, this.wallsConfig);
         //Here we create the player.
         this.player = new Player(this, game3D, {x: 0, y: 0}, this.playerConfig);
         
+        this.cameras.main.startFollow(this.player, true, 0.1, 0.1);
+        this.cameras.main.setScroll(0, 0);
+
         this.cacodemons = new EnemyGroup(this, game3D, 10, 15, this.cacodemonConfig);
 
         this.player.setWeaponManager();
+
+        let weapons = this.playerConfig.weaponsConfig.list;
+
+        for(let weapon of weapons){
+            let fixedName = `${weapon.name}Ammo`;
+            fixedName = fixedName.charAt(0).toUpperCase() + fixedName.slice(1);
+            this.items[fixedName] = new ItemGroup(this, game3D, fixedName, 10);
+        }
+
+        this.items["MedPack"] = new ItemGroup(this, game3D, "MedPack", 10);
+
+        //TODO: Make configuration for the items to simplify processes.
 
         //We load those elements to the walls object.
         this.walls.setColliders(this.player.colliderElements(), this.cacodemons.groupCollidersElements());
@@ -37,10 +54,15 @@ class Game2D extends GeneralGameScene{
 
         this.player.getCamera().setWorldElements();
         this.fpscounter = new HUDText(game3D, 0, 0, "", this.player.getCamera().hud.style, 1000, {both: 0});
+        this.ammoCounter = this.player.camera.hud.setHUDElementValue("ammo", this.player.weaponManager.getCurrentWeapon().bullets.countActive(false), false);
+        this.healthCounter = this.player.camera.hud.setHUDElementValue("health", this.player.getHealth(), true, "%");
     }
 
     update(time, delta){
         this.fpscounter.setText((1000/delta).toFixed(1));
+        this.ammoCounter = this.player.camera.hud.setHUDElementValue("ammo", this.player.weaponManager.getCurrentWeapon().bullets.countActive(false), false);
+        this.healthCounter = this.player.camera.hud.setHUDElementValue("health", this.player.getHealth(), true, "%");
+
         //The basic movement of the player.
         if(this.player.isAlive){
             this.player.update();

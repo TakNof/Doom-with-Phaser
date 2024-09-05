@@ -10,6 +10,7 @@ class Projectile extends Entity{
         super(scene, {x: x, y: y}, key);
         this.scene.physics.add.existing(this, false);
         this.body.setAllowRotation(true);
+        this.body.onCollide = false;
     }
 
     /**
@@ -35,6 +36,7 @@ class Projectile extends Entity{
         this.setVisible(true);
         this.setOwnSize(12);
         let angle = Phaser.Math.RadToDeg(Math.atan(directionComponents.y/directionComponents.x));
+        this.body.onCollide = true;
         // this.disableBody(false);
         this.setAngle(angle);
         this.setVelocityX(directionComponents.x * this.config.velocity);
@@ -52,11 +54,11 @@ class Projectile extends Entity{
 class ProjectileGroup extends Phaser.Physics.Arcade.Group{
     /**
      * 
-     * @param {*} scene 
-     * @param {*} key 
-     * @param {*} maxAmount
-     * @param {*} bulletDetectionElements
-     * @param {*} config 
+     * @param {Phaser.Scene} scene 
+     * @param {Object} owner
+     * @param {Number} maxAmount
+     * @param {Array<Phaser.Sprite>} bulletDetectionElements
+     * @param {JSON} config 
      */
     constructor(scene, owner, bulletDetectionElements, maxAmount, config){
         super(scene.physics.world, scene);
@@ -100,15 +102,15 @@ class ProjectileGroup extends Phaser.Physics.Arcade.Group{
                 // console.log(`Collision detected: ${bullet.texture.key} collided with ${collidedObject.texture.key}`);
                 bullet.setVelocity(0);
                 bullet.setPosition(-100, -100);
-                bullet.body.onOverlap = false;
+                bullet.body.onCollide = false;
 
                 if(bullet.projectile3D){
                     const {projectile3D} = bullet;
                     projectile3D.setActive(false);
                     projectile3D.setVisible(false);
                 }
-                this.killAndHide(bullet);
                 
+                bullet.setVisible(false);
         
                 let enemyShotPlayer = owner instanceof Enemy && collidedObject instanceof Player;
                 let playerShotEnemy = owner instanceof Player && collidedObject instanceof Enemy;
@@ -120,6 +122,10 @@ class ProjectileGroup extends Phaser.Physics.Arcade.Group{
                         if(playerShotEnemy) collidedObject.getStateMachine().transitionToState("Damaged");
                         if(enemyShotPlayer) collidedObject.getSpriteSounds("Damaged").playSound();
                         collidedObject.decreaseHealthBy(bullet.config.damage);
+                    }
+
+                    if(enemyShotPlayer){
+                        collidedObject.camera.hud.displayHurtRedScreen();
                     }
                 }
 

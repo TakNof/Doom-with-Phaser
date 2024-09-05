@@ -60,11 +60,11 @@ const cacodemon = {
 
 let options = {
     quality: {
-        setting: 1,
+        setting: 3,
         value: 64
     },
     renderDistance: {
-        setting: 1,
+        setting: 3,
         value: 40
     },
     difficulty: {

@@ -466,31 +466,42 @@ class CacodemonDeadState extends EnemyState{
         enemy.getSpriteSounds(this.stateKey).playSound(enemy);
 
         //itemDropLogic
-        // if(Phaser.Math.Between(1, 2) == 1){
-        //     let itemIsMilk = Phaser.Math.Between(1, 3) < 2;
-
-        //     let item;
-        //     if(itemIsMilk){
-        //         item = enemy.scene.milks.get();
-        //     }else{
-        //         item = enemy.scene.cookies.get();
-        //     }
-
-        //     if(item){
-        //         item.setActive(true);
-        //         item.setVisible(true);
+        let spawnItem = Phaser.Math.Between(1, 3) == 1;
+        
+        if(spawnItem){
+            let itemToSpawn = Phaser.Math.Between(1,3);
                 
-        //         item.x = enemy.x;
-        //         item.y = enemy.y;
-        //     }
-            
-        // }
+            switch (itemToSpawn) {
+                case 1:
+                    itemToSpawn = "PistolAmmo";
+                break;
+                
+                case 2:
+                    itemToSpawn = "ShotgunAmmo";
+                break;
+
+                case 3:
+                    itemToSpawn = "MedPack";
+                break;
+            }
+
+            let item = enemy.scene.items[itemToSpawn].getFirstDead();
+            if(item){
+                item.setActive(true);
+                item.setVisible(true);
+                item.body.onCollide = true;
+                
+                item.x = enemy.x;
+                item.y = enemy.y;
+            }
+        }
+
         enemy.disableBody(true);
         setTimeout(() => {
             enemy3D.getScene().tweens.add({
                 targets: enemy3D,
                 alpha: 0,
-                duration: 5000,
+                duration: 1000,
                 ease: "Cubic",
                 onComplete: () => {
                     enemy.disable();
@@ -498,7 +509,7 @@ class CacodemonDeadState extends EnemyState{
                     enemy.getPathFinder().clearPath();
                 },
             });
-        }, 1000);
+        }, 200);
     }
 
     updateState(){
