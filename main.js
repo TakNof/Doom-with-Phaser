@@ -5,7 +5,7 @@ let config = {
     physics:{
         default: "arcade",
         arcade: {
-            debug: false
+                debug: false
         }
     },
     width: canvasSize.width,

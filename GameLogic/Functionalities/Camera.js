@@ -12,8 +12,9 @@ class Camera{
         this.scene3D = scene3D;
         this.config = config;
         this.owner = owner;
+        this.blocksize = scene2D.wallsConfig.size;
 
-        this.graphicator = new Graphicator(scene3D, scene2D.wallsConfig.size, this.config);
+        this.graphicator = new Graphicator(scene3D, this.blocksize, this.config);
     }
 
     setWorldElements(){
@@ -56,11 +57,13 @@ class Camera{
     
             if (element instanceof Enemy) {
                 this.drawEnemy(element, distance, angle);
-                this.drawActiveProjectiles(element);
+                if(element.config.bulletConfig.make3D){
+                    this.drawActiveProjectiles(element);
+                }
             }
 
             if(element instanceof Item){
-                this.drawElement(element, distance, angle, element.item3D, {height: 1, zPosition: 0, scaleFactor: 100})
+                this.drawElement(element, distance, angle, element.item3D, {height: 1, zPosition: 0})
             }
         }
     }
@@ -79,12 +82,12 @@ class Camera{
             return;
         }
     
-        const { height, zPosition, scaleFactor } = config;
+        const {height, zPosition} = config;
     
         element3D.visible = true;
         element3D.setPositionX(this.drawElementByOwnerPov(angle));
-        element3D.setPositionY(this.graphicator.placeElementHeightProjection(distance, height, zPosition));
-        element3D.setScale(scaleFactor / distance);
+        element3D.setPositionY(this.graphicator.placeElementHeightProjection(distance, element.height/this.blocksize, zPosition) + canvasSize.height/2);
+        element3D.setScale(this.config.fov*element.height/(this.config.fov + distance));
         element3D.setDepth(1000 - (distance / 10).toFixed(0));
     }
     

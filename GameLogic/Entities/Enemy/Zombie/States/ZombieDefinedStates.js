@@ -1,4 +1,4 @@
-class CacodemonIdleState extends EnemyState{
+class ZombieIdleState extends EnemyState{
     /**
      * 
      * @param {Enemy} enemy The object which will provide the context for the enemy states.
@@ -9,6 +9,7 @@ class CacodemonIdleState extends EnemyState{
     }
 
     enterState(){
+        this.enemy.getSpriteSounds( this.stateKey).playSound();
         this.timeout = this.enemy.getScene().time.delayedCall(Phaser.Math.Between(2, 3)*1000, () =>{
             this.enemy.getStateMachine().transitionToState("Patrol");
         });
@@ -16,7 +17,6 @@ class CacodemonIdleState extends EnemyState{
 
     updateState(){
         this.enemy.setVelocityX(0);
-        // this.enemy.play(this.enemy.getSpriteAnimations("Idle"), true);
         
         if(this.enemy.targetInSight && this.enemy.getScene().player.isAlive){
             this.timeout.destroy();
@@ -52,7 +52,7 @@ class CacodemonIdleState extends EnemyState{
     onTriggerExit(other){}
 }
 
-class CacodemonPatrolState extends EnemyState{
+class ZombiePatrolState extends EnemyState{
     /**
      * 
      * @param {Enemy} enemy The object which will provide the context for the enemy states.
@@ -94,7 +94,7 @@ class CacodemonPatrolState extends EnemyState{
 
     updateState(){
         const {player} = this.enemy.scene
-        
+        this.enemy.play(this.enemy.getSpriteAnimations("Walk"), true);
         if(this.enemy.targetInSight && player.isAlive){
             this.interval.remove();
             this.timeout.destroy();
@@ -131,7 +131,7 @@ class CacodemonPatrolState extends EnemyState{
     onTriggerExit(other){}
 }
 
-class CacodemonChaseState extends EnemyState{
+class ZombieChaseState extends EnemyState{
     /**
      * 
      * @param {Enemy} enemy The object which will provide the context for the enemy states.
@@ -147,6 +147,8 @@ class CacodemonChaseState extends EnemyState{
 
     updateState(){
         const {player} = this.enemy.getScene();
+
+        this.enemy.play(this.enemy.getSpriteAnimations("Walk"), true);
 
         if(this.enemy.getDistanceToTarget() <= this.enemy.config.attackDistance && player.isAlive){
             this.enemy.getStateMachine().transitionToState("Attack");
@@ -183,7 +185,7 @@ class CacodemonChaseState extends EnemyState{
     onTriggerExit(other){}
 }
 
-class CacodemonSearchState extends EnemyState{
+class ZombieSearchState extends EnemyState{
     /**
      * 
      * @param {Enemy} enemy The object which will provide the context for the enemy states.
@@ -227,7 +229,6 @@ class CacodemonSearchState extends EnemyState{
             this.enemy.getPathFinder().reset();
                     
             this.enemy.setVelocityX(0);
-            // this.enemy.play(this.enemy.getSpriteAnimations("Idle"), true);
             
             if(!this.interval || this.interval.paused){
                 let searchStateTime = Phaser.Math.Between(4, 6)*1000;
@@ -256,6 +257,7 @@ class CacodemonSearchState extends EnemyState{
             }
 
         }else if(!this.reachedPlayerLastSeenPosition && this.enemy.getPathFinder().path){
+            this.enemy.play(this.enemy.getSpriteAnimations("Walk"), true);
             this.enemy.moveToPoint();
         }
     }
@@ -290,7 +292,7 @@ class CacodemonSearchState extends EnemyState{
     onTriggerExit(other){}
 }
 
-class CacodemonAttackState extends EnemyState{
+class ZombieAttackState extends EnemyState{
     /**
      * 
      * @param {Enemy} enemy The object which will provide the context for the enemy states.
@@ -345,7 +347,7 @@ class CacodemonAttackState extends EnemyState{
     onTriggerExit(other){}
 }
 
-class CacodemonDamagedState extends EnemyState{
+class ZombieDamagedState extends EnemyState{
     /**
      * 
      * @param {Enemy} enemy The object which will provide the context for the enemy states.
@@ -403,7 +405,7 @@ class CacodemonDamagedState extends EnemyState{
     onTriggerExit(other){}
 }
 
-class CacodemonStunnedState extends EnemyState{
+class ZombieStunnedState extends EnemyState{
     /**
      * 
      * @param {Enemy} enemy The object which will provide the context for the enemy states.
@@ -447,7 +449,7 @@ class CacodemonStunnedState extends EnemyState{
     onTriggerExit(other){}
 }
 
-class CacodemonDeadState extends EnemyState{
+class ZombieDeadState extends EnemyState{
     /**
      * 
      * @param {Enemy} enemy The object which will provide the context for the enemy states.
@@ -463,7 +465,7 @@ class CacodemonDeadState extends EnemyState{
         
         // enemy.play(enemy.getSpriteAnimations(this.stateKey));
         enemy.getSpriteSounds(this.stateKey).sound.setDetune(Phaser.Math.Between(-1,1)*100);
-        enemy.getSpriteSounds(this.stateKey).playSound(enemy);
+        enemy.getSpriteSounds(this.stateKey).playSound();
 
         //itemDropLogic
         let spawnItem = Phaser.Math.Between(1, 3) == 1;

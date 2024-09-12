@@ -54,6 +54,23 @@ class SelectDifficulty extends MenuBuilder{
                 cacodemon.bulletProperties.damage = 20;
             break;
         }
+
+        // let spriteList = ["Loki", "Hades", "Susanoo"];
+
+        // let playerOption = 1;
+
+        // gameManager.player = spriteList[playerOption]+"small";
+
+        // for(let i = 0; i < spriteList.length; i++){
+        //     if(i == playerOption){
+        //         continue;
+        //     }
+
+        //     gameManager.enemies.push(spriteList[i]);
+        // }
+
+        // console.log(gameManager.player);
+        // console.log(gameManager.enemies);
     }
 
 }

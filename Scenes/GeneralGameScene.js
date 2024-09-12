@@ -9,8 +9,9 @@ class GeneralGameScene extends Phaser.Scene{
         this.load.image("bullet", "./assets/Player/Sprites/bullet.png", {frameWidth: 12, frameHeight: 12});
 
         let controls = this.input.keyboard.createCursorKeys();
-
-        for(let key of ["w", "a", "s", "d", "r", "shift", "space", "enter", "esc"]) {
+        
+        let keys = ["w", "a", "s", "d", "r", "shift", "space", "enter", "esc"];
+        for(let key of keys) {
             controls[key] = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes[key.toUpperCase()]);
         }
 
@@ -128,11 +129,10 @@ class GeneralGameScene extends Phaser.Scene{
         this.cacodemonConfig = {
             name: "cacodemon",
             size: this.wallsConfig.size*2,
-            zPosition: 1,
+            zPosition: 6,
             height: 1,
-            scaleFactor: 500,
             mass: 300,
-            defaultVelocity: 150,
+            defaultVelocity: 120,
             angleOffset: 3*Math.PI/2,
             chaseDistance: 500,
             attackDistance: 200,
@@ -157,12 +157,62 @@ class GeneralGameScene extends Phaser.Scene{
             make3D: true,
             zPosition: this.cacodemonConfig.zPosition,
             height: 1,
-            scaleFactor: 100,
             damage: 12,
             velocity: 200,
             delay: 3000,
             critical: 1.5,
             sounds: this.loadAudios("small_energy_bomb", "./assets/Enemy/Cacodemon/Projectiles/Sounds/", energyBombSounds)
+        }};
+
+        this.load.image("zombie", "./assets/Enemy/Zombie/Sprites/zombie.png");
+
+        let zombieSounds = [
+            {name: "Idle"},
+            {name: "Attack", amount: 3},
+            {name: "Damaged"},
+            {name: "Dead", amount: 3}
+        ];
+
+        let zombieWeaponSounds = [
+            {name: "Shoot"}
+        ];
+
+        this.zombieConfig = {
+            name: "zombie",
+            size: this.wallsConfig.size*2,
+            zPosition: 0,
+            height: 1,
+            mass: 120,
+            defaultVelocity: 150,
+            angleOffset: 3*Math.PI/2,
+            chaseDistance: 500,
+            attackDistance: 400,
+            maxHealth: 120,
+            distanceLimits:{
+                min: 400,
+                max: 1000
+            },
+            rayAmount: 1,
+            rayColor: "0x000000",
+            possibleStates: ["Idle", "Patrol", "Chase", "Search", "Attack", "Damaged", "Stunned", "Dead"],
+            animations: [
+                {name: "Attack", animationParams: {end: 1, framerate: 5}},
+                {name: "Damaged", animationParams: {end: 0, framerate: 30}},
+                {name: "Walk", animationParams: {end: 3, framerate: 10}}
+            ],
+            sounds: this.loadAudios("zombie", "./assets/Enemy/Zombie/Sounds/", zombieSounds)
+        }
+
+        this.zombieConfig = {... this.zombieConfig, bulletConfig:{
+            name: "bullet",
+            make3D: false,
+            zPosition: this.zombieConfig.zPosition,
+            height: 1,
+            damage: 12,
+            velocity: 600,
+            delay: 3000,
+            critical: 1.5,
+            sounds: this.loadAudios("bullet", "./assets/Enemy/Zombie/Projectiles/Sounds/", zombieWeaponSounds)
         }};
 
         this.load.image("small_energy_bomb", "./assets/Enemy/Cacodemon/Projectiles/Sprites/small_energy_bomb.png");
@@ -173,6 +223,7 @@ class GeneralGameScene extends Phaser.Scene{
         this.load.image("MedPack", "./assets/Items/MedPack.png");
 
         this.loadAnimations("cacodemon", "./assets/Enemy/Cacodemon/Animations/", this.cacodemonConfig.animations);
+        this.loadAnimations("zombie", "./assets/Enemy/Zombie/Animations/", this.zombieConfig.animations);
 
         this.load.audio("at_dooms_gate", "assets/music/at_dooms_gate.wav");
 

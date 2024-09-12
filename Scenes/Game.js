@@ -25,7 +25,8 @@ class Game2D extends GeneralGameScene{
         this.cameras.main.startFollow(this.player, true, 0.1, 0.1);
         this.cameras.main.setScroll(0, 0);
 
-        this.cacodemons = new EnemyGroup(this, game3D, 10, 15, this.cacodemonConfig);
+        this.cacodemons = new EnemyGroup(this, game3D, 5, 15, this.cacodemonConfig);
+        this.zombies = new EnemyGroup(this, game3D, 8, 15, this.zombieConfig);
 
         this.player.setWeaponManager();
 
@@ -66,14 +67,15 @@ class Game2D extends GeneralGameScene{
         //The basic movement of the player.
         if(this.player.isAlive){
             this.player.update();
-            this.cacodemons.callAll("update");            
+            this.cacodemons.callAll("update");
+            this.zombies.callAll("update");    
         }else if(this.player.getScore() == undefined){
             this.player.setTimeAlive();
             this.player.setScore("Defeat");
             this.scene.launch("endGameMenu", {endGameState: "Defeat", score: this.player.getScore()});
         }
 
-        if(!this.cacodemons.getFirstAlive() && this.player.getScore() == undefined){
+        if(!this.cacodemons.getFirstAlive() && !this.zombies.getFirstAlive() && this.player.getScore() == undefined){
             this.player.setTimeAlive();
             this.player.setScore("Victory");
 

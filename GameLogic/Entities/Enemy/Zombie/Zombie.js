@@ -1,6 +1,6 @@
-class Cacodemon extends RangeEnemy{
+class Zombie extends RangeEnemy{
     /**
-    * The constructor of Cacodemon Class.
+    * The constructor of Zombie Class.
     * @constructor
     * @param {Phaser.Scene} scene2D The scene to place the sprite in the game.
     * @param {Phaser.Scene} scene3D The scene to place the 3D sprite in the game.
@@ -9,5 +9,12 @@ class Cacodemon extends RangeEnemy{
     */
     constructor(scene2D, scene3D, worldOriginInfo, config){
         super(scene2D, scene3D, worldOriginInfo, config);
+    }
+
+    update(){
+        super.update();
+        // this.on("animationupdate", (anim, frame) =>{
+        //     console.log(anim.key);
+        // })
     }
 } 

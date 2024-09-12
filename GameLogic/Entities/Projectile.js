@@ -99,6 +99,11 @@ class ProjectileGroup extends Phaser.Physics.Arcade.Group{
                     collidedObject = object1;
                 }
 
+                if(object2 instanceof Item){
+                    object2.body.setVelocity(0);
+                    return;
+                }
+
                 // console.log(`Collision detected: ${bullet.texture.key} collided with ${collidedObject.texture.key}`);
                 bullet.setVelocity(0);
                 bullet.setPosition(-100, -100);
@@ -130,7 +135,7 @@ class ProjectileGroup extends Phaser.Physics.Arcade.Group{
                 }
 
                 if(bullet.spriteSounds){
-                    bullet.getSpriteSounds("Explosion").playSound(bullet);
+                    bullet.getSpriteSounds("Explosion")?.playSound();
                 }
             });
         }

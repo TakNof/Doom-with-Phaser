@@ -42,7 +42,18 @@ class Entity extends Sprite{
         if(!element){
             return this.spriteSounds;
         }else{
-            return this.spriteSounds[element];
+            let filteredKeys = Object.keys(this.spriteSounds).filter(key => key.includes(element));
+
+            if (filteredKeys.length === 0) {
+                return null;
+            }
+
+            if(filteredKeys.length === 1){
+                return this.spriteSounds[element];
+            }
+        
+            let randomKey = filteredKeys[Phaser.Math.Between(0, filteredKeys.length - 1)];
+            return this.spriteSounds[randomKey];
         }
     }
 
@@ -91,7 +102,18 @@ class Entity extends Sprite{
         if(!animation){
             return this.animations;
         }else{
-            return this.animations[animation];
+            let filteredKeys = Object.keys(this.animations).filter(key => key.includes(animation));
+
+            if (filteredKeys.length === 0) {
+                return null;
+            }
+
+            if(filteredKeys.length === 1){
+                return this.animations[animation];
+            }
+        
+            let randomKey = filteredKeys[Phaser.Math.Between(0, filteredKeys.length - 1)];
+            return this.animations[randomKey];
         }
     }
   }
