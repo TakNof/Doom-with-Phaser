@@ -67,7 +67,7 @@ class Rays{
     redrawRay2D(rayDataCoordinates){
         //This method allows the recalculation of the ray coordinates and redraws it.
         for(let i = 0; i < this.emitter.config.rayAmount; i++){
-            this.rays[i].setTo(0, 0, -this.emitter.getPositionX() + rayDataCoordinates.x[i], -this.emitter.getPositionY() + rayDataCoordinates.y[i]);
+            this.rays[i].setTo(0, 0, -this.emitter.getPositionX() + rayDataCoordinates.raysHitXposition[i], -this.emitter.getPositionY() + rayDataCoordinates.raysHitYposition[i]);
         }
     }
 

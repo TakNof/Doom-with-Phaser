@@ -11,8 +11,8 @@ class Zombie extends RangeEnemy{
         super(scene2D, scene3D, worldOriginInfo, config);
     }
 
-    update(){
-        super.update();
+    update(frameFactor = 1){
+        super.update(frameFactor);
         // this.on("animationupdate", (anim, frame) =>{
         //     console.log(anim.key);
         // })

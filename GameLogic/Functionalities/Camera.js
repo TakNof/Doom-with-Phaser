@@ -47,7 +47,7 @@ class Camera{
      */
     draw3DWorld(){
         this.setArcAngles();
-        this.graphicator.redraw3DScaling(this.owner.getRaycaster().calculateRayData());
+        this.graphicator.redraw3DScaling(this.owner.getRaycaster().calculateRayData(), this.owner.getPosition());
         this.draw3DWorldElements();
     }
 
@@ -83,11 +83,11 @@ class Camera{
         }
     
         const {height, zPosition} = config;
-    
+
         element3D.visible = true;
         element3D.setPositionX(this.drawElementByOwnerPov(angle));
-        element3D.setPositionY(this.graphicator.placeElementHeightProjection(distance, element.height/this.blocksize, zPosition) + canvasSize.height/2);
-        element3D.setScale(this.config.fov*element.height/(this.config.fov + distance));
+        element3D.setPositionY(this.graphicator.placeElementVerticalOffset(distance, zPosition) + canvasSize.height/2);
+        element3D.setScale(this.graphicator.placeElementScale(distance, height, element3D.height));
         element3D.setDepth(1000 - (distance / 10).toFixed(0));
     }
     

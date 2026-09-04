@@ -28,6 +28,10 @@
         this.damageReceived = 0;
         this.lastSwitchWeaponTimer = 0;
         this.creationTime = this.getScene().time.now;
+
+        //Set every tick from Scene.update(time, delta); 1 == 60 FPS. Used to keep
+        //the per-frame turn rate (moveCamera) independent of the refresh rate.
+        this.frameFactor = 1;
     }
 
     /**
@@ -149,7 +153,8 @@
         return this.score;
     }
 
-    update(){
+    update(frameFactor = 1){
+        this.frameFactor = frameFactor;
         this.getStateMachine().update();
         this.getRaycaster().update();
         this.moveCamera();
@@ -164,13 +169,17 @@
 
             //Here we use trigonometrics to calculate the x and y component of the velocity.
             this.setXcomponent();
-            this.setYcomponent();    
-    
+            this.setYcomponent();
+
+            //Scale the per-frame turn by how long this frame lasted relative to 60 FPS
+            //so the look speed is the same on a 60Hz and a 180Hz monitor.
+            const turnStep = this.config.angleOperator * this.frameFactor;
+
             if (left.isDown || a.isDown){
-                this.setAngle(this.getAngle() - this.config.angleOperator);
+                this.setAngle(this.getAngle() - turnStep);
 
             }else if(right.isDown || d.isDown){
-                this.setAngle(this.getAngle() + this.config.angleOperator);
+                this.setAngle(this.getAngle() + turnStep);
             }
         }
     }

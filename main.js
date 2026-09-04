@@ -1,11 +1,19 @@
 const canvasSize = {width: 1024, height: 768};
 
+/**
+ * The frame duration (in ms) the game was originally tuned for (60 FPS).
+ * Per-frame values that aren't handled by Arcade Physics (which already scales
+ * velocities by delta) are multiplied by `delta / TARGET_FRAME_MS` so they behave
+ * identically regardless of the monitor's refresh rate.
+ */
+const TARGET_FRAME_MS = 1000 / 60;
+
 let config = {
     type: Phaser.AUTO,
     physics:{
         default: "arcade",
         arcade: {
-                debug: false
+            debug: true
         }
     },
     width: canvasSize.width,
@@ -20,7 +28,16 @@ const colors = {
     DarkGreen : "0x004200",
     black: "0x000000",
     crimsonRed: "0xDC143C",
-    sapphireBlue: "0x0F52BA"
+    sapphireBlue: "0x0F52BA",
+
+    // Numeric hex values (not the "0x..." strings above) - these feed Phaser
+    // fill-color APIs (Grid, Rectangle) directly, which expect plain numbers.
+    brick: 0x9c4a2e,
+    mortar: 0xcfc4b4,
+    floor: 0x4a4a4a,
+    floorAlt: 0x3a3a3a,
+    ceiling: 0x1c2b3a,
+    ceilingAlt: 0x16212c
 };
 
 const cacodemon = {
@@ -61,11 +78,11 @@ const cacodemon = {
 let options = {
     quality: {
         setting: 3,
-        value: 64
+        value: 32
     },
     renderDistance: {
         setting: 3,
-        value: 40
+        value: 100
     },
     difficulty: {
         setting: 1

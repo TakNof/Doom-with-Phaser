@@ -168,7 +168,11 @@ class Enemy extends Living{
         }
     }
 
-    update(){
+    update(frameFactor = 1){
+        //Enemy movement already goes through Arcade Physics velocities (scaled by
+        //delta) and its turning snaps to an absolute angle, so it's refresh-rate
+        //independent as-is. `frameFactor` is stored only for any future per-frame math.
+        this.frameFactor = frameFactor;
         if(this.isAlive){
             this.setDistanceToTarget();
             this.getStateMachine().update();

@@ -25,8 +25,8 @@ class Game2D extends GeneralGameScene{
         this.cameras.main.startFollow(this.player, true, 0.1, 0.1);
         this.cameras.main.setScroll(0, 0);
 
-        this.cacodemons = new EnemyGroup(this, game3D, 5, 15, this.cacodemonConfig);
-        this.zombies = new EnemyGroup(this, game3D, 8, 15, this.zombieConfig);
+        this.cacodemons = new EnemyGroup(this, game3D, 1, 15, this.cacodemonConfig);
+        this.zombies = new EnemyGroup(this, game3D, 1, 15, this.zombieConfig);
 
         this.player.setWeaponManager();
 
@@ -64,11 +64,20 @@ class Game2D extends GeneralGameScene{
         this.ammoCounter = this.player.camera.hud.setHUDElementValue("ammo", this.player.weaponManager.getCurrentWeapon().bullets.countActive(false), false);
         this.healthCounter = this.player.camera.hud.setHUDElementValue("health", this.player.getHealth(), true, "%");
 
+        //How many "60 FPS frames" this tick represents. 1 at 60Hz, ~0.33 at 180Hz.
+        //Clamped so a lag spike / alt-tab can't produce a huge instantaneous turn.
+        const frameFactor = Phaser.Math.Clamp(delta / TARGET_FRAME_MS, 0, 4);
+
+        //Keep the follow camera's smoothing frame-rate independent: applying a 0.1
+        //lerp every frame catches up 3x faster at 180Hz, so rescale it per tick.
+        const followLerp = 1 - Math.pow(1 - 0.1, frameFactor);
+        this.cameras.main.setLerp(followLerp, followLerp);
+
         //The basic movement of the player.
         if(this.player.isAlive){
-            this.player.update();
-            this.cacodemons.callAll("update");
-            this.zombies.callAll("update");    
+            this.player.update(frameFactor);
+            this.cacodemons.callAll("update", frameFactor);
+            this.zombies.callAll("update", frameFactor);
         }else if(this.player.getScore() == undefined){
             this.player.setTimeAlive();
             this.player.setScore("Defeat");
