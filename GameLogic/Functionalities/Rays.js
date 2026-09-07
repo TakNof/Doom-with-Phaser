@@ -62,12 +62,13 @@ class Rays{
     
     /**
      * This method redraws the created rays to the new coordinates given by the raycaster and the sprite's position.
-     * @param {{x: coordinatesX, y: coordinatesY}} rayDataCoordinates The rayData thrown by the raycaster to graph the rays.
+     * @param {Array<{rayHitXposition: number, rayHitYposition: number}>} rayDataCoordinates The rayData thrown by the raycaster to graph the rays.
      */
     redrawRay2D(rayDataCoordinates){
         //This method allows the recalculation of the ray coordinates and redraws it.
         for(let i = 0; i < this.emitter.config.rayAmount; i++){
-            this.rays[i].setTo(0, 0, -this.emitter.getPositionX() + rayDataCoordinates.raysHitXposition[i], -this.emitter.getPositionY() + rayDataCoordinates.raysHitYposition[i]);
+            let rayInfo = rayDataCoordinates[i];
+            this.rays[i].setTo(0, 0, -this.emitter.getPositionX() + rayInfo.rayHitXposition, -this.emitter.getPositionY() + rayInfo.rayHitYposition);
         }
     }
 

@@ -31,13 +31,18 @@ class Graphicator{
         this.pixelAmount = 32;
 
         this.texture = this.buildBrickTexture();
+        this.floorCeilingTexture = this.buildFloorCeilingTexture();
 
         // Floor/ceiling are cast per-column, just like walls, using their own bands (see
-        // castFloorOrCeiling) instead of a flat, camera-independent backdrop.
-        this.floorPixelAmount = 6;
-        this.ceilingPixelAmount = 6;
-        this.floorPixels = Array(rectanglesAmount);
-        this.ceilingPixels = Array(rectanglesAmount);
+        // castFloorOrCeiling). They're grouped into containers ("vertical lines") the same
+        // way wall columns are, and kept at the lowest depth on purpose: a container has a
+        // single depth relative to other display objects, so individual bands can no longer
+        // be interleaved against sprites at their own per-band distance - pinning floor/ceiling
+        // to the back avoids that ordering problem entirely instead of getting it wrong.
+        this.floorPixelAmount = 32;
+        this.ceilingPixelAmount = 32;
+        this.floorLines = Array(rectanglesAmount);
+        this.ceilingLines = Array(rectanglesAmount);
 
         for(let i = 0; i < rectanglesAmount; i++){
             let fixedXPosition = this.rectanglesWidth*(i + 0.5);
@@ -57,20 +62,20 @@ class Graphicator{
                 pixelAux += pixelStep;
             }
 
-            // Floor/ceiling bands are top-level rectangles rather than container children,
-            // because (unlike a wall column's texture rows, which all sit at the same distance)
-            // each band is at its own distance and needs its own depth to sort correctly
-            // against other columns' walls and sprites.
-            this.floorPixels[i] = Array(this.floorPixelAmount);
+            this.floorLines[i] = this.scene.add.container(fixedXPosition, 0);
+            this.floorLines[i].setDepth(0);
             for(let f = 0; f < this.floorPixelAmount; f++){
-                this.floorPixels[i][f] = this.scene.add.rectangle(fixedXPosition, fixedYPosition, this.rectanglesWidth, 1, colors.floor);
+                let pixel = this.scene.add.rectangle(0, fixedYPosition, this.rectanglesWidth, 1, colors.floor);
+                this.floorLines[i].add(pixel);
             }
 
-            this.ceilingPixels[i] = Array(this.ceilingPixelAmount);
+            this.ceilingLines[i] = this.scene.add.container(fixedXPosition, 0);
+            this.ceilingLines[i].setDepth(0);
             for(let c = 0; c < this.ceilingPixelAmount; c++){
-                this.ceilingPixels[i][c] = this.scene.add.rectangle(fixedXPosition, fixedYPosition, this.rectanglesWidth, 1, colors.ceiling);
+                let pixel = this.scene.add.rectangle(0, fixedYPosition, this.rectanglesWidth, 1, colors.ceiling);
+                this.ceilingLines[i].add(pixel);
             }
-        }
+        }   
     }
 
     /**
@@ -82,64 +87,92 @@ class Graphicator{
      * @returns {Array<number>} A flat 0/1 array, 1 = mortar, 0 = brick body.
      */
     buildBrickTexture(){
-        // const size = this.blockSize;
-        // const rowsSampled = this.pixelAmount;
-        // const rowStride = size/rowsSampled;
-
-        // const brickWidth = 8;
-        // const courseHeight = 4;
-
-        // const texture = new Array(size*size);
-
-        // for(let row = 0; row < size; row++){
-        //     const sampledRow = Math.floor(row/rowStride);
-        //     const rowInCourse = sampledRow % courseHeight;
-        //     const course = Math.floor(sampledRow/courseHeight);
-        //     const offset = (course % 2 === 0) ? 0 : brickWidth/2;
-        //     const isMortarRow = rowInCourse === 0;
-
-        //     for(let col = 0; col < size; col++){
-        //         const isMortarJoint = (col + offset) % brickWidth === brickWidth - 1;
-        //         texture[row*size + col] = (isMortarRow || isMortarJoint) ? 1 : 0;
-        //     }
-        // }
-
         const texture = [
-            0,0,0,0,0,0,0,0, 1,1,1,1,1,1,1,1, 0,0,0,0,0,0,0,0, 1,1,1,1,1,1,1,1,
-            0,0,0,0,1,0,0,0, 1,1,1,1,1,1,1,1, 0,0,0,0,0,0,0,0, 1,1,1,1,1,1,1,1,
-            0,1,1,1,1,1,0,0, 1,1,1,1,1,1,1,1, 0,0,0,0,0,0,0,0, 1,1,1,1,1,1,1,1,
-            0,1,1,1,1,1,1,0, 1,1,1,1,1,1,1,1, 0,0,0,0,0,0,0,0, 1,1,1,1,1,1,1,1,
-            0,1,1,1,1,1,0,0, 1,1,1,1,1,1,1,1, 0,0,0,0,0,0,0,0, 1,1,1,1,1,1,1,1,
-            0,0,0,0,1,1,0,0, 1,1,1,1,1,1,1,1, 0,0,0,0,0,0,0,0, 1,1,1,1,1,1,1,1,
-            0,0,0,0,1,0,0,0, 1,1,1,1,1,1,1,1, 0,0,0,0,0,0,0,0, 1,1,1,1,1,1,1,1,
-            0,0,0,0,0,0,0,0, 1,1,1,1,1,1,1,1, 0,0,0,0,0,0,0,0, 1,1,1,1,1,1,1,1,
+            1,1,1,1,1,1,1,1, 1,1,1,1,1,1,1,1, 1,1,1,1,1,1,1,1, 1,1,1,1,1,1,1,1,
+            0,0,0,0,0,0,0,1, 1,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,1, 1,0,0,0,0,0,0,0,
+            0,0,0,0,1,0,0,1, 1,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,1, 1,0,0,0,0,0,0,0,
+            0,0,1,1,1,1,0,1, 1,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,1, 1,0,0,0,0,0,0,0,
+            0,0,0,1,1,0,0,1, 1,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,1, 1,0,0,0,0,0,0,0,
+            0,0,0,0,1,0,0,1, 1,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,1, 1,0,0,0,0,0,0,0,
+            0,0,0,0,0,0,0,1, 1,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,1, 1,0,0,0,0,0,0,0,
+            1,1,1,1,1,1,1,1, 1,1,1,1,1,1,1,1, 1,1,1,1,1,1,1,1, 1,1,1,1,1,1,1,1,
 
-            1,1,1,1,1,1,1,1, 0,0,0,0,0,0,0,0, 1,1,1,1,1,1,1,1, 0,0,0,0,0,0,0,0,
-            1,1,1,1,1,1,1,1, 0,0,0,0,0,0,0,0, 1,1,1,1,1,1,1,1, 0,0,0,0,0,0,0,0,
-            1,1,1,1,1,1,1,1, 0,0,0,0,0,0,0,0, 1,1,1,1,1,1,1,1, 0,0,0,0,0,0,0,0,
-            1,1,1,1,1,1,1,1, 0,0,0,0,0,0,0,0, 1,1,1,1,1,1,1,1, 0,0,0,0,0,0,0,0,
-            1,1,1,1,1,1,1,1, 0,0,0,0,0,0,0,0, 1,1,1,1,1,1,1,1, 0,0,0,0,0,0,0,0,
-            1,1,1,1,1,1,1,1, 0,0,0,0,0,0,0,0, 1,1,1,1,1,1,1,1, 0,0,0,0,0,0,0,0,
-            1,1,1,1,1,1,1,1, 0,0,0,0,0,0,0,0, 1,1,1,1,1,1,1,1, 0,0,0,0,0,0,0,0,
-            1,1,1,1,1,1,1,1, 0,0,0,0,0,0,0,0, 1,1,1,1,1,1,1,1, 0,0,0,0,0,0,0,0,
+            1,1,1,1,1,1,1,1, 1,1,1,1,1,1,1,1, 1,1,1,1,1,1,1,1, 1,1,1,1,1,1,1,1,
+            1,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,1, 1,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,1,
+            1,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,1, 1,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,1,
+            1,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,1, 1,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,1,
+            1,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,1, 1,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,1,
+            1,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,1, 1,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,1,
+            1,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,1, 1,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,1,
+            1,1,1,1,1,1,1,1, 1,1,1,1,1,1,1,1, 1,1,1,1,1,1,1,1, 1,1,1,1,1,1,1,1,
             
-            0,0,0,0,0,0,0,0, 1,1,1,1,1,1,1,1, 0,0,0,0,0,0,0,0, 1,1,1,1,1,1,1,1,
-            0,0,0,0,0,0,0,0, 1,1,1,1,1,1,1,1, 0,0,0,0,0,0,0,0, 1,1,1,1,1,1,1,1,
-            0,0,0,0,0,0,0,0, 1,1,1,1,1,1,1,1, 0,0,0,0,0,0,0,0, 1,1,1,1,1,1,1,1,
-            0,0,0,0,0,0,0,0, 1,1,1,1,1,1,1,1, 0,0,0,0,0,0,0,0, 1,1,1,1,1,1,1,1,
-            0,0,0,0,0,0,0,0, 1,1,1,1,1,1,1,1, 0,0,0,0,0,0,0,0, 1,1,1,1,1,1,1,1,
-            0,0,0,0,0,0,0,0, 1,1,1,1,1,1,1,1, 0,0,0,0,0,0,0,0, 1,1,1,1,1,1,1,1,
-            0,0,0,0,0,0,0,0, 1,1,1,1,1,1,1,1, 0,0,0,0,0,0,0,0, 1,1,1,1,1,1,1,1,
-            0,0,0,0,0,0,0,0, 1,1,1,1,1,1,1,1, 0,0,0,0,0,0,0,0, 1,1,1,1,1,1,1,1,
+            1,1,1,1,1,1,1,1, 1,1,1,1,1,1,1,1, 1,1,1,1,1,1,1,1, 1,1,1,1,1,1,1,1,
+            0,0,0,0,0,0,0,1, 1,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,1, 1,0,0,0,0,0,0,0,
+            0,0,0,0,0,0,0,1, 1,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,1, 1,0,0,0,0,0,0,0,
+            0,0,0,0,0,0,0,1, 1,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,1, 1,0,0,0,0,0,0,0,
+            0,0,0,0,0,0,0,1, 1,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,1, 1,0,0,0,0,0,0,0,
+            0,0,0,0,0,0,0,1, 1,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,1, 1,0,0,0,0,0,0,0,
+            0,0,0,0,0,0,0,1, 1,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,1, 1,0,0,0,0,0,0,0,
+            1,1,1,1,1,1,1,1, 1,1,1,1,1,1,1,1, 1,1,1,1,1,1,1,1, 1,1,1,1,1,1,1,1,
 
-            1,1,1,1,1,1,1,1, 0,0,0,0,0,0,0,0, 1,1,1,1,1,1,1,1, 0,0,0,0,0,0,0,0,
-            1,1,1,1,1,1,1,1, 0,0,0,0,0,0,0,0, 1,1,1,1,1,1,1,1, 0,0,0,0,0,0,0,0,
-            1,1,1,1,1,1,1,1, 0,0,0,0,0,0,0,0, 1,1,1,1,1,1,1,1, 0,0,0,0,0,0,0,0,
-            1,1,1,1,1,1,1,1, 0,0,0,0,0,0,0,0, 1,1,1,1,1,1,1,1, 0,0,0,0,0,0,0,0,
-            1,1,1,1,1,1,1,1, 0,0,0,0,0,0,0,0, 1,1,1,1,1,1,1,1, 0,0,0,0,0,0,0,0,
-            1,1,1,1,1,1,1,1, 0,0,0,0,0,0,0,0, 1,1,1,1,1,1,1,1, 0,0,0,0,0,0,0,0,
-            1,1,1,1,1,1,1,1, 0,0,0,0,0,0,0,0, 1,1,1,1,1,1,1,1, 0,0,0,0,0,0,0,0,
-            1,1,1,1,1,1,1,1, 0,0,0,0,0,0,0,0, 1,1,1,1,1,1,1,1, 0,0,0,0,0,0,0,0,
+            1,1,1,1,1,1,1,1, 1,1,1,1,1,1,1,1, 1,1,1,1,1,1,1,1, 1,1,1,1,1,1,1,1,
+            1,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,1, 1,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,1,
+            1,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,1, 1,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,1,
+            1,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,1, 1,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,1,
+            1,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,1, 1,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,1,
+            1,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,1, 1,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,1,
+            1,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,1, 1,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,1,
+            1,1,1,1,1,1,1,1, 1,1,1,1,1,1,1,1, 1,1,1,1,1,1,1,1, 1,1,1,1,1,1,1,1,
+        ]
+
+        return texture;
+    }
+
+    /**
+     * Builds a simple tiled grout pattern shared by the floor and ceiling: a this.blockSize by
+     * this.blockSize 0/1 grid with a grout line along one edge of each tile (row 0 and column 0).
+     * Sampled with a world coordinate wrapped modulo this.blockSize (see castFloorOrCeiling), that
+     * single edge repeats into a full grid of tile borders, the same way a single brick course
+     * repeats into the full wall texture.
+     * @returns {Array<number>} A flat 0/1 array, 1 = grout line, 0 = tile body.
+     */
+    buildFloorCeilingTexture(){
+        const texture = [
+            1,1,1,1,1,1,1,1, 1,1,1,1,1,1,1,1, 1,1,1,1,1,1,1,1, 1,1,1,1,1,1,1,1,
+            0,0,0,0,0,0,0,1, 1,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,1, 1,0,0,0,0,0,0,0,
+            0,0,0,0,1,0,0,1, 1,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,1, 1,0,0,0,0,0,0,0,
+            0,0,1,1,1,1,0,1, 1,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,1, 1,0,0,0,0,0,0,0,
+            0,0,0,1,1,0,0,1, 1,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,1, 1,0,0,0,0,0,0,0,
+            0,0,0,0,1,0,0,1, 1,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,1, 1,0,0,0,0,0,0,0,
+            0,0,0,0,0,0,0,1, 1,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,1, 1,0,0,0,0,0,0,0,
+            1,1,1,1,1,1,1,1, 1,1,1,1,1,1,1,1, 1,1,1,1,1,1,1,1, 1,1,1,1,1,1,1,1,
+
+            1,1,1,1,1,1,1,1, 1,1,1,1,1,1,1,1, 1,1,1,1,1,1,1,1, 1,1,1,1,1,1,1,1,
+            1,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,1, 1,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,1,
+            1,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,1, 1,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,1,
+            1,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,1, 1,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,1,
+            1,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,1, 1,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,1,
+            1,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,1, 1,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,1,
+            1,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,1, 1,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,1,
+            1,1,1,1,1,1,1,1, 1,1,1,1,1,1,1,1, 1,1,1,1,1,1,1,1, 1,1,1,1,1,1,1,1,
+            
+            1,1,1,1,1,1,1,1, 1,1,1,1,1,1,1,1, 1,1,1,1,1,1,1,1, 1,1,1,1,1,1,1,1,
+            0,0,0,0,0,0,0,1, 1,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,1, 1,0,0,0,0,0,0,0,
+            0,0,0,0,0,0,0,1, 1,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,1, 1,0,0,0,0,0,0,0,
+            0,0,0,0,0,0,0,1, 1,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,1, 1,0,0,0,0,0,0,0,
+            0,0,0,0,0,0,0,1, 1,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,1, 1,0,0,0,0,0,0,0,
+            0,0,0,0,0,0,0,1, 1,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,1, 1,0,0,0,0,0,0,0,
+            0,0,0,0,0,0,0,1, 1,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,1, 1,0,0,0,0,0,0,0,
+            1,1,1,1,1,1,1,1, 1,1,1,1,1,1,1,1, 1,1,1,1,1,1,1,1, 1,1,1,1,1,1,1,1,
+
+            1,1,1,1,1,1,1,1, 1,1,1,1,1,1,1,1, 1,1,1,1,1,1,1,1, 1,1,1,1,1,1,1,1,
+            1,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,1, 1,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,1,
+            1,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,1, 1,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,1,
+            1,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,1, 1,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,1,
+            1,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,1, 1,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,1,
+            1,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,1, 1,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,1,
+            1,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,1, 1,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,1,
+            1,1,1,1,1,1,1,1, 1,1,1,1,1,1,1,1, 1,1,1,1,1,1,1,1, 1,1,1,1,1,1,1,1,
         ]
 
         return texture;
@@ -148,66 +181,61 @@ class Graphicator{
     /**
      * This method redraws the size of the created rectangles acording to the distance given by the raycaster,
      * and casts that same ray's floor and ceiling bands.
-     * @param {{x: Array<number>, y: Array<number>, angles: Array<number>, rayAngles: Array<number>, distances: Array<number>, typeOfHit: Array<string>}} raycasterData The per-ray data from the raycaster.
+     * @param {Array<{rayHitXposition: number, rayHitYposition: number, angle: number, rayAngle: number, distance: number, typeOfHit: string}>} raycasterData The per-ray data from the raycaster.
      * @param {{x: Number, y: Number}} emitterPosition The world position of the camera owner (the player), used to cast the floor/ceiling.
+     * @param {Number} emitterAngle The camera owner's facing angle (radians), i.e. the raycaster's center ray - used to derive the floor/ceiling fisheye correction directly, the same way the reference row-caster computes cos(playerAngle - rayAngle).
      */
-    redraw3DScaling(raycasterData, emitterPosition) {
+    redraw3DScaling(raycasterData, emitterPosition, emitterAngle) {
         const horizon = canvasSize.height/2;
         const eyeHeightPx = this.config.zPosition*this.blockSize;
 
         for(let i = 0; i < this.verticalLines.length; i++){
-            let verticalLineHeight = this.placeElementHeightProjection(raycasterData.distances[i], this.rectanglesWorldHeight, this.rectanglesWorldzPosition);
+            let rayInfo = raycasterData[i];
+            let currentVerticalLine = this.verticalLines[i];
+            let verticalLineHeight = this.placeElementHeightProjection(rayInfo.distance, this.rectanglesWorldHeight, this.rectanglesWorldzPosition);
             let pixelHeight = verticalLineHeight/this.pixelAmount;
 
-            let shade = raycasterData.typeOfHit[i] === "v" ? 1: 0.8;
+            let shade = rayInfo.typeOfHit === "v" ? 1: 0.8;
 
             let pixelStep = this.blockSize/this.pixelAmount;
             let currentTextureRow = 0;
 
-            // The texture's horizontal (U) coordinate has to come from whichever world axis
-            // actually varies along the hit wall's face, not always X: a "v" hit crossed a
-            // vertical grid line (wall face runs along Y, so Y is what changes as you scan
-            // across it); an "h" hit crossed a horizontal grid line (wall face runs along X).
-            // Always sampling X regardless of hit type is why a "v" wall's texture used to barely
-            // move between columns - X stays nearly constant along that wall's own face.
-            // Math.floor (not Math.ceil) here: a texel index is "which cell does this continuous
-            // coordinate fall inside," which is the floor of it. Math.ceil rounds a position that's
-            // fractionally almost at a block boundary (e.g. 31.9998, a float artifact of a hit that's
-            // really still in the current block) up to 32, which then wraps to column 0 - jumping to
-            // the START of the texture instead of landing on its last column (31), right at the point
-            // where a wall segment visually ends.
             let texturePixelXcounter;
-            if(raycasterData.typeOfHit[i] === "v"){
-                texturePixelXcounter = Math.floor(raycasterData.raysHitYposition[i])%this.blockSize;
-                if(raycasterData.angles[i] > Math.PI/2 && raycasterData.angles[i] < 3*Math.PI/2){
+            if(rayInfo.typeOfHit === "v"){
+                texturePixelXcounter = Math.floor(rayInfo.rayHitYposition)%this.blockSize;
+                if(rayInfo.rayAngle > Math.PI/2 && rayInfo.rayAngle < 3*Math.PI/2){
                     texturePixelXcounter = this.blockSize - 1 - texturePixelXcounter;
                 }
             }else{
-                texturePixelXcounter = Math.floor(raycasterData.raysHitXposition[i])%this.blockSize;
-                if(raycasterData.angles[i] > Math.PI){
+                texturePixelXcounter = Math.floor(rayInfo.rayHitXposition)%this.blockSize;
+                if(rayInfo.rayAngle < Math.PI)
+                    {
                     texturePixelXcounter = this.blockSize - 1 - texturePixelXcounter;
                 }
             }
-            texturePixelXcounter = ((texturePixelXcounter%this.blockSize) + this.blockSize)%this.blockSize;
             for(let y = 0; y < this.pixelAmount; y++){
                 let color = this.texture[currentTextureRow*this.blockSize + texturePixelXcounter] == 1 ? colors.mortar: colors.brick;
                 color *= shade;
 
                 let pixelYPosition = (pixelHeight/2 - verticalLineHeight/2) + (y*pixelHeight);
 
-                this.verticalLines[i].list[y].setPosition(0, pixelYPosition, this.rectanglesWidth, pixelHeight);
-                this.verticalLines[i].list[y].setSize(this.rectanglesWidth, pixelHeight);
-                this.verticalLines[i].list[y].setFillStyle(color);
+                currentVerticalLine.list[y].setPosition(0, pixelYPosition, this.rectanglesWidth, pixelHeight);
+                currentVerticalLine.list[y].setSize(this.rectanglesWidth, pixelHeight);
+                currentVerticalLine.list[y].setFillStyle(color);
                 currentTextureRow += pixelStep;
             }
 
-            this.verticalLines[i].setDepth(1000 - (raycasterData.distances[i]/10).toFixed(0));
+            currentVerticalLine.setDepth(1000 - (rayInfo.distance/10).toFixed(0));
 
             const column = {
                 x: this.rectanglesWidth*(i + 0.5),
-                rayDirX: Math.cos(raycasterData.rayAngles[i]),
-                rayDirY: Math.sin(raycasterData.rayAngles[i]),
-                sinFixAngle: Math.sin(raycasterData.angles[i]),
+                rayDirX: Math.cos(rayInfo.rayAngle),
+                rayDirY: Math.sin(rayInfo.rayAngle),
+                // cos of this ray's angular offset from the player's own facing direction - the
+                // fisheye correction, derived the same way the reference row-caster computes
+                // raFix = cos(FixAng(playerAngle - rayAngle)), rather than reusing rayInfo.angle
+                // (which Raycaster.js derives independently for the wall-distance correction).
+                raFix: Math.cos(rayInfo.rayAngle - emitterAngle),
                 emitterX: emitterPosition.x,
                 emitterY: emitterPosition.y
             };
@@ -215,62 +243,97 @@ class Graphicator{
             const wallTop = horizon - verticalLineHeight/2;
             const wallBottom = horizon + verticalLineHeight/2;
 
-            // this.castFloorOrCeiling(this.floorPixels[i], this.floorPixelAmount, Math.max(wallBottom, horizon + 1), canvasSize.height, horizon, eyeHeightPx, column, colors.floor, colors.floorAlt);
-            // this.castFloorOrCeiling(this.ceilingPixels[i], this.ceilingPixelAmount, 0, Math.min(wallTop, horizon - 1), horizon, eyeHeightPx, column, colors.ceiling, colors.ceilingAlt);
+            const topSize = wallTop;
+            // The floor region (wallBottom..canvasSize.height) is always exactly as tall as the
+            // ceiling region (0..wallTop), since horizon sits at the exact vertical midpoint of
+            // the canvas - canvasSize.height - wallBottom reduces to horizon - verticalLineHeight/2,
+            // the same expression as topSize.
+            const bottomSize = topSize;
+
+            const ceilingYPosition = topSize/2;
+            const floorYPosition = wallBottom + bottomSize/2;
+
+            const ceilingPixelHeight = topSize/this.ceilingPixelAmount;
+            const floorPixelHeight = bottomSize/this.floorPixelAmount;
+
+            this.floorLines[i].setPosition(this.floorLines[i].x, floorYPosition);
+            this.floorLines[i].setSize(this.rectanglesWidth, bottomSize);
+            this.ceilingLines[i].setPosition(this.ceilingLines[i].x, ceilingYPosition);
+            this.ceilingLines[i].setSize(this.rectanglesWidth, topSize);
+
+            // floorPixelAmount === ceilingPixelAmount and bottomSize === topSize (horizon symmetry),
+            // so band p of the floor and band (amount-1-p) of the ceiling sit the same |distance|
+            // from the horizon and land on the exact same world point - one trig+texture sample
+            // serves both, the same trick classic row-casters use when they compute tx/ty once for
+            // screen row y and reuse it to draw the mirrored ceiling row at (screenHeight - y).
+            const bandAmount = this.floorPixelAmount;
+            for(let p = 0; p < bandAmount; p++){
+                const floorLinePixels = this.floorLines[i].list[p];
+                const mirroredIndex = bandAmount - 1 - p;
+                const ceilingLinePixels = this.ceilingLines[i].list[mirroredIndex];
+
+                const floorPixelYPosition = (floorPixelHeight/2 - bottomSize/2) + (p*floorPixelHeight);
+                floorLinePixels.setPosition(0, floorPixelYPosition);
+                floorLinePixels.setSize(this.rectanglesWidth, floorPixelHeight);
+
+                const ceilingPixelYPosition = (ceilingPixelHeight/2 - topSize/2) + (mirroredIndex*ceilingPixelHeight);
+                ceilingLinePixels.setPosition(0, ceilingPixelYPosition);
+                ceilingLinePixels.setSize(this.rectanglesWidth, ceilingPixelHeight);
+
+                const sample = this.sampleFloorCeilingTile(floorYPosition + floorPixelYPosition, horizon, eyeHeightPx, column);
+                floorLinePixels.setFillStyle(this.tintFloorCeilingTile(sample, colors.floor, colors.floorAlt));
+                ceilingLinePixels.setFillStyle(this.tintFloorCeilingTile(sample, colors.ceiling, colors.ceilingAlt));
+            }
         }
     }
 
     /**
-     * Renders one column's worth of floor or ceiling as a stack of perspective-correct bands
-     * between screenTop and screenBottom. Each band's distance comes from the classic row-casting
-     * formula (how far a screen row sits from the horizon maps directly to a world distance via
-     * projectionPlaneDistance); that perpendicular distance is then converted into a real
-     * (worldX, worldY) point along this column's own ray using the same fisheye-correction
-     * relationship the raycaster already applies to wall hits (distance*sin(fixAngle)), just
-     * inverted. That's what makes the tile checker line up with the world grid and shrink toward
-     * the horizon correctly, instead of the flat, camera-independent backdrop this used to be.
-     * @param {Array<Phaser.GameObjects.Rectangle>} pixels The pre-built band rectangles for this column.
-     * @param {Number} amount How many bands to split screenTop..screenBottom into.
-     * @param {Number} screenTop Top screen-Y of the region to cast (floor: below the wall; ceiling: 0).
-     * @param {Number} screenBottom Bottom screen-Y of the region to cast.
+     * Computes the perspective-correct world tile a floor/ceiling band lands on. midY (this band's
+     * absolute screen-Y center) maps to a world distance via the classic row-casting formula (how
+     * far a screen row sits from the horizon corresponds directly to a world distance through
+     * projectionPlaneDistance); that perpendicular distance is then turned into a real (worldX,
+     * worldY) point along this column's own ray using the same fisheye-correction relationship the
+     * raycaster applies to wall hits (distance*sin(fixAngle)), just inverted. Only Math.abs(midY -
+     * horizon) matters, so a ceiling row (above the horizon) and its mirrored floor row (equally far
+     * below it) resolve to the same world point - callers exploit that to sample once per row pair.
+     * @param {Number} midY Absolute screen-Y center of the band being sampled.
      * @param {Number} horizon The screen-Y of the horizon (canvasSize.height/2).
      * @param {Number} heightPx How far (in pixels) the plane being cast sits from the camera's eye.
-     * @param {{x:Number, rayDirX:Number, rayDirY:Number, sinFixAngle:Number, emitterX:Number, emitterY:Number}} column Precomputed per-column ray data.
+     * @param {{rayDirX:Number, rayDirY:Number, raFix:Number, emitterX:Number, emitterY:Number}} column Precomputed per-column ray data.
+     * @returns {{isEvenTile: boolean, isGroutLine: boolean}} The tile parity (checkerboard) and whether this point falls on a grout line.
+     */
+    sampleFloorCeilingTile(midY, horizon, heightPx, column){
+        const blockSize = this.blockSize;
+
+        const perpDistance = (heightPx*this.projectionPlaneDistance)/Math.max(Math.abs(midY - horizon), 1e-6);
+        const radialDistance = Math.max(Math.abs(column.raFix) > 1e-3 ? perpDistance/column.raFix : perpDistance, 1);
+
+        const worldX = column.emitterX + column.rayDirX*radialDistance;
+        const worldY = column.emitterY + column.rayDirY*radialDistance;
+
+        const tileX = Math.floor(worldX/blockSize);
+        const tileY = Math.floor(worldY/blockSize);
+        const isEvenTile = (((tileX + tileY)%2) + 2)%2 === 0;
+
+        const texX = Math.floor(((worldX%blockSize) + blockSize)%blockSize);
+        const texY = Math.floor(((worldY%blockSize) + blockSize)%blockSize);
+        const isGroutLine = this.floorCeilingTexture[texY*blockSize + texX] === 1;
+
+        return {isEvenTile, isGroutLine};
+    }
+
+    /**
+     * Turns a sampleFloorCeilingTile() result into a concrete fill color for one surface (floor or
+     * ceiling), since the same sample is shared between a floor band and its mirrored ceiling band
+     * but each needs its own color pair.
+     * @param {{isEvenTile: boolean, isGroutLine: boolean}} sample Result from sampleFloorCeilingTile.
      * @param {Number} color Tile color for even-parity world tiles.
      * @param {Number} altColor Tile color for odd-parity world tiles.
+     * @returns {Number} The color to fill this band with.
      */
-    castFloorOrCeiling(pixels, amount, screenTop, screenBottom, horizon, heightPx, column, color, altColor){
-        let span = screenBottom - screenTop;
-
-        if(span <= 0){
-            for(let b = 0; b < amount; b++){
-                pixels[b].setVisible(false);
-            }
-            return;
-        }
-
-        let bandHeight = span/amount;
-
-        for(let b = 0; b < amount; b++){
-            let midY = screenTop + bandHeight*(b + 0.5);
-            let perpDistance = (heightPx*this.projectionPlaneDistance)/Math.abs(midY - horizon);
-            let radialDistance = Math.abs(column.sinFixAngle) > 1e-3 ? perpDistance/column.sinFixAngle : perpDistance;
-            radialDistance = Math.max(radialDistance, 1);
-
-            let worldX = column.emitterX + column.rayDirX*radialDistance;
-            let worldY = column.emitterY + column.rayDirY*radialDistance;
-
-            let tileX = Math.floor(worldX/this.blockSize);
-            let tileY = Math.floor(worldY/this.blockSize);
-            let tileColor = (((tileX + tileY)%2) + 2)%2 === 0 ? color : altColor;
-
-            let pixel = pixels[b];
-            pixel.setVisible(true);
-            pixel.setPosition(column.x, midY);
-            pixel.setSize(this.rectanglesWidth, bandHeight);
-            pixel.setFillStyle(tileColor);
-            pixel.setDepth(1000 - radialDistance/10);
-        }
+    tintFloorCeilingTile(sample, color, altColor){
+        const tileColor = sample.isEvenTile ? color : altColor;
+        return sample.isGroutLine ? tileColor*0.5 : tileColor;
     }
 
     /**

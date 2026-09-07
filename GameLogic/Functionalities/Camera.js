@@ -47,7 +47,8 @@ class Camera{
      */
     draw3DWorld(){
         this.setArcAngles();
-        this.graphicator.redraw3DScaling(this.owner.getRaycaster().calculateRayData(), this.owner.getPosition());
+        const ownerAngle = adjustAngleValue(this.owner.getRotation() + this.owner.config.angleOffset);
+        this.graphicator.redraw3DScaling(this.owner.getRaycaster().calculateRayData(), this.owner.getPosition(), ownerAngle);
         this.draw3DWorldElements();
     }
 

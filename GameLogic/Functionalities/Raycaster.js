@@ -6,6 +6,14 @@ class Raycaster{
         this.rayAmount = rayAmount;
         this.depthOfFieldLimit = options.renderDistance.value;
         this.cellSize = this.emitter.scene.wallsConfig.size;
+        this.rayData = Array.from({length: this.rayAmount}, () => ({
+            rayHitXposition: 0,
+            rayHitYposition: 0,
+            angle: 0,
+            rayAngle: 0,
+            distance: 0,
+            typeOfHit: ""
+        }));
         if(game.config.physics.arcade.debug){
             this.graphicRays = new Rays(this.emitter.scene, this.emitter);
         }
@@ -74,20 +82,14 @@ class Raycaster{
     calculateRayData(){
         let currentAngle = this.rayAngle;
 
-        let raysHitXposition = Array(this.rayAmount);
-        let raysHitYposition = Array(this.rayAmount);
-        let distances = Array(this.rayAmount);
-        let typeOfHit = Array(this.rayAmount);
-        let angles = Array(this.rayAmount);
-        let rayAngles = Array(this.rayAmount);
-
         let emitterPosition = this.emitter.getPosition();
         let emitterX = this.emitter.getPositionX();
         let emitterY = this.emitter.getPositionY();
         const cellSize = this.cellSize;
 
         for(let i = 0; i < this.rayAmount; i++){
-            rayAngles[i] = currentAngle;
+            let rayInfo = this.rayData[i];
+            rayInfo.rayAngle = currentAngle;
 
             let hit = this.castRay(currentAngle, emitterX, emitterY);
 
@@ -99,29 +101,29 @@ class Raycaster{
                 rayXposition = hit.x;
                 rayYposition = hit.y;
                 RDistance = hit.distance;
-                typeOfHit[i] = hit.typeOfHit;
+                rayInfo.typeOfHit = hit.typeOfHit;
             }else{
                 rayXposition = Math.cos(currentAngle) * this.depthOfFieldLimit*cellSize + emitterX;
                 rayYposition = Math.sin(currentAngle) * this.depthOfFieldLimit*cellSize + emitterY;
                 RDistance = Phaser.Math.Distance.BetweenPoints(emitterPosition, {x: rayXposition, y: rayYposition});
-                typeOfHit[i] = "";
+                rayInfo.typeOfHit = "";
             }
 
             currentAngle = adjustAngleValue(currentAngle + this.getAngleStep());
 
-            raysHitXposition[i] = rayXposition;
-            raysHitYposition[i] = rayYposition;
+            rayInfo.rayHitXposition = rayXposition;
+            rayInfo.rayHitYposition = rayYposition;
 
             let fixAngle = (this.rayAngle - 5*Math.PI/4) - currentAngle;
 
             fixAngle = adjustAngleValue(fixAngle);
 
             RDistance = RDistance*Math.sin(fixAngle);
-            angles[i] = fixAngle;
-            distances[i] = hit.wallDetected ? RDistance : Infinity;
+            rayInfo.angle = fixAngle;
+            rayInfo.distance = hit.wallDetected ? RDistance : Infinity;
         }
 
-        return {raysHitXposition, raysHitYposition, angles, rayAngles, distances, typeOfHit};
+        return this.rayData;
     }
 
     /**
